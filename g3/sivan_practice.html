@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <title>乘法练习</title>
 
-  <!-- 🔐 关键：统一守卫 -->
   <script src="/js/guard.js" defer></script>
 
-  <!-- ⭐ 声明权限 -->
   <script>
     window.pageGrade = "grade3";
   </script>
@@ -15,13 +13,13 @@
 
 <body>
 
-<h1>乘法口算挑战赛</h1>
+<h1>乘法口算挑战赛（Sivan专用）</h1>
 
 <div id="app"></div>
 
 <script>
 
-// ====== 以下是你的原逻辑（完全不变）======
+// ===== 你的逻辑完全不改 =====
 
 const user = localStorage.getItem("user");
 
@@ -37,16 +35,16 @@ let startTime = 0;
 let timer = null;
 let timeLeft = TIME_PER_QUESTION;
 
-function generateQuestions() {
+function generateQuestions(){
   questions = [];
-  for (let i = 0; i < NUM_QUESTIONS; i++) {
-    let a = Math.floor(Math.random() * MAX_FACTOR) + 1;
-    let b = Math.floor(Math.random() * MAX_FACTOR) + 1;
-    questions.push({ a, b, answer: a * b });
+  for(let i=0;i<NUM_QUESTIONS;i++){
+    let a = Math.floor(Math.random()*MAX_FACTOR)+1;
+    let b = Math.floor(Math.random()*MAX_FACTOR)+1;
+    questions.push({a,b,answer:a*b});
   }
 }
 
-function start() {
+function start(){
   generateQuestions();
   current = 0;
   correctCount = 0;
@@ -55,7 +53,7 @@ function start() {
   showQuestion();
 }
 
-function showQuestion() {
+function showQuestion(){
   timeLeft = TIME_PER_QUESTION;
 
   const q = questions[current];
@@ -63,61 +61,62 @@ function showQuestion() {
   document.getElementById("app").innerHTML = `
     <h2>${q.a} × ${q.b}</h2>
     <p>⏳ ${timeLeft}s</p>
-    <input id="answer" type="number" />
+    <input id="answer" type="number"/>
     <button onclick="submit()">提交</button>
   `;
 
   startTimer();
 }
 
-function startTimer() {
+function startTimer(){
   clearInterval(timer);
 
-  timer = setInterval(() => {
+  timer = setInterval(()=>{
     timeLeft--;
-    document.getElementById("app").querySelector("p").innerText = `⏳ ${timeLeft}s`;
+    document.querySelector("p").innerText = `⏳ ${timeLeft}s`;
 
-    if (timeLeft <= 0) {
+    if(timeLeft<=0){
       clearInterval(timer);
       handleAnswer(null);
     }
-  }, 1000);
+  },1000);
 }
 
-function submit() {
+function submit(){
   const val = document.getElementById("answer").value;
   handleAnswer(parseInt(val));
 }
 
-function handleAnswer(userAnswer) {
+function handleAnswer(userAnswer){
   clearInterval(timer);
 
   const q = questions[current];
-  const correct = userAnswer === q.answer;
 
-  if (correct) correctCount++;
-  else wrongQuestions.push(q);
+  if(userAnswer === q.answer){
+    correctCount++;
+  } else {
+    wrongQuestions.push(q);
+  }
 
   current++;
 
-  if (current < NUM_QUESTIONS) {
+  if(current < NUM_QUESTIONS){
     showQuestion();
   } else {
     end();
   }
 }
 
-function end() {
+function end(){
   document.getElementById("app").innerHTML = `
     <h2>完成</h2>
-    <p>正确率：${Math.round(correctCount / NUM_QUESTIONS * 100)}%</p>
+    <p>正确率：${Math.round(correctCount/NUM_QUESTIONS*100)}%</p>
     <button onclick="start()">再来一次</button>
   `;
 }
 
-document.getElementById("app").innerHTML = `
-  <button onclick="start()">开始</button>
-`;
+document.getElementById("app").innerHTML =
+`<button onclick="start()">开始</button>`;
 
 </script>
 
