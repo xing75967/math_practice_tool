@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fraction to Percentage - Enhanced Dual Scale</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+  canvas { border: 1px solid #ccc; margin-top: 10px; }
+  .slider-container { margin: 10px; }
+  input[type=number] { width: 60px; }
+</style>
+</head>
+<body>
+
+<h2>Fraction to Percentage - Dual Scale with Highlighted Percent Marks</h2>
+
+<p id="fraction">Fraction: 3/4</p>
+<p id="decimal">Decimal: 0.75</p>
+<p id="percentage">Percentage: 75%</p>
+
+<canvas id="pizza" width="300" height="300"></canvas>
+
+<div class="slider-container">
+  <label>Numerator: <input type="number" id="numerator" value="3" step="1" min="0"></label>
+</div>
+
+<div class="slider-container">
+  <label>Denominator: <input type="number" id="denominator" value="4" step="1" min="1"></label>
+</div>
+
+<script>
+const canvas = document.getElementById('pizza');
+const ctx = canvas.getContext('2d');
+
+const numeratorInput = document.getElementById('numerator');
+const denominatorInput = document.getElementById('denominator');
+const fractionLabel = document.getElementById('fraction');
+const decimalLabel = document.getElementById('decimal');
+const percentLabel = document.getElementById('percentage');
+
+function drawPizza(num, den) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const centerX = canvas.width/2;
+    const centerY = canvas.height/2;
+    const radius = 140;
+
+    // 百分比底图：100块
+    for (let i = 0; i < 100; i++) {
+        const startAngle = (i/100)*2*Math.PI;
+        const endAngle = ((i+1)/100)*2*Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = 'lightgray';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+    }
+
+    // 百分比刻度突出显示，每10%加粗
+    for (let i = 0; i <= 100; i += 10) {
+        const angle = (i/100)*2*Math.PI;
+        const inner = radius * 0.9;
+        const outer = radius;
+        const x1 = centerX + inner * Math.cos(angle);
+        const y1 = centerY + inner * Math.sin(angle);
+        const x2 = centerX + outer * Math.cos(angle);
+        const y2 = centerY + outer * Math.sin(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 百分比数字
+        const xText = centerX + radius*1.05 * Math.cos(angle);
+        const yText = centerY + radius*1.05 * Math.sin(angle);
+        ctx.fillStyle = 'black';
+        ctx.font = '10px Arial';
+        ctx.fillText(`${i}%`, xText-10, yText+3);
+    }
+
+    // 内圈分数可视化
+    for (let i = 0; i < den; i++) {
+        const startAngle = (i/den)*2*Math.PI;
+        const endAngle = ((i+1)/den)*2*Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius*0.7, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = i < num ? 'green' : 'lightgray';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+
+        // 内圈编号
+        const midAngle = (startAngle + endAngle)/2;
+        const x = centerX + radius*0.5*Math.cos(midAngle);
+        const y = centerY + radius*0.5*Math.sin(midAngle);
+        ctx.fillStyle = 'black';
+        ctx.font = '10px Arial';
+        ctx.fillText(`${i+1}`, x-3, y+3);
+    }
+
+    // 数值显示
+    fractionLabel.textContent = `Fraction: ${num}/${den}`;
+    decimalLabel.textContent = `Decimal: ${(num/den).toFixed(2)}`;
+    percentLabel.textContent = `Percentage: ${(num/den*100).toFixed(1)}%`;
+}
+
+function updateValues() {
+    let num = parseInt(numeratorInput.value);
+    let den = parseInt(denominatorInput.value);
+    if (den < 1) den = 1;
+    if (num < 0) num = 0;
+    if (num > den) num = den;
+    numeratorInput.value = num;
+    denominatorInput.value = den;
+    drawPizza(num, den);
+}
+
+// 初始绘制
+updateValues();
+
+numeratorInput.addEventListener('input', updateValues);
+denominatorInput.addEventListener('input', updateValues);
+</script>
+
+</body>
+</html>

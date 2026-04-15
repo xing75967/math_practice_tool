@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fraction to Percentage Interactive</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+  canvas { border: 1px solid #ccc; }
+  .slider-container { margin: 10px; }
+</style>
+</head>
+<body>
+
+<h2>Fraction to Percentage Visualization</h2>
+
+<p id="fraction">Fraction: 3/4</p>
+<p id="percentage">Percentage: 75%</p>
+
+<canvas id="pizza" width="300" height="300"></canvas>
+
+<div class="slider-container">
+  <label>Numerator: <span id="numValue">3</span></label><br>
+  <input type="range" id="numerator" min="0" max="20" value="3">
+</div>
+
+<div class="slider-container">
+  <label>Denominator: <span id="denValue">4</span></label><br>
+  <input type="range" id="denominator" min="1" max="20" value="4">
+</div>
+
+<script>
+const canvas = document.getElementById('pizza');
+const ctx = canvas.getContext('2d');
+
+const numeratorSlider = document.getElementById('numerator');
+const denominatorSlider = document.getElementById('denominator');
+const fractionLabel = document.getElementById('fraction');
+const percentLabel = document.getElementById('percentage');
+const numValueLabel = document.getElementById('numValue');
+const denValueLabel = document.getElementById('denValue');
+
+function drawPizza(numerator, denominator) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const totalSlices = 100;
+    const eatenSlices = Math.round(numerator / denominator * totalSlices);
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = 140;
+
+    for (let i = 0; i < totalSlices; i++) {
+        const startAngle = (i / totalSlices) * 2 * Math.PI;
+        const endAngle = ((i+1) / totalSlices) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = i < eatenSlices ? 'green' : 'lightgray';
+        ctx.fill();
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+    }
+
+    fractionLabel.textContent = `Fraction: ${numerator}/${denominator}`;
+    percentLabel.textContent = `Percentage: ${(numerator/denominator*100).toFixed(1)}%`;
+}
+
+function updateValues() {
+    let num = parseInt(numeratorSlider.value);
+    let den = parseInt(denominatorSlider.value);
+    if (den === 0) den = 1;
+    numeratorSlider.value = num;
+    denominatorSlider.value = den;
+
+    numValueLabel.textContent = num;
+    denValueLabel.textContent = den;
+    drawPizza(num, den);
+}
+
+// 初始绘制
+updateValues();
+
+// 滑块事件
+numeratorSlider.addEventListener('input', updateValues);
+denominatorSlider.addEventListener('input', updateValues);
+
+</script>
+</body>
+</html>
