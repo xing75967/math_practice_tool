@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 <head>
   <meta charset="UTF-8">
@@ -7,42 +6,77 @@
 </head>
 <body>
 
-  <h1>Daniel's Class Funny Tools</h1>
-  <h2>✝️ I am the math magician who can make your math journey easy！！</h2>
-  <h1>🎓 Math Learning System</h1>
+<h1>🎓 Math Learning System</h1>
+<p id="welcome"></p>
 
-  <h2>📘 Multiplication</h2>
-  <button onclick="go('g3/sivan_practice.html')">七星乘法口算</button>
-  <button onclick="go('general/Multiplication_Challenge.html')">Multiplication Challenges</button>
+<script>
+const users = {
+  "admin": "admin",
+  "user": "user123",
+  "userx": "userx123",
+  "sivan": "sivan123"
+};
 
-  <!-- <h2>➗ Division</h2>
-  <button onclick="go('practice3.html')">除法练习</button> -->
+function login(){
+  let u = prompt("Username:");
+  let p = prompt("Password:");
 
-  <h2>📊 Fraction Percentages</h2>
-  <button onclick="go('g6/fraction1.html')">Fraction to Percentage Visualization</button>
-  <button onclick="go('g6/fraction2.html')">Fraction to Percentage Visualization(Scale)</button>
-  <button onclick="go('g6/fraction3.html')">Fraction to Percentage Visualization(Dynamic)</button>
+  if(users[u] && users[u] === p){
+    localStorage.setItem("user", u);
+    document.getElementById("welcome").innerText =
+      "Welcome, " + u + " 👋";
+  } else {
+    document.body.innerHTML = "<h1>Wrong login ❌</h1>";
+  }
+}
 
-  <!-- <h2>📊 Mixed / Challenge</h2>
-  <button onclick="go('practice4.html')">混合挑战</button> -->
+login();
+</script>
 
-  <hr>
+<hr>
 
-  <p id="last"></p>
+<h2>📘 Multiplication</h2>
+<button onclick="go('multiplication/sivan_practice.html')">
+  七星乘法口算
+</button>
 
-  <script>
-    function go(file){
-      localStorage.setItem("lastPage", file);
-      window.location.href = file;
-    }
+<button onclick="go('multiplication/Multiplication_Challenge.html')">
+  Multiplication Challenge
+</button>
 
-    // 显示最近练习
-    const last = localStorage.getItem("lastPage");
-    if(last){
-      document.getElementById("last").innerText =
-        "最近练习: " + last;
-    }
-  </script>
+<h2>📐 Fractions</h2>
+<button onclick="go('fraction/fraction1.html')">
+  Fraction Practice
+</button>
+
+<button onclick="go('fraction/fraction2.html')">
+  Fraction Scale
+</button>
+
+<button onclick="go('fraction/fraction3.html')">
+  Fraction Dynamic
+</button>
+
+<hr>
+
+<p id="last"></p>
+
+<script>
+function go(file){
+  let user = localStorage.getItem("user");
+  console.log("User:", user, "opening:", file);
+
+  localStorage.setItem("lastPage", file);
+  window.location.href = file;
+}
+
+// 最近练习记录
+const last = localStorage.getItem("lastPage");
+if(last){
+  document.getElementById("last").innerText =
+    "Recent Practice: " + last;
+}
+</script>
 
 </body>
 </html>
