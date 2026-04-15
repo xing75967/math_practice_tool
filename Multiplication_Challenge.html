@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Multiplication Practice</title>
+</head>
+<body style="font-family: Arial; text-align:center; margin-top:50px;">
+
+<h1>Multiplication Challenge</h1>
+<div id="app"></div>
+
+<script>
+// ===== Config =====
+const NUM_QUESTIONS = 15;
+const MAX_FACTOR = 10;
+const TIME_PER_QUESTION = 10;
+
+let questions = [];
+let current = 0;
+let correctCount = 0;
+let wrongQuestions = [];
+let startTime = 0;
+let timer = null;
+let timeLeft = TIME_PER_QUESTION;
+let locked = false; // 防止重复提交
+
+// Generate questions
+function generateQuestions() {
+  questions = [];
+  for (let i = 0; i < NUM_QUESTIONS; i++) {
+    let a = Math.floor(Math.random() * MAX_FACTOR) + 1;
+    let b = Math.floor(Math.random() * MAX_FACTOR) + 1;
+    questions.push({ a, b, answer: a * b });
+  }
+}
+
+// Start
+function start() {
+  generateQuestions();
+  current = 0;
+  correctCount = 0;
+  wrongQuestions = [];
+  startTime = Date.now();
+  showQuestion();
+}
+
+// Show question
+function showQuestion() {
+  locked = false;
+  timeLeft = TIME_PER_QUESTION;
+  const q = questions[current];
+
+  document.getElementById("app").innerHTML = `
+    <h2>Question ${current + 1}</h2>
+    <div style="font-size:28px; margin:20px;">
+      ${q.a} × ${q.b} = 
+      <input id="answer" type="number" autofocus style="width:80px; font-size:20px; text-align:center;" />
+    </div>
+    <p>⏳ Time Left: <span id="timer">${timeLeft}</span>s</p>
+    <button onclick="submit()">Submit</button>
+    <div id="feedback" style="margin-top:15px; font-size:20px;"></div>
+  `;
+
+  // Enter 提交
+  document.getElementById("answer").addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      submit();
+    }
+  });
+
+  startTimer();
+}
+
+// Timer
+function startTimer() {
+  clearInterval(timer);
+  timer = setInterval(() => {
+    timeLeft--;
+    document.getElementById("timer").innerText = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      handleAnswer(null);
+    }
+  }, 1000);
+}
+
+// Submit
+function submit() {
+  if (locked) return; // 防止双触发
+  const input = document.getElementById("answer").value;
+  handleAnswer(parseInt(input));
+}
+
+// Handle answer
+function handleAnswer(userAnswer) {
+  if (locked) return;
+  locked = true;
+
+  clearInterval(timer);
+
+  const q = questions[current];
+  const correct = userAnswer === q.answer;
+  const feedbackDiv = document.getElementById("feedback");
+
+  if (correct) {
+    correctCount++;
+    feedbackDiv.innerHTML = "✅ Correct!";
+  } else {
+    wrongQuestions.push({
+      question: `${q.a} × ${q.b}`,
+      correctAnswer: q.answer,
+      userAnswer: userAnswer === null ? "Timeout" : userAnswer
+    });
+    feedbackDiv.innerHTML = `❌ Wrong! Answer: ${q.answer}`;
+  }
+
+  // 延迟1秒进入下一题（让用户看到反馈）
+  setTimeout(() => {
+    current++;
+    if (current < NUM_QUESTIONS) {
+      showQuestion();
+    } else {
+      end();
+    }
+  }, 1000);
+}
+
+// End
+function end() {
+  const endTime = Date.now();
+  const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+  const accuracy = Math.round((correctCount / NUM_QUESTIONS) * 100);
+
+  let wrongHtml = "";
+
+  if (wrongQuestions.length > 0) {
+    wrongHtml = "<h3>❌ Mistakes:</h3>";
+    wrongQuestions.forEach(q => {
+      wrongHtml += `
+        <p>${q.question} = ${q.correctAnswer} (Your answer: ${q.userAnswer})</p>
+      `;
+    });
+  } else {
+    wrongHtml = "<h3>🎉 Perfect!</h3>";
+  }
+
+  document.getElementById("app").innerHTML = `
+    <h2>Finished!</h2>
+    <p>⏱ Time: ${totalTime}s</p>
+    <p>🎯 Accuracy: ${accuracy}%</p>
+    ${wrongHtml}
+    <br/>
+    <button onclick="start()">Try Again</button>
+  `;
+}
+
+// Initial screen
+document.getElementById("app").innerHTML = `
+  <p>${NUM_QUESTIONS} questions | Range 1~${MAX_FACTOR} | ${TIME_PER_QUESTION}s each</p>
+  <button onclick="start()">Start</button>
+`;
+</script>
+
+</body>
+</html>
