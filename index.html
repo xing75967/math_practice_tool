@@ -1,18 +1,36 @@
 <!DOCTYPE html>
-<!-- update -->
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Math Practice</title>
+  <title>Math Practice Hub</title>
 </head>
 <body>
-  <h1>Math Practice Tool</h1>
 
-  <a href="sivan_practice.html">
-    <button style="font-size:20px;padding:10px;">
-      Start Practice
-    </button>
-  </a>
+  <h1>📚 Math Practice Hub</h1>
+  <p>Choose a practice:</p>
+
+  <div id="menu"></div>
+
+  <script>
+    const pages = [
+      { name: "七星乘法口算", file: "practice1.html" },
+      { name: "两位数乘法", file: "practice2.html" },
+      { name: "除法练习", file: "practice3.html" }
+    ];
+
+    const menu = document.getElementById("menu");
+
+    pages.forEach(p => {
+      const btn = document.createElement("button");
+      btn.innerText = p.name;
+      btn.style = "font-size:18px;margin:8px;padding:10px;";
+      btn.onclick = () => {
+        window.location.href = p.file;
+      };
+      menu.appendChild(btn);
+      menu.appendChild(document.createElement("br"));
+    });
+  </script>
 
 </body>
 </html>
