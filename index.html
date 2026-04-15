@@ -6,6 +6,126 @@
 </head>
 <body>
 
+<h1>🎓 Math Learning System</h1>
+<p id="welcome"></p>
+
+<div id="menu"></div>
+
+<hr>
+
+<p id="last"></p>
+
+<script>
+
+// ========================
+// 1. 用户系统
+// ========================
+const users = {
+  "admin": "admin",
+  "user": "user123",
+  "userx": "userx123",
+  "sivan": "sivan123"
+};
+
+// ========================
+// 2. 登录函数
+// ========================
+function login(){
+  let u = prompt("Username:");
+  let p = prompt("Password:");
+
+  if(users[u] && users[u] === p){
+
+    localStorage.setItem("user", u);
+
+    document.getElementById("welcome").innerText =
+      "Welcome, " + u + " 👋";
+
+  } else {
+    document.body.innerHTML = "<h1>Wrong login ❌</h1>";
+  }
+}
+
+// ========================
+// 3. 强制登录检查（关键修复）
+// ========================
+function checkLogin(){
+  const user = localStorage.getItem("user");
+
+  if(!user){
+    login();
+  } else {
+    document.getElementById("welcome").innerText =
+      "Welcome back, " + user + " 👋";
+  }
+}
+
+checkLogin();
+
+
+// ========================
+// 4. 课程模块
+// ========================
+const modules = {
+  grade3: [
+    { name: "七星乘法口算", file: "multiplication/sivan_practice.html" },
+    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
+  ],
+
+  grade4: [
+    { name: "Fraction Practice", file: "fraction/fraction1.html" },
+    { name: "Fraction Scale", file: "fraction/fraction2.html" },
+    { name: "Fraction Dynamic", file: "fraction/fraction3.html" }
+  ]
+};
+
+
+// ========================
+// 5. 菜单渲染（简单版）
+// ========================
+function renderMenu(){
+  const menu = document.getElementById("menu");
+
+  Object.values(modules).flat().forEach(item => {
+    const btn = document.createElement("button");
+
+    btn.innerText = item.name;
+    btn.style = "font-size:18px;margin:6px;padding:10px;";
+
+    btn.onclick = () => {
+      localStorage.setItem("lastPage", item.file);
+      window.location.href = item.file;
+    };
+
+    menu.appendChild(btn);
+    menu.appendChild(document.createElement("br"));
+  });
+}
+
+renderMenu();
+
+
+// ========================
+// 6. 最近访问记录
+// ========================
+const last = localStorage.getItem("lastPage");
+if(last){
+  document.getElementById("last").innerText =
+    "📌 Recent Practice: " + last;
+}
+
+</script>
+
+</body>
+</html>
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Math Learning System</title>
+</head>
+<body>
+
 <h1> Daniel's Class Funny Tools </h1>
 <h2> ✝️ I am the math magician who can make your math journey easy！！</h2>
   
@@ -139,4 +259,4 @@ if(last){
 </script>
 
 </body>
-</html>
+</html> -->
