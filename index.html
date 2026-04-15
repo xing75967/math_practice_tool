@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <title>Math Learning System</title>
 </head>
+
 <body>
 
 <h1>🎓 Math Learning System</h1>
+
 <p id="welcome"></p>
 
 <div id="menu"></div>
@@ -28,7 +30,7 @@ const users = {
 };
 
 // ========================
-// 2. 登录函数
+// 2. 登录
 // ========================
 function login(){
   let u = prompt("Username:");
@@ -37,6 +39,15 @@ function login(){
   if(users[u] && users[u] === p){
 
     localStorage.setItem("user", u);
+
+    // ⭐ 默认权限（你可以后面改成动态）
+    if(u === "admin"){
+      localStorage.setItem("grades", JSON.stringify(["all"]));
+    } else if(u === "sivan"){
+      localStorage.setItem("grades", JSON.stringify(["grade3"]));
+    } else {
+      localStorage.setItem("grades", JSON.stringify(["grade3"]));
+    }
 
     document.getElementById("welcome").innerText =
       "Welcome, " + u + " 👋";
@@ -47,7 +58,7 @@ function login(){
 }
 
 // ========================
-// 3. 强制登录检查（关键修复）
+// 3. 登录检查
 // ========================
 function checkLogin(){
   const user = localStorage.getItem("user");
@@ -62,9 +73,14 @@ function checkLogin(){
 
 checkLogin();
 
+// ========================
+// 4. 读取权限
+// ========================
+const user = localStorage.getItem("user");
+const grades = JSON.parse(localStorage.getItem("grades") || "[]");
 
 // ========================
-// 4. 课程模块
+// 5. 课程模块
 // ========================
 const modules = {
   grade3: [
@@ -79,36 +95,44 @@ const modules = {
   ]
 };
 
-
 // ========================
-// 5. 菜单渲染（简单版）
+// 6. 渲染菜单（🔥权限过滤核心）
 // ========================
 function renderMenu(){
+
   const menu = document.getElementById("menu");
 
-  Object.values(modules).flat().forEach(item => {
-    const btn = document.createElement("button");
+  Object.keys(modules).forEach(grade => {
 
-    btn.innerText = item.name;
-    btn.style = "font-size:18px;margin:6px;padding:10px;";
+    // ❌ 没权限直接跳过
+    if(!grades.includes("all") && !grades.includes(grade)) return;
 
-    btn.onclick = () => {
-      localStorage.setItem("lastPage", item.file);
-      window.location.href = item.file;
-    };
+    modules[grade].forEach(item => {
 
-    menu.appendChild(btn);
-    menu.appendChild(document.createElement("br"));
+      const btn = document.createElement("button");
+
+      btn.innerText = item.name;
+      btn.style = "font-size:18px;margin:6px;padding:10px;";
+
+      btn.onclick = () => {
+        localStorage.setItem("lastPage", item.file);
+        window.location.href = item.file;
+      };
+
+      menu.appendChild(btn);
+      menu.appendChild(document.createElement("br"));
+    });
+
   });
 }
 
 renderMenu();
 
-
 // ========================
-// 6. 最近访问记录
+// 7. 最近访问
 // ========================
 const last = localStorage.getItem("lastPage");
+
 if(last){
   document.getElementById("last").innerText =
     "📌 Recent Practice: " + last;
@@ -118,6 +142,8 @@ if(last){
 
 </body>
 </html>
+
+
 <!-- <!DOCTYPE html>
 <html>
 <head>
