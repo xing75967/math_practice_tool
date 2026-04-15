@@ -9,18 +9,13 @@
     return;
   }
 
-  // 🔥 teacher 直接放行
+  // ⭐ teacher
   if (grades.includes("all")) return;
 
-  // ⭐ 从页面读取 grade（不再依赖 URL）
   const pageGrade = window.pageGrade;
 
-  if (!pageGrade) {
-    console.warn("No pageGrade defined");
-    return;
-  }
+  if (!pageGrade) return;
 
-  // ❌ 没权限
   if (!grades.includes(pageGrade)) {
     alert("No permission for this page");
     window.location.href = "/index.html";
