@@ -2,34 +2,38 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Math Practice Hub</title>
+  <title>Math Learning System</title>
 </head>
 <body>
 
-  <h1>📚 Math Practice Hub</h1>
-  <p>Choose a practice:</p>
+  <h1>🎓 Math Learning System</h1>
 
-  <div id="menu"></div>
+  <h2>📘 Multiplication</h2>
+  <button onclick="go('practice1.html')">七星乘法口算</button>
+  <button onclick="go('practice2.html')">两位数乘法</button>
+
+  <h2>➗ Division</h2>
+  <button onclick="go('practice3.html')">除法练习</button>
+
+  <h2>📊 Mixed / Challenge</h2>
+  <button onclick="go('practice4.html')">混合挑战</button>
+
+  <hr>
+
+  <p id="last"></p>
 
   <script>
-    const pages = [
-      { name: "七星乘法口算", file: "practice1.html" },
-      { name: "两位数乘法", file: "practice2.html" },
-      { name: "除法练习", file: "practice3.html" }
-    ];
+    function go(file){
+      localStorage.setItem("lastPage", file);
+      window.location.href = file;
+    }
 
-    const menu = document.getElementById("menu");
-
-    pages.forEach(p => {
-      const btn = document.createElement("button");
-      btn.innerText = p.name;
-      btn.style = "font-size:18px;margin:8px;padding:10px;";
-      btn.onclick = () => {
-        window.location.href = p.file;
-      };
-      menu.appendChild(btn);
-      menu.appendChild(document.createElement("br"));
-    });
+    // 显示最近练习
+    const last = localStorage.getItem("lastPage");
+    if(last){
+      document.getElementById("last").innerText =
+        "最近练习: " + last;
+    }
   </script>
 
 </body>
