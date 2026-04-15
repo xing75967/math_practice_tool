@@ -38,7 +38,7 @@ const users = {
   },
   "sivan": {
     password: "sivan123",
-    allowedGrades: ["grade3", "grade4"]
+    allowedGrades: ["grade3", "grade6"]
   }
 };
 
@@ -70,21 +70,22 @@ login();
 // 3. 课程模块（按 grade 分类）
 // ========================
 const modules = {
-  grade1: [
-    { name: "Fraction Basic", file: "fraction/fraction1.html" }
+  general: [
+    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
   ],
 
-  grade2: [
-    { name: "Fraction Scale", file: "fraction/fraction2.html" }
-  ],
+  // grade2: [
+  //   { name: "Fraction Scale", file: "g6/fraction2.html" }
+  // ],
 
   grade3: [
-    { name: "七星乘法口算", file: "multiplication/sivan_practice.html" },
-    { name: "Multiplication Challenge", file: "multiplication/Multiplication_Challenge.html" }
+    { name: "七星乘法口算", file: "g3/sivan_practice.html" },
+    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
   ],
 
-  grade4: [
-    { name: "Fraction Dynamic", file: "fraction/fraction3.html" }
+  grade6: [
+    { name: "Fraction Dynamic", file: "g6/fraction3.html" },
+    { name: "Fraction Basic", file: "g6/fraction1.html" }
   ]
 };
 
