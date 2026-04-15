@@ -20,7 +20,7 @@
 <script>
 
 // ========================
-// 1. 用户系统
+// 用户系统
 // ========================
 const users = {
   "admin": "admin",
@@ -30,7 +30,7 @@ const users = {
 };
 
 // ========================
-// 2. 登录
+// 登录
 // ========================
 function login(){
   let u = prompt("Username:");
@@ -40,7 +40,7 @@ function login(){
 
     localStorage.setItem("user", u);
 
-    // ⭐ 默认权限（你可以后面改成动态）
+    // 权限初始化（你可后续改数据库）
     if(u === "admin"){
       localStorage.setItem("grades", JSON.stringify(["all"]));
     } else if(u === "sivan"){
@@ -58,8 +58,6 @@ function login(){
 }
 
 // ========================
-// 3. 登录检查
-// ========================
 function checkLogin(){
   const user = localStorage.getItem("user");
 
@@ -74,13 +72,7 @@ function checkLogin(){
 checkLogin();
 
 // ========================
-// 4. 读取权限
-// ========================
-const user = localStorage.getItem("user");
-const grades = JSON.parse(localStorage.getItem("grades") || "[]");
-
-// ========================
-// 5. 课程模块
+// 模块
 // ========================
 const modules = {
   grade3: [
@@ -96,21 +88,21 @@ const modules = {
 };
 
 // ========================
-// 6. 渲染菜单（🔥权限过滤核心）
+// 权限 + 菜单
 // ========================
 function renderMenu(){
 
   const menu = document.getElementById("menu");
 
+  const grades = JSON.parse(localStorage.getItem("grades") || "[]");
+
   Object.keys(modules).forEach(grade => {
 
-    // ❌ 没权限直接跳过
     if(!grades.includes("all") && !grades.includes(grade)) return;
 
     modules[grade].forEach(item => {
 
       const btn = document.createElement("button");
-
       btn.innerText = item.name;
       btn.style = "font-size:18px;margin:6px;padding:10px;";
 
@@ -128,11 +120,8 @@ function renderMenu(){
 
 renderMenu();
 
-// ========================
-// 7. 最近访问
-// ========================
+// 最近访问
 const last = localStorage.getItem("lastPage");
-
 if(last){
   document.getElementById("last").innerText =
     "📌 Recent Practice: " + last;
@@ -142,7 +131,6 @@ if(last){
 
 </body>
 </html>
-
 
 <!-- <!DOCTYPE html>
 <html>
