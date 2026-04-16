@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Area Learning System (Upgraded)</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #f5f6fa;
+  padding: 20px;
+}
+
+h1 { color: #333; }
+
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.panel {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.grid {
+  display: grid;
+  margin: 15px auto;
+  justify-content: center;
+}
+
+.cell {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+
+.cell.active {
+  background: #4a90e2;
+}
+
+button {
+  padding: 10px 14px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.primary { background: #4a90e2; color: white; }
+.info-box {
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📐 Area Learning System (Upgraded)</h1>
+
+<p>Click the squares to fill the rectangle and understand area visually</p>
+
+<div class="container">
+
+  <!-- Question Panel -->
+  <div class="panel">
+    <h2>Current Question</h2>
+
+    <div id="question"></div>
+
+    <div id="grid" class="grid"></div>
+
+    <button class="primary" onclick="checkAnswer()">Submit Answer</button>
+    <button onclick="nextQuestion()">Next Question</button>
+
+    <div class="info-box">
+      <p>Score: <span id="score">0</span></p>
+      <p>Wrong: <span id="wrong">0</span></p>
+    </div>
+  </div>
+
+  <!-- Wrong Answer Panel -->
+  <div class="panel">
+    <h2>Wrong Answers</h2>
+    <div id="wrongList"></div>
+  </div>
+
+</div>
+
+<script>
+
+// =========================
+// State
+// =========================
+let current = {};
+let score = 0;
+let wrong = 0;
+let wrongList = [];
+
+// =========================
+// Generate Question
+// =========================
+function generateQuestion() {
+  const w = Math.floor(Math.random() * 8) + 2;
+  const h = Math.floor(Math.random() * 8) + 2;
+
+  current = { w, h, answer: w * h };
+
+  document.getElementById("question").innerHTML =
+    `<h3>Width: ${w} × Height: ${h}</h3>
+     <p>Click squares to fill the rectangle area</p>`;
+
+  drawGrid(w, h);
+}
+
+// =========================
+// Draw clickable grid
+// =========================
+function drawGrid(w, h) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  grid.style.gridTemplateColumns = `repeat(${w}, 22px)`;
+
+  for (let i = 0; i < w * h; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+
+    cell.onclick = () => {
+      cell.classList.toggle("active");
+    };
+
+    grid.appendChild(cell);
+  }
+}
+
+// =========================
+// Check answer
+// =========================
+function checkAnswer() {
+  const cells = document.querySelectorAll(".cell");
+  let selected = 0;
+
+  cells.forEach(c => {
+    if (c.classList.contains("active")) selected++;
+  });
+
+  if (selected === current.answer) {
+    score++;
+    alert("Correct!");
+  } else {
+    wrong++;
+    alert(`Wrong! Correct answer is ${current.answer}`);
+
+    wrongList.push({
+      question: `${current.w} × ${current.h}`,
+      your: selected,
+      correct: current.answer
+    });
+
+    updateWrongList();
+  }
+
+  updateScore();
+}
+
+// =========================
+// Update score
+// =========================
+function updateScore() {
+  document.getElementById("score").innerText = score;
+  document.getElementById("wrong").innerText = wrong;
+}
+
+// =========================
+// Wrong list
+// =========================
+function updateWrongList() {
+  const box = document.getElementById("wrongList");
+  box.innerHTML = "";
+
+  wrongList.forEach(q => {
+    box.innerHTML += `
+      <p>${q.question} → Your answer: ${q.your} | Correct: ${q.correct}</p>
+    `;
+  });
+}
+
+// =========================
+// Next question
+// =========================
+function nextQuestion() {
+  generateQuestion();
+}
+
+// =========================
+// Init
+// =========================
+generateQuestion();
+updateScore();
+
+</script>
+
+</body>
+</html>
