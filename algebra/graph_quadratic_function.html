@@ -90,7 +90,7 @@ canvas {
 <p>✔ If a > 0 → opens upward 📈</p>
 <p>✔ If a < 0 → opens downward 📉</p>
 <p>✔ x = -b / (2a) is the symmetry axis</p>
-<p>✔ Vertex calculation: (-b/2a, (4ac - b^2)/4a)</p>
+<p>✔ Vertex calculation: （ -b/(2a), (4ac - b^2)/(4a) ）</p>
 <p>✔ Vertex is the turning point of the parabola</p>
 <p>✔ Vertex moves continuously as parameters change</p>
 
@@ -241,13 +241,13 @@ function drawGraph() {
 
     ctx.fillStyle = "#fbbf24";
     ctx.fillText(
-        `Vertex x = -b / (2a) = ${vx.toFixed(2)}`,
+        `Symmetry axis: x = -b / (2a) = ${vx.toFixed(2)}`,
         originX + 175,
         50
     );
 
     ctx.fillText(
-        `Vertex = (${vx.toFixed(2)}, ${vy.toFixed(2)})`,
+        `Vertex: (${vx.toFixed(2)}, ${vy.toFixed(2)})`,
         originX + 175,
         70
     );
