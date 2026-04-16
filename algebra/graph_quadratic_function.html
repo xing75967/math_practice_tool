@@ -232,7 +232,7 @@ function drawGraph() {
     ctx.fillRect(originX + 160, 10, 340, 60);
 
     ctx.fillStyle = "#38bdf8";
-    ctx.font = "14px Arial";
+    ctx.font = "16px Arial";
     ctx.fillText(
         `y = ${a.toFixed(1)}x² + ${b}x + ${c}`,
         originX + 175,
@@ -240,6 +240,7 @@ function drawGraph() {
     );
 
     ctx.fillStyle = "#fbbf24";
+    ctx.font = "14px Arial";
     ctx.fillText(
         `Vertex: ( ${vx.toFixed(2)}, ${vy.toFixed(2)} )`,
         originX + 175,
