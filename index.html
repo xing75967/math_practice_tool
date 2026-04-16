@@ -8,317 +8,233 @@
     body {
       font-family: Arial;
       text-align: center;
-      margin-top: 40px;
+      margin-top: 30px;
     }
 
-    .grade-box {
+    .box {
       border: 1px solid #ddd;
-      margin: 20px auto;
+      margin: 15px auto;
       padding: 15px;
       width: 60%;
       border-radius: 10px;
     }
 
-    .course-btn {
-      display: block;
-      margin: 8px auto;
+    button {
+      margin: 6px;
       padding: 10px;
-      font-size: 16px;
       width: 80%;
+      font-size: 16px;
       cursor: pointer;
-    }
-
-    h2 {
-      color: #333;
     }
   </style>
 </head>
 
 <body>
-<!-- <body style="font-family:Arial;text-align:center;margin-top:60px;"> -->
-<h1>Daniel's Class Funny Tools</h1>
-  <h2> I am the magician who can make your math journey easy!</h2>
-  </br>
 
 <h1>🎓 Math Learning System</h1>
 
-<p id="status">👤 Guest Mode</p>
-
-<hr>
+<p id="path">📍 Home</p>
 
 <div id="app"></div>
 
 <script>
 
 // ======================
-// 数据结构（核心）
+// 1. 三层数据结构
 // ======================
-const courses = {
+const data = {
 
-  grade1: [
-    // { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
-  
-  grade2: [
-    // { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
-  
-  grade3: [
-    { name: "七星乘法口算", file: "g3/sivan_practice.html" },
-    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
+  primary: {
+    name: "📘 Elementary School",
+    grades: {
+      grade1: {
+        name: "Grade 1",
+        courses: []
+      },
+      grade2: {
+        name: "Grade 2",
+        courses: []
+      },
+      grade3: {
+        name: "Grade 3",
+        courses: [
+          { name: "七星乘法口算", file: "g3/sivan_practice.html" },
+          { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
+        ]
+      },
 
-  grade4: [
-    // { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
+      grade4: {
+        name: "Grade 4",
+        courses: []
+      },
+      grade5: {
+        name: "Grade 5",
+        courses: []
+      },
+      grade6: {
+        name: "Grade 6",
+        courses: [
+          { name: "Fraction 1", file: "g6/fraction1.html" },
+          { name: "Fraction 2", file: "g6/fraction2.html" },
+          { name: "Fraction 3", file: "g6/fraction3.html" }
+        ]
+      }
+      
+    }
+  },
 
-  grade5: [
-    // { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
+  middle: {
+    name: "📗 Middle School",
+    grades: {
+      
+      grade7: {
+        name: "Grade 7",
+        courses: []
+      },
+      grade8: {
+        name: "Grade 8",
+        courses: []
+      },
+      grade9: {
+        name: "Grade 9",
+        courses: [
+          // { name: "Fraction 1", file: "g6/fraction1.html" },
+          // { name: "Fraction 2", file: "g6/fraction2.html" },
+          // { name: "Fraction 3", file: "g6/fraction3.html" }
+        ]
+      }
+      
+    }
+  },
 
-  grade6: [
-    { name: "Fraction Percentage", file: "g6/fraction1.html" },
-    { name: "Fraction Percentage(Scale)", file: "g6/fraction2.html" },
-    { name: "Fraction Percentage(Dynamic)", file: "g6/fraction3.html" }
-  ],
-
-    general: [
-    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
+  high: {
+    name: "📙 High School",
+    grades: {
+      grade10: {
+        name: "Grade 10",
+        courses: []
+      },
+      grade11: {
+        name: "Grade 11",
+        courses: []
+      },
+      grade12: {
+        name: "Grade 12",
+        courses: []
+      }
+    }
+  }
 };
 
 // ======================
-// 渲染函数
+// 当前页面状态
 // ======================
-function render() {
+let level = null;
+let grade = null;
+
+// ======================
+// 渲染入口
+// ======================
+function renderHome() {
+
+  level = null;
+  grade = null;
+
+  document.getElementById("path").innerText = "📍 Home";
 
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  Object.keys(courses).forEach(grade => {
+  Object.keys(data).forEach(l => {
 
-    const box = document.createElement("div");
-    box.className = "grade-box";
+    const btn = document.createElement("button");
+    btn.innerText = data[l].name;
 
-    const title = document.createElement("h2");
-    title.innerText = "📘 " + grade.toUpperCase();
+    btn.onclick = () => renderLevel(l);
 
-    box.appendChild(title);
-
-    courses[grade].forEach(c => {
-
-      const btn = document.createElement("button");
-      btn.className = "course-btn";
-      btn.innerText = c.name;
-
-      btn.onclick = () => {
-        window.location.href = c.file;
-      };
-
-      box.appendChild(btn);
-    });
-
-    app.appendChild(box);
+    app.appendChild(btn);
   });
 }
 
-render();
-
-</script>
-
-</body>
-</html>
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Math Learning System</title>
-
-  <script src="./js/db.js"></script>
-</head>
-
-<body style="font-family:Arial;text-align:center;margin-top:60px;">
-<h1>Daniel's Class Funny Tools</h1>
-  <h2> I am the magician who can make your math journey easy!</h2>
-  </br>
-<h1>🎓 Math Learning System</h1>
-
-<p id="status">👤 Guest Mode (Not logged in)</p>
-
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-
-<hr>
-
-<h2>📚 Courses</h2>
-<div id="menu"></div>
-
-<script>
-
 // ======================
-// 登录（可选）
+// 第二层：学段
 // ======================
-function login() {
+function renderLevel(l) {
 
-  const u = prompt("Username:");
-  const p = prompt("Password:");
+  level = l;
 
-  if (!window.DB || !window.DB.users) {
-    alert("DB not loaded");
-    return;
-  }
+  document.getElementById("path").innerText =
+    "📍 " + data[l].name;
 
-  const user = window.DB.users[u];
+  const app = document.getElementById("app");
+  app.innerHTML = "";
 
-  if (!user || user.password !== p) {
-    alert("❌ Login failed");
-    return;
-  }
+  const grades = data[l].grades;
 
-  localStorage.setItem("user", u);
-  localStorage.setItem("grades", JSON.stringify(user.grades));
-
-  updateStatus();
-  renderMenu();
-
-  alert("✅ Welcome " + u);
-}
-
-// ======================
-// 登出
-// ======================
-function logout() {
-  localStorage.removeItem("user");
-  localStorage.removeItem("grades");
-
-  updateStatus();
-  renderMenu();
-}
-
-// ======================
-// 状态显示
-// ======================
-function updateStatus() {
-
-  const user = localStorage.getItem("user");
-
-  document.getElementById("status").innerText =
-    user ? "👤 Logged in: " + user : "👤 Guest Mode (Not logged in)";
-}
-
-// ======================
-// 课程（全部公开）
-// ======================
-const courses = [
-  { name: "七星乘法口算练习Multiplication", file: "g3/sivan_practice.html" },
-  
-  { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" },
-
-  { name: "Fraction Visulization", file: "g6/fraction1.html" },
-  { name: "Fraction Visulization(Scale)", file: "g6/fraction2.html" },
-  { name: "Fraction Visulization(Dynamic)", file: "g6/fraction3.html" }
-  
-];
-
-// ======================
-// 渲染菜单（关键改动）
-// ======================
-function renderMenu() {
-
-  const menu = document.getElementById("menu");
-  menu.innerHTML = "";
-
-  courses.forEach(c => {
+  Object.keys(grades).forEach(g => {
 
     const btn = document.createElement("button");
+    btn.innerText = grades[g].name;
 
+    btn.onclick = () => renderGrade(g);
+
+    app.appendChild(btn);
+  });
+
+  addBack(renderHome);
+}
+
+// ======================
+// 第三层：年级 → 课程
+// ======================
+function renderGrade(g) {
+
+  grade = g;
+
+  const grades = data[level].grades;
+
+  document.getElementById("path").innerText =
+    "📍 " + data[level].name + " → " + grades[g].name;
+
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  grades[g].courses.forEach(c => {
+
+    const btn = document.createElement("button");
     btn.innerText = c.name;
-    btn.style = "font-size:16px;margin:6px;padding:10px;";
 
     btn.onclick = () => {
       window.location.href = c.file;
     };
 
-    menu.appendChild(btn);
-    menu.appendChild(document.createElement("br"));
+    app.appendChild(btn);
   });
+
+  addBack(() => renderLevel(level));
+}
+
+// ======================
+// 返回按钮
+// ======================
+function addBack(fn) {
+  const app = document.getElementById("app");
+
+  const back = document.createElement("button");
+  back.innerText = "⬅ Back";
+
+  back.onclick = fn;
+
+  app.appendChild(document.createElement("hr"));
+  app.appendChild(back);
 }
 
 // ======================
 // 初始化
 // ======================
-updateStatus();
-renderMenu();
+renderHome();
 
 </script>
 
 </body>
 </html>
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Math System</title>
-
-  <script src="/js/db.js"></script>
-  <script src="/js/auth.js"></script>
-</head>
-
-<body style="font-family:Arial;text-align:center;margin-top:60px;">
-
-<h1>🎓 Math Learning System</h1>
-
-<p id="status"></p>
-
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-
-<hr>
-
-<h2>Courses</h2>
-<div id="menu"></div>
-
-<script>
-
-const courses = [
-  { name: "Grade 3 Practice", file: "g3/sivan_practice.html", grade: "grade3" },
-  { name: "Fraction", file: "g4/fraction1.html", grade: "grade4" }
-];
-
-function render() {
-
-  const user = localStorage.getItem("user");
-  const grades = JSON.parse(localStorage.getItem("grades") || "[]");
-
-  document.getElementById("status").innerText =
-    user ? "Logged in: " + user : "Not logged in";
-
-  const menu = document.getElementById("menu");
-  menu.innerHTML = "";
-
-  if (!user) return;
-
-  courses.forEach(c => {
-
-    if (grades.includes("all") || grades.includes(c.grade)) {
-
-      const btn = document.createElement("button");
-      btn.innerText = c.name;
-
-      btn.onclick = () => {
-        window.location.href = c.file;
-      };
-
-      menu.appendChild(btn);
-      menu.appendChild(document.createElement("br"));
-    }
-
-  });
-}
-
-render();
-
-</script>
-
-</body>
-</html> --> -->
