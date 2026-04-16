@@ -240,20 +240,23 @@ const data = {
         } // end modules
       }, // end grade
 
-        amc8: { // start grade
+      amc8: { // start grade
         name: "AMC 8",
         modules: { // start modules
+          
           algerba: {
             title: "📌 Algerba",
             courses: [
-              { name: "Prime Numbers", file: "" },
-              { name: "备用Placeholder", file: "" }
+
             ]
           } , // end category
 
           numbertheory: {
             title: "📌 Number Theory",
-            courses: []
+            courses: [
+              { name: "Primes & Divisibility", file: "amc8/prime_numbers.html" },
+              { name: "备用Placeholder", file: "" }
+            ]
           } , // end category
 
           geometry: {
@@ -261,7 +264,7 @@ const data = {
             courses: []
           } , // end category
 
-          counting: {
+          combinatorics: {
             title: "📌 Counting & Probability",
             courses: []
           }  // end category
