@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exponential Function Explorer</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    width: 900px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 20px;
+}
+
+.slider-box {
+    margin: 20px;
+}
+
+input {
+    width: 300px;
+}
+
+.info {
+    margin-top: 10px;
+    color: #94a3b8;
+}
+
+.box {
+    margin-top: 40px;
+    padding: 20px;
+    border-top: 1px solid #334155;
+    text-align: left;
+}
+
+h2 {
+    color: #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Exponential Function Explorer</h1>
+
+<div class="container">
+
+<div class="slider-box">
+    <p>a = <span id="aval">2</span></p>
+    <input type="range" min="0.2" max="5" step="0.1" value="2" id="slider">
+</div>
+
+<canvas id="graph" width="800" height="450"></canvas>
+
+<p class="info" id="desc"></p>
+
+</div>
+
+<div class="box">
+<h2>🧠 Exponential Function Properties</h2>
+
+<p>✔ General form: y = a^x (a > 0, a ≠ 1)</p>
+<p>✔ Always passes through (0, 1)</p>
+<p>✔ (1, a) shows the base directly</p>
+<p>✔ (1/a, 1) shows inverse symmetry idea</p>
+<p>✔ If a > 1 → exponential growth 📈</p>
+<p>✔ If 0 < a < 1 → exponential decay 📉</p>
+<p>✔ Domain: all real numbers</p>
+<p>✔ Range: y > 0 always</p>
+</div>
+
+<script>
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const slider = document.getElementById("slider");
+const aval = document.getElementById("aval");
+const desc = document.getElementById("desc");
+
+let a = 2;
+
+// 坐标比例
+const scale = 50;
+const originX = 400;
+const originY = 225;
+
+function drawAxes() {
+    ctx.strokeStyle = "#475569";
+    ctx.lineWidth = 1;
+
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(800, originY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, 450);
+    ctx.stroke();
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "12px Arial";
+
+    for (let i = -7; i <= 7; i++) {
+        let x = originX + i * scale;
+        ctx.beginPath();
+        ctx.moveTo(x, originY - 5);
+        ctx.lineTo(x, originY + 5);
+        ctx.stroke();
+        ctx.fillText(i, x - 5, originY + 20);
+    }
+
+    for (let j = -4; j <= 6; j++) {
+        let y = originY - j * scale;
+        ctx.beginPath();
+        ctx.moveTo(originX - 5, y);
+        ctx.lineTo(originX + 5, y);
+        ctx.stroke();
+
+        if (j !== 0)
+            ctx.fillText(j, originX + 10, y + 5);
+    }
+}
+
+function f(x) {
+    return Math.pow(a, x);
+}
+
+function drawGraph() {
+    ctx.clearRect(0, 0, 800, 450);
+    drawAxes();
+
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < 800; px++) {
+        let x = (px - originX) / scale;
+        let y = f(x);
+
+        if (y > 50) continue;
+
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.stroke();
+
+    // ✅ 已修正关键点 C
+    drawPoint(0, 1, "(0,1)");
+    drawPoint(1, a, "(1,a)");
+    drawPoint(-1, 1 / a, "(-1,1/a)");
+
+    desc.innerText =
+        "When a = " + a.toFixed(2) +
+        " → " +
+        (a > 1 ? "Growth 📈" : "Decay 📉");
+}
+
+function drawPoint(x, y, label) {
+    let px = originX + x * scale;
+    let py = originY - y * scale;
+
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(px, py, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.font = "14px Arial";
+    ctx.fillText(label, px + 8, py - 8);
+}
+
+slider.oninput = function() {
+    a = parseFloat(this.value);
+    aval.innerText = a;
+    drawGraph();
+};
+
+drawGraph();
+</script>
+
+</body>
+</html>
