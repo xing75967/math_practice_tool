@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Function Transformation Lab</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    width: 980px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 10px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.control {
+    margin: 10px;
+}
+
+input {
+    width: 200px;
+}
+
+/* 核心结论 */
+.summary {
+    margin-top: 25px;
+    text-align: center;
+    border-top: 1px solid #334155;
+    padding: 20px;
+}
+
+.summary h2 {
+    color: #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📐 Function Transformation Lab</h1>
+
+<div class="container">
+
+<canvas id="graph" width="950" height="500"></canvas>
+
+<div class="controls">
+
+<div class="control">
+<p>a = <span id="aval">2</span></p>
+<input type="range" min="0.2" max="5" step="0.1" value="2" id="aSlider">
+</div>
+
+<div class="control">
+<p>h = <span id="hval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="hSlider">
+</div>
+
+<div class="control">
+<p>k = <span id="kval">1</span></p>
+<input type="range" min="-3" max="3" step="0.1" value="1" id="kSlider">
+</div>
+
+</div>
+
+</div>
+
+<div class="summary">
+<h2>📐 Core Learning Ideas</h2>
+<p>✔ a controls growth rate</p>
+<p>✔ h shifts graph left/right</p>
+<p>✔ k stretches/flips vertically</p>
+<p>✔ Transformations are independent</p>
+</div>
+
+<script>
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const aSlider = document.getElementById("aSlider");
+const hSlider = document.getElementById("hSlider");
+const kSlider = document.getElementById("kSlider");
+
+const aval = document.getElementById("aval");
+const hval = document.getElementById("hval");
+const kval = document.getElementById("kval");
+
+let a = 2;
+let h = 0;
+let k = 1;
+
+/* ✔ 更清晰范围 */
+const scale = 20;
+const originX = 475;
+const originY = 250;
+
+/* ================= GRID ================= */
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
+/* ================= AXES + NUMBERS ================= */
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#94a3b8";
+
+    // x-axis
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
+
+    // y-axis
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
+
+    // ✔ x numbers (-20 to 20)
+    for (let i = -20; i <= 20; i++) {
+        let x = originX + i * scale;
+        ctx.fillText(i, x - 5, originY + 15);
+    }
+
+    // ✔ y numbers (-15 to 15)
+    for (let j = -15; j <= 15; j++) {
+        let y = originY - j * scale;
+        ctx.fillText(j, originX + 5, y + 4);
+    }
+}
+
+/* ================= FUNCTIONS ================= */
+function base(x) {
+    return Math.pow(a, x);
+}
+
+function shift(x) {
+    return Math.pow(a, x - h);
+}
+
+function stretch(x) {
+    return k * Math.pow(a, x);
+}
+
+/* ================= CURVE ================= */
+function drawCurve(func, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < canvas.width; px++) {
+        let x = (px - originX) / scale;
+        let y = func(x);
+
+        if (y > 100 || y < -100) continue;
+
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.stroke();
+}
+
+/* ================= LEGEND INSIDE GRAPH ================= */
+function drawLegend() {
+    ctx.font = "18px Arial";
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText("● y = a^x", canvas.width - 160, 40);
+
+    ctx.fillStyle = "#22c55e";
+    ctx.fillText("● y = a^(x - h)", canvas.width - 160, 65);
+
+    ctx.fillStyle = "#a855f7";
+    ctx.fillText("● y = k·a^x", canvas.width - 160, 90);
+}
+
+/* ================= DRAW ================= */
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawAxes();
+
+    drawCurve(base, "#38bdf8");
+    drawCurve(shift, "#22c55e");
+    drawCurve(stretch, "#a855f7");
+
+    drawLegend();
+
+    aval.innerText = a.toFixed(2);
+    hval.innerText = h;
+    kval.innerText = k.toFixed(2);
+}
+
+/* ================= EVENTS ================= */
+aSlider.oninput = () => { a = parseFloat(aSlider.value); draw(); };
+hSlider.oninput = () => { h = parseInt(hSlider.value); draw(); };
+kSlider.oninput = () => { k = parseFloat(kSlider.value); draw(); };
+
+draw();
+</script>
+
+</body>
+</html>
