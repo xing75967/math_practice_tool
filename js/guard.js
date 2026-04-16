@@ -3,28 +3,43 @@
   const user = localStorage.getItem("user");
   const grades = JSON.parse(localStorage.getItem("grades") || "[]");
 
+  // ⭐ 先锁页面（防止闪内容）
+  document.documentElement.style.display = "none";
+
   function goLogin() {
     window.location.replace("/index.html");
   }
 
-  // ⭐ 未登录 → 登录页
+  function unlock() {
+    document.documentElement.style.display = "block";
+  }
+
+  // ❌ 未登录
   if (!user) {
     goLogin();
     return;
   }
 
   // ⭐ teacher 放行
-  if (grades.includes("all")) return;
+  if (grades.includes("all")) {
+    unlock();
+    return;
+  }
 
   const pageGrade = window.pageGrade;
 
-  if (!pageGrade) return;
+  if (!pageGrade) {
+    unlock();
+    return;
+  }
 
   if (!grades.includes(pageGrade)) {
-    alert("No permission for this page");
     goLogin();
     return;
   }
+
+  // ✅ 放行
+  unlock();
 
 })();
 // (function () {
