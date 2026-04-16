@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AMC8 Prime Numbers & Divisibility Rules</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: #f8fafc;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    margin: 20px auto;
+    width: 90%;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.number {
+    padding: 10px;
+    background: #1e293b;
+    border-radius: 6px;
+}
+
+.crossed {
+    background: #ef4444;
+}
+
+.prime {
+    background: #22c55e;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.rules {
+    background: #1e293b;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.quiz {
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Prime Numbers (Under 100)</h1>
+  
+<p style="color: gold;">
+Only need to check primes ≤ √100 = 10 → 2, 3, 5, 7
+</p>
+  
+<div class="container">
+
+<div>
+<button onclick="resetGrid()">Reset</button>
+<button onclick="sieve(2)">Eliminate Multiples of 2</button>
+<button onclick="sieve(3)">Eliminate Multiples of 3</button>
+<button onclick="sieve(5)">Eliminate Multiples of 5</button>
+<button onclick="sieve(7)">Eliminate Multiples of 7</button>
+<button onclick="showPrimes()">Show Primes</button>
+</div>
+
+<div id="grid" class="grid"></div>
+
+<div class="rules">
+<h2>Divisibility Rules</h2>
+
+<ul>
+<li><b>Divisible by 2:</b> Last digit is even (0,2,4,6,8)</li>
+<li><b>Divisible by 3:</b> Sum of digits is divisible by 3</li>
+<li><b>Divisible by 4:</b> Last two digits form a number divisible by 4</li>
+<li><b>Divisible by 5:</b> Ends in 0 or 5</li>
+<li><b>Divisible by 6:</b> Divisible by both 2 and 3</li>
+<li><b>Divisible by 7:</b> Double last digit and subtract from rest (advanced)</li>
+<li><b>Divisible by 8:</b> Last three digits divisible by 8</li>
+<li><b>Divisible by 9:</b> Sum of digits divisible by 9</li>
+<li><b>Divisible by 10:</b> Ends in 0</li>
+</ul>
+</div>
+
+<div class="quiz">
+<h2>Practice</h2>
+
+<p>1. Which numbers are divisible by 3?</p>
+<p>21, 34, 45, 52</p>
+
+<p>2. Is 48 divisible by 6? Why?</p>
+
+<p>3. Which of these are prime?</p>
+<p>17, 21, 29, 33</p>
+
+<p>4. Explain why 100 is divisible by 4.</p>
+
+</div>
+
+</div>
+
+<script>
+
+let numbers = [];
+
+function createGrid() {
+    let grid = document.getElementById("grid");
+    grid.innerHTML = "";
+
+    for (let i = 1; i <= 100; i++) {
+        let div = document.createElement("div");
+        div.classList.add("number");
+        div.innerText = i;
+        grid.appendChild(div);
+        numbers.push(div);
+    }
+}
+
+function resetGrid() {
+    numbers = [];
+    createGrid();
+}
+
+function sieve(n) {
+    numbers.forEach((el, index) => {
+        let num = index + 1;
+        if (num !== n && num % n === 0) {
+            el.classList.add("crossed");
+        }
+    });
+}
+
+function isPrime(num) {
+    if (num < 2) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) return false;
+    }
+    return true;
+}
+
+function showPrimes() {
+    numbers.forEach((el, index) => {
+        let num = index + 1;
+        if (isPrime(num)) {
+            el.classList.remove("crossed");
+            el.classList.add("prime");
+        }
+    });
+}
+
+createGrid();
+
+</script>
+
+</body>
+</html>
