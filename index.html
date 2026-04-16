@@ -2,138 +2,18 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Math Learning System</title>
-
-  <!-- ⭐ 读取“模拟数据库” -->
-  <script src="/js/credentials.js"></script>
+  <title>Access Denied</title>
 </head>
 
-<body style="font-family:Arial; text-align:center; margin-top:60px;">
+<body style="text-align:center;font-family:Arial;margin-top:100px;">
 
-<h1>🎓 Math Learning System</h1>
+<h1>🚫 Access Denied</h1>
 
-<p id="status">❌ Not logged in</p>
+<p>You don't have permission.</p>
 
-<button onclick="login()">🔐 Login</button>
-<button onclick="logout()">🚪 Logout</button>
-
-<hr>
-
-<h2>📚 Courses</h2>
-<div id="menu"></div>
-
-<script>
-
-// ======================
-// 登录
-// ======================
-function login() {
-
-  const u = prompt("Username:");
-  const p = prompt("Password:");
-
-  const user = window.DB.users[u];
-
-  if (!user || user.password !== p) {
-    alert("❌ Login failed");
-    return;
-  }
-
-  // ⭐ 保存登录状态
-  localStorage.setItem("user", u);
-  localStorage.setItem("grades", JSON.stringify(user.grades));
-
-  alert("✅ Welcome " + u);
-
-  renderStatus();
-  renderMenu();
-}
-
-// ======================
-// 登出
-// ======================
-function logout() {
-  localStorage.removeItem("user");
-  localStorage.removeItem("grades");
-
-  document.getElementById("status").innerText = "❌ Not logged in";
-  document.getElementById("menu").innerHTML = "";
-}
-
-// ======================
-// 状态显示
-// ======================
-function renderStatus() {
-
-  const user = localStorage.getItem("user");
-
-  document.getElementById("status").innerText =
-    user ? "👤 Logged in as: " + user : "❌ Not logged in";
-}
-
-// ======================
-// 课程列表
-// ======================
-const courses = [
-  {
-    name: "🔢 Multiplication Practice (Grade 3)",
-    file: "g3/sivan_practice.html",
-    grade: "grade3"
-  },
-  {
-    name: "📊 Fraction Practice (Grade 4)",
-    file: "g4/fraction1.html",
-    grade: "grade4"
-  },
-  {
-    name: "🔥 Multiplication Challenge",
-    file: "general/Multiplication_Challenge.html",
-    grade: "grade3"
-  }
-];
-
-// ======================
-// 渲染菜单
-// ======================
-function renderMenu() {
-
-  const menu = document.getElementById("menu");
-  menu.innerHTML = "";
-
-  const user = localStorage.getItem("user");
-  const grades = JSON.parse(localStorage.getItem("grades") || "[]");
-
-  if (!user) {
-    menu.innerHTML = "<p>🔒 Please login first</p>";
-    return;
-  }
-
-  courses.forEach(c => {
-
-    if (grades.includes("all") || grades.includes(c.grade)) {
-
-      const btn = document.createElement("button");
-
-      btn.innerText = c.name;
-      btn.style = "font-size:16px;margin:6px;padding:10px;";
-
-      btn.onclick = () => {
-        window.location.href = c.file;
-      };
-
-      menu.appendChild(btn);
-      menu.appendChild(document.createElement("br"));
-    }
-  });
-}
-
-// ======================
-// 初始化
-// ======================
-renderStatus();
-renderMenu();
-
-</script>
+<button onclick="location.href='/index.html'">
+  Back to Login
+</button>
 
 </body>
 </html>
