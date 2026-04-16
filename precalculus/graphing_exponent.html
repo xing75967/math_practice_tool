@@ -178,7 +178,26 @@ function drawGraph() {
         " → " +
         (a > 1 ? "Growth 📈" : "Decay 📉");
 }
+    
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
 
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+    
 function drawPoint(x, y, label) {
     let px = originX + x * scale;
     let py = originY - y * scale;
