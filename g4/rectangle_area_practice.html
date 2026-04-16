@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Area Practice (Simplified)</title>
+<title>Area Practice Game</title>
 
 <style>
 body {
@@ -29,8 +29,8 @@ body {
 
 .grid {
   display: grid;
-  margin: 15px auto;
   justify-content: center;
+  margin: 15px auto;
 }
 
 .cell {
@@ -66,36 +66,34 @@ button {
 
 <body>
 
-<h1>📐 Area Practice (Simplified)</h1>
-
-<p>Look at the rectangle and enter the correct area</p>
+<h1>📐 Area Practice</h1>
 
 <div class="container">
 
-  <!-- Question -->
-  <div class="card">
-    <h2>Question</h2>
+<!-- QUESTION -->
+<div class="card">
+  <h2>Question</h2>
 
-    <div id="question"></div>
+  <div id="question"></div>
+  <div id="grid" class="grid"></div>
 
-    <div id="grid" class="grid"></div>
+  <input id="answer" type="number" placeholder="Your answer">
 
-    <input id="answer" type="number" placeholder="Your answer">
+  <br>
 
-    <br>
+  <button onclick="check()">Submit</button>
 
-    <button onclick="check()">Submit</button>
-    <button onclick="next()">Next</button>
+  <p id="feedback"></p>
+</div>
 
-    <p id="feedback"></p>
-  </div>
-
-  <!-- Score -->
-  <div class="card">
-    <h2>Score</h2>
-    <p>Correct: <span id="score">0</span></p>
-    <p>Wrong: <span id="wrong">0</span></p>
-  </div>
+<!-- SCORE -->
+<div class="card">
+  <h2>Score</h2>
+  <p>Correct: <span id="score">0</span></p>
+  <p>Wrong: <span id="wrong">0</span></p>
+  <p>Total: <span id="total">0</span></p>
+  <p>Accuracy: <span id="accuracy">0%</span></p>
+</div>
 
 </div>
 
@@ -107,9 +105,10 @@ button {
 let w, h;
 let score = 0;
 let wrong = 0;
+let total = 0;
 
 // =====================
-// generate
+// generate question
 // =====================
 function generate() {
   w = Math.floor(Math.random() * 8) + 2;
@@ -119,12 +118,13 @@ function generate() {
     `<h3>${w} × ${h}</h3>`;
 
   draw(w, h);
+
   document.getElementById("answer").value = "";
   document.getElementById("feedback").innerText = "";
 }
 
 // =====================
-// draw grid (visual only)
+// draw grid
 // =====================
 function draw(w, h) {
   const grid = document.getElementById("grid");
@@ -145,16 +145,23 @@ function check() {
   const ans = Number(document.getElementById("answer").value);
   const correct = w * h;
 
+  total++; // ⭐ 总题数+1
+
   if (ans === correct) {
     score++;
-    document.getElementById("feedback").innerText = "Correct!";
+    document.getElementById("feedback").innerText = "✅ Correct!";
   } else {
     wrong++;
     document.getElementById("feedback").innerText =
-      `Wrong. Correct answer is ${correct}`;
+      `❌ Wrong! Correct answer is ${correct}`;
   }
 
   updateScore();
+
+  // ⭐ 1秒自动下一题
+  setTimeout(() => {
+    next();
+  }, 1000);
 }
 
 // =====================
@@ -165,14 +172,29 @@ function next() {
 }
 
 // =====================
-// score
+// score update
 // =====================
 function updateScore() {
   document.getElementById("score").innerText = score;
   document.getElementById("wrong").innerText = wrong;
+  document.getElementById("total").innerText = total;
+
+  const acc = total === 0 ? 0 : Math.round((score / total) * 100);
+  document.getElementById("accuracy").innerText = acc + "%";
 }
 
+// =====================
+// ENTER submit
+// =====================
+document.getElementById("answer").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    check();
+  }
+});
+
+// =====================
 // init
+// =====================
 generate();
 
 </script>
