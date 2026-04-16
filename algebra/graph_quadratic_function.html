@@ -250,7 +250,7 @@ function drawGraph() {
     ctx.fillText(
         `y = ${a.toFixed(1)}·x² + ${b}·x + ${c}`,
         originX + 175,
-        35
+        40
     );
 
     ctx.fillStyle = "#fbbf24";
@@ -258,13 +258,13 @@ function drawGraph() {
     ctx.fillText(
         `Vertex: ( ${vx.toFixed(2)}, ${vy.toFixed(2)} )`,
         originX + 175,
-        60
+        65
     );
 
     ctx.fillText(
-        `Axis of Symmetry: x = -b / (2a) = ${vx.toFixed(2)}`,
+        `Symmetry Axis: x = -b / (2a) = ${vx.toFixed(2)}`,
         originX + 175,
-        80
+        85
     );
 
     /* update UI */
