@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quadratic Function Explorer</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    width: 950px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 15px;
+}
+
+/* 控制区 */
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.control {
+    margin: 10px;
+}
+
+input {
+    width: 200px;
+}
+
+/* summary 在下方 */
+.summary {
+    margin-top: 25px;
+    padding: 20px;
+    border-top: 1px solid #334155;
+    text-align: center;
+}
+
+.summary h2 {
+    color: #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Quadratic Function Explorer</h1>
+
+<div class="container">
+
+<canvas id="graph" width="950" height="500"></canvas>
+
+<div class="controls">
+
+<div class="control">
+<p>a = <span id="aval">1</span></p>
+<input type="range" min="-3" max="3" step="0.1" value="1" id="aSlider">
+</div>
+
+<div class="control">
+<p>b = <span id="bval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="bSlider">
+</div>
+
+<div class="control">
+<p>c = <span id="cval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="cSlider">
+</div>
+
+</div>
+
+</div>
+
+<!-- 📌 summary（在图像下方） -->
+<div class="summary">
+<h2>📐 Quadratic Function Summary</h2>
+
+<p>✔ General form: y = ax² + bx + c</p>
+<p>✔ a controls opening direction & width</p>
+<p>✔ b controls horizontal shift (vertex movement)</p>
+<p>✔ c is the y-intercept (point at x = 0)</p>
+<p>✔ If a > 0 → opens upward 📈</p>
+<p>✔ If a < 0 → opens downward 📉</p>
+<p>✔ Vertex is the turning point of the parabola</p>
+</div>
+
+<script>
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const aSlider = document.getElementById("aSlider");
+const bSlider = document.getElementById("bSlider");
+const cSlider = document.getElementById("cSlider");
+
+const aval = document.getElementById("aval");
+const bval = document.getElementById("bval");
+const cval = document.getElementById("cval");
+
+let a = 1;
+let b = 0;
+let c = 0;
+
+/* ===== 坐标系统 ===== */
+const scale = 30;
+const originX = 475;
+const originY = 250;
+
+/* ================= GRID ================= */
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
+/* ================= AXES ================= */
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#94a3b8";
+
+    // x-axis
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
+
+    // y-axis
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
+
+    // labels
+    for (let i = -10; i <= 10; i++) {
+        let x = originX + i * scale;
+        ctx.fillText(i, x - 5, originY + 15);
+    }
+
+    for (let j = -8; j <= 8; j++) {
+        let y = originY - j * scale;
+        ctx.fillText(j, originX + 5, y + 4);
+    }
+}
+
+/* ================= FUNCTION ================= */
+function f(x) {
+    return a * x * x + b * x + c;
+}
+
+/* ================= DRAW CURVE ================= */
+function drawGraph() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawAxes();
+
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < canvas.width; px++) {
+        let x = (px - originX) / scale;
+        let y = f(x);
+
+        if (y > 100 || y < -100) continue;
+
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.stroke();
+
+    /* ===== key points ===== */
+    drawPoint(0, c, "(0,c)");
+
+    let vx = -b / (2 * a);
+    let vy = f(vx);
+    drawPoint(vx, vy, "Vertex");
+
+    /* update UI */
+    aval.innerText = a;
+    bval.innerText = b;
+    cval.innerText = c;
+}
+
+/* ================= POINT ================= */
+function drawPoint(x, y, label) {
+    let px = originX + x * scale;
+    let py = originY - y * scale;
+
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(px, py, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.font = "14px Arial";
+    ctx.fillText(label, px + 8, py - 8);
+}
+
+/* ================= EVENTS ================= */
+aSlider.oninput = function() {
+    a = parseFloat(this.value);
+    drawGraph();
+};
+
+bSlider.oninput = function() {
+    b = parseFloat(this.value);
+    drawGraph();
+};
+
+cSlider.oninput = function() {
+    c = parseFloat(this.value);
+    drawGraph();
+};
+
+drawGraph();
+</script>
+
+</body>
+</html>
