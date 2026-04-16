@@ -2,6 +2,125 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <title>Math Learning System</title>
+
+  <script src="./js/db.js"></script>
+</head>
+
+<body style="font-family:Arial;text-align:center;margin-top:60px;">
+
+<h1>🎓 Math Learning System</h1>
+
+<p id="status">👤 Guest Mode (Not logged in)</p>
+
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+
+<hr>
+
+<h2>📚 Courses</h2>
+<div id="menu"></div>
+
+<script>
+
+// ======================
+// 登录（可选）
+// ======================
+function login() {
+
+  const u = prompt("Username:");
+  const p = prompt("Password:");
+
+  if (!window.DB || !window.DB.users) {
+    alert("DB not loaded");
+    return;
+  }
+
+  const user = window.DB.users[u];
+
+  if (!user || user.password !== p) {
+    alert("❌ Login failed");
+    return;
+  }
+
+  localStorage.setItem("user", u);
+  localStorage.setItem("grades", JSON.stringify(user.grades));
+
+  updateStatus();
+  renderMenu();
+
+  alert("✅ Welcome " + u);
+}
+
+// ======================
+// 登出
+// ======================
+function logout() {
+  localStorage.removeItem("user");
+  localStorage.removeItem("grades");
+
+  updateStatus();
+  renderMenu();
+}
+
+// ======================
+// 状态显示
+// ======================
+function updateStatus() {
+
+  const user = localStorage.getItem("user");
+
+  document.getElementById("status").innerText =
+    user ? "👤 Logged in: " + user : "👤 Guest Mode (Not logged in)";
+}
+
+// ======================
+// 课程（全部公开）
+// ======================
+const courses = [
+  { name: "Grade 3 Multiplication", file: "g3/sivan_practice.html" },
+  { name: "Fraction Practice", file: "g4/fraction1.html" },
+  { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
+];
+
+// ======================
+// 渲染菜单（关键改动）
+// ======================
+function renderMenu() {
+
+  const menu = document.getElementById("menu");
+  menu.innerHTML = "";
+
+  courses.forEach(c => {
+
+    const btn = document.createElement("button");
+
+    btn.innerText = c.name;
+    btn.style = "font-size:16px;margin:6px;padding:10px;";
+
+    btn.onclick = () => {
+      window.location.href = c.file;
+    };
+
+    menu.appendChild(btn);
+    menu.appendChild(document.createElement("br"));
+  });
+}
+
+// ======================
+// 初始化
+// ======================
+updateStatus();
+renderMenu();
+
+</script>
+
+</body>
+</html>
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
   <title>Math System</title>
 
   <script src="/js/db.js"></script>
@@ -65,4 +184,4 @@ render();
 </script>
 
 </body>
-</html>
+</html> -->
