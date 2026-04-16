@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Power vs Exponential Function</title>
+<style>
+body{
+  font-family: Arial, sans-serif;
+  margin:0;
+  padding:20px;
+  background: linear-gradient(135deg,#eef2f7,#dfe9f3);
+  text-align:center;
+}
+
+h1{margin-bottom:10px;}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  margin:18px auto;
+  width:80%;
+  box-shadow:0 4px 16px rgba(0,0,0,0.1);
+  text-align:left;
+}
+
+.canvas-box{ text-align:center; }
+
+canvas{
+  border-radius:10px;
+  background:white;
+  margin-top:10px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.legend{
+  font-size:14px;
+  margin-top:10px;
+  line-height:1.6;
+}
+
+.px2{ color:#e74c3c; font-weight:bold; }
+.px3{ color:#8e44ad; font-weight:bold; }
+.ex{ color:#2980b9; font-weight:bold; }
+
+ul{ margin-top:8px; }
+
+.highlight{
+  background:#f8f9fc;
+  padding:12px;
+  border-radius:10px;
+  margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>📊 Power Function vs Exponential Function</h1>
+
+<div class="card">
+  <h2>1. Definitions</h2>
+  <p><b>Power Function:</b> <span class="px2">y = x²</span>, <span class="px3">y = x³</span></p>
+  <p><b>Exponential Function:</b> <span class="ex">y = 2ˣ</span></p>
+</div>
+
+<div class="card">
+  <h2>2. Key Idea Difference</h2>
+  <p><b>Power function:</b> x is changing, exponent is fixed → growth depends on input size</p>
+  <p><b>Exponential function:</b> exponent is changing → growth depends on repeated multiplication</p>
+</div>
+
+<div class="card">
+  <h2>3. Graph Comparison</h2>
+  <div class="canvas-box">
+    <canvas id="plot" width="600" height="380"></canvas>
+    <div class="legend">
+      <span class="px2">Red: y = x²</span><br>
+      <span class="px3">Purple: y = x³</span><br>
+      <span class="ex">Blue: y = 2ˣ</span>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>4. Most Important Visual Difference</h2>
+  <ul>
+    <li>Power function grows <b>symmetrically or polynomially</b></li>
+    <li>Exponential function grows <b>slow → then explodes rapidly</b></li>
+    <li>Exponential eventually dominates <b>ANY</b> power function</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>5. Why Does Exponential Dominate?</h2>
+
+  <div class="highlight">
+    <p><b>Meaning:</b> Exponential eventually dominates ANY power function means:</p>
+    <p>👉 No matter how big the power is (x², x³, x¹⁰⁰...), the exponential function (like 2ˣ) will become larger when x is big enough.</p>
+  </div>
+
+  <div class="highlight">
+    <p><b>Example Comparison:</b></p>
+    <p>x = 5 → x² = 25, x³ = 125, 2ˣ = 32</p>
+    <p>x = 10 → x² = 100, x³ = 1000, 2ˣ = 1024</p>
+    <p>x = 20 → x² = 400, x³ = 8000, 2ˣ = 1,048,576 🚀</p>
+  </div>
+
+  <div class="highlight">
+    <p><b>Key Insight:</b></p>
+    <p>Power functions grow step by step.</p>
+    <p>Exponential functions grow by multiplying again and again.</p>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("plot");
+const ctx = canvas.getContext("2d");
+
+function drawGrid(){
+  ctx.strokeStyle = "#eee";
+  ctx.lineWidth = 1;
+
+  for(let x=0; x<=600; x+=25){
+    ctx.beginPath();
+    ctx.moveTo(x,0);
+    ctx.lineTo(x,380);
+    ctx.stroke();
+  }
+
+  for(let y=0; y<=380; y+=25){
+    ctx.beginPath();
+    ctx.moveTo(0,y);
+    ctx.lineTo(600,y);
+    ctx.stroke();
+  }
+}
+
+function drawAxes(){
+  ctx.strokeStyle="#333";
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  ctx.moveTo(40,330);
+  ctx.lineTo(560,330);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(300,40);
+  ctx.lineTo(300,350);
+  ctx.stroke();
+}
+
+// ⭐ 优化后的比例（更协调）
+function transformX(x){ return 300 + x*22; }
+function transformY(y){ return 330 - y*10; }
+
+function plotFunction(func, color, scaleY=1){
+  ctx.beginPath();
+  ctx.strokeStyle=color;
+  ctx.lineWidth = 2.5;
+
+  let first = true;
+
+  for(let x=-7;x<=7;x+=0.05){
+    let y = func(x);
+    if(y > 120) continue;
+
+    let px = transformX(x);
+    let py = transformY(y/scaleY);
+
+    if(first){ ctx.moveTo(px,py); first=false; }
+    else ctx.lineTo(px,py);
+  }
+
+  ctx.stroke();
+}
+
+function power2(x){ return x*x; }
+function power3(x){ return x*x*x; }
+function expo(x){ return Math.pow(2,x); }
+
+function plot(){
+  drawGrid();
+  drawAxes();
+
+  plotFunction(power2, "#e74c3c", 4);
+  plotFunction(power3, "#8e44ad", 25);
+  plotFunction(expo, "#2980b9", 25);
+}
+
+plot();
+</script>
+
+</body>
+</html>
