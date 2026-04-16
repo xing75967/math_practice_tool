@@ -2,18 +2,67 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Access Denied</title>
+  <title>Math System</title>
+
+  <script src="/js/db.js"></script>
+  <script src="/js/auth.js"></script>
 </head>
 
-<body style="text-align:center;font-family:Arial;margin-top:100px;">
+<body style="font-family:Arial;text-align:center;margin-top:60px;">
 
-<h1>🚫 Access Denied</h1>
+<h1>🎓 Math Learning System</h1>
 
-<p>You don't have permission.</p>
+<p id="status"></p>
 
-<button onclick="location.href='/index.html'">
-  Back to Login
-</button>
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+
+<hr>
+
+<h2>Courses</h2>
+<div id="menu"></div>
+
+<script>
+
+const courses = [
+  { name: "Grade 3 Practice", file: "g3/sivan_practice.html", grade: "grade3" },
+  { name: "Fraction", file: "g4/fraction1.html", grade: "grade4" }
+];
+
+function render() {
+
+  const user = localStorage.getItem("user");
+  const grades = JSON.parse(localStorage.getItem("grades") || "[]");
+
+  document.getElementById("status").innerText =
+    user ? "Logged in: " + user : "Not logged in";
+
+  const menu = document.getElementById("menu");
+  menu.innerHTML = "";
+
+  if (!user) return;
+
+  courses.forEach(c => {
+
+    if (grades.includes("all") || grades.includes(c.grade)) {
+
+      const btn = document.createElement("button");
+      btn.innerText = c.name;
+
+      btn.onclick = () => {
+        window.location.href = c.file;
+      };
+
+      menu.appendChild(btn);
+      menu.appendChild(document.createElement("br"));
+    }
+
+  });
+}
+
+render();
+
+</script>
 
 </body>
 </html>
