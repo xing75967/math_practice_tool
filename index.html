@@ -176,21 +176,29 @@ const data = {
         }
       },
 
-      general: {
+      general: { // start general
         name: "General",
         modules: {
           challenge: {
             title: "📌 Multiplication",
             courses: [
-              { name: "Challenge挑战", file: "general/Multiplication_Challenge.html" }
+              { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" },
+              { name: "备用Placeholder", file: "" }
+            ]
+          },
+          placeholder: {
+            title: "📌 Placeholder Category Name",
+            courses: [
+              { name: "module name 1", file: "" },
+              { name: "module name 2", file: "" }
             ]
           }
+          
         }
-      }
+      } // end general
 
-      
-    }
-  },
+    } // end grade
+  },  // end primary
 
   middle: {
     name: "📗 Middle School",
@@ -216,7 +224,7 @@ const data = {
       }
       
     }
-  },
+  }, // end middle
 
   high: {
     name: "📙 High School",
@@ -234,7 +242,8 @@ const data = {
         modules: {}
       }
     }
-  }
+  } // end high
+  
 };
 
 let level = null;
