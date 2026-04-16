@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exponent Visualizer</title>
+<style>
+    body {
+        font-family: Arial;
+        text-align: center;
+        background: #f5f5f5;
+    }
+    canvas {
+        background: white;
+        border: 1px solid #ccc;
+        margin-top: 20px;
+    }
+    input, select, button {
+        margin: 5px;
+        padding: 5px;
+        font-size: 16px;
+    }
+</style>
+</head>
+
+<body>
+
+<h2>🎯 Exponent Visualizer</h2>
+
+Base: <input type="number" id="base" value="2">
+m: <input type="number" id="m" value="3">
+n: <input type="number" id="n" value="2">
+
+<br>
+
+Mode:
+<select id="mode">
+    <option value="add">a^m × a^n</option>
+    <option value="multiply">(a^m)^n</option>
+</select>
+
+<br>
+
+<button onclick="startAnimation()">Start Animation</button>
+
+<canvas id="canvas" width="600" height="300"></canvas>
+
+<script>
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+let dots = [];
+let frame = 0;
+let total = 0;
+let m, n, mode, base;
+
+function startAnimation() {
+    base = parseInt(document.getElementById("base").value);
+    m = parseInt(document.getElementById("m").value);
+    n = parseInt(document.getElementById("n").value);
+    mode = document.getElementById("mode").value;
+
+    dots = [];
+    frame = 0;
+
+    if (mode === "add") {
+        total = m + n;
+    } else {
+        total = m * n;
+    }
+
+    animate();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (frame < total) {
+        dots.push(frame);
+        frame++;
+    }
+
+    drawDots();
+
+    if (frame <= total) {
+        setTimeout(animate, 500);
+    }
+}
+
+function drawDots() {
+    for (let i = 0; i < dots.length; i++) {
+
+        let x, y;
+
+        if (mode === "add") {
+            x = 50 + i * 40;
+            y = 150;
+
+            ctx.fillStyle = i < m ? "blue" : "red";
+
+        } else {
+            let row = Math.floor(i / m);
+            let col = i % m;
+
+            x = 100 + col * 40;
+            y = 50 + row * 40;
+
+            ctx.fillStyle = "black";
+        }
+
+        ctx.beginPath();
+        ctx.arc(x, y, 10, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.fillStyle = "black";
+    ctx.font = "18px Arial";
+
+    if (mode === "add") {
+        ctx.fillText(`${base}^${m} × ${base}^${n} = ${base}^${m+n}`, 150, 280);
+    } else {
+        ctx.fillText(`(${base}^${m})^${n} = ${base}^${m*n}`, 150, 280);
+    }
+}
+</script>
+
+</body>
+</html>
