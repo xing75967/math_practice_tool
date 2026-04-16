@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Prime Challenge Mode</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #020617;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 { color: gold; }
+
+.box {
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.number {
+    font-size: 60px;
+    margin: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.correct { color: #22c55e; }
+.wrong { color: #ef4444; }
+
+.small {
+    margin-top: 10px;
+    color: #94a3b8;
+    font-size: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Prime Challenge</h1>
+
+<div class="box">
+
+<div id="number" class="number">?</div>
+
+<button onclick="answer(true)">Prime</button>
+<button onclick="answer(false)">Composite</button>
+
+<p id="result"></p>
+<p id="reason" class="small"></p>
+
+<p>
+Score: <span id="score">0</span> |
+Total: <span id="total">0</span> |
+Accuracy: <span id="accuracy">0%</span>
+</p>
+
+<button onclick="nextQuestion()">Next</button>
+
+</div>
+
+<script>
+let current;
+let score = 0;
+let total = 0;
+
+// 判断质数
+function isPrime(num) {
+    if (num < 2) return false;
+    for (let i = 2; i <= Math.sqrt(num); i++) {
+        if (num % i === 0) return false;
+    }
+    return true;
+}
+
+// 获取所有因数
+function getFactors(num) {
+    let factors = [];
+    for (let i = 1; i <= num; i++) {
+        if (num % i === 0) {
+            factors.push(i);
+        }
+    }
+    return factors;
+}
+
+// 更新统计
+function updateStats() {
+    let accuracy = total === 0 ? 0 : Math.round((score / total) * 100);
+    document.getElementById("score").innerText = score;
+    document.getElementById("total").innerText = total;
+    document.getElementById("accuracy").innerText = accuracy + "%";
+}
+
+// 下一题
+function nextQuestion() {
+    current = Math.floor(Math.random() * 100) + 1;
+    document.getElementById("number").innerText = current;
+
+    document.getElementById("result").innerText = "";
+    document.getElementById("reason").innerText = "";
+}
+
+// 回答
+function answer(userChoice) {
+    let correct = isPrime(current);
+    total++;
+
+    if (userChoice === correct) {
+        score++;
+        document.getElementById("result").innerText = "✅ Correct!";
+        document.getElementById("result").className = "correct";
+    } else {
+        document.getElementById("result").innerText =
+            "❌ Wrong! " + current + (correct ? " is Prime" : " is Composite");
+        document.getElementById("result").className = "wrong";
+    }
+
+    // 🔥 永远显示因数
+    let factors = getFactors(current);
+    document.getElementById("reason").innerText =
+        "Factors: " + factors.join(", ");
+
+    updateStats();
+}
+
+// 初始化
+nextQuestion();
+</script>
+
+</body>
+</html>
