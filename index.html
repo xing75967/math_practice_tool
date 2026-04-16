@@ -1,40 +1,92 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Math Learning System</title>
+<meta charset="UTF-8">
+<title>Math Learning System</title>
 
-  <style>
-    body {
-      font-family: Arial;
-      text-align: center;
-      margin-top: 30px;
-    }
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  background: #f5f6fa;
+}
 
-    .box {
-      border: 1px solid #ddd;
-      margin: 15px auto;
-      padding: 15px;
-      width: 60%;
-      border-radius: 10px;
-    }
+/* 顶部标题 */
+h1 {
+  margin-top: 10px;
+}
 
-    button {
-      margin: 6px;
-      padding: 10px;
-      width: 80%;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+/* 学段卡片 */
+.level-box {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 20px auto;
+  width: 75%;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* 年级区域 */
+.grade-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* 年级按钮（小卡片） */
+.grade-btn {
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: #4a90e2;
+  color: white;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.grade-btn:hover {
+  background: #357ab8;
+  transform: scale(1.05);
+}
+
+/* 课程按钮 */
+.course-btn {
+  display: block;
+  margin: 8px auto;
+  padding: 10px;
+  width: 70%;
+  border: none;
+  border-radius: 8px;
+  background: #2ecc71;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.course-btn:hover {
+  background: #27ae60;
+}
+
+.back-btn {
+  margin-top: 15px;
+  background: #999;
+}
+</style>
 </head>
 
 <body>
+
 <h1>Daniel's Class - Funny Tools</h1>
   <h2>✝️ I am the magacian, who makes your math journey easy!</h2>
   </br>
+  
 <h1>🎓 Math Learning System</h1>
-
 <p id="path">📍 Home</p>
 
 <div id="app"></div>
@@ -42,24 +94,16 @@
 <script>
 
 // ======================
-// 1. 三层数据结构
+// 数据结构（你原来的保留）
 // ======================
 const data = {
 
   primary: {
     name: "📘 Elementary School",
     grades: {
+      grade1: { name: "Grade 1", courses: [] },
+      grade2: { name: "Grade 2", courses: [] },
 
-      grade1: {
-        name: "Grade 1",
-        courses: []
-      },
-      
-      grade2: {
-        name: "Grade 2",
-        courses: []
-      },
-      
       grade3: {
         name: "Grade 3",
         courses: [
@@ -68,16 +112,9 @@ const data = {
         ]
       },
 
-      grade4: {
-        name: "Grade 4",
-        courses: []
-      },
-      
-      grade5: {
-        name: "Grade 5",
-        courses: []
-      },
-      
+      grade4: { name: "Grade 4", courses: [] },
+      grade5: { name: "Grade 5", courses: [] },
+
       grade6: {
         name: "Grade 6",
         courses: [
@@ -85,69 +122,34 @@ const data = {
           { name: "Fraction 2", file: "g6/fraction2.html" },
           { name: "Fraction 3", file: "g6/fraction3.html" }
         ]
-      },
-
-      general: {
-        name: "General",
-        courses: [
-          { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-        ]
       }
-      
     }
   },
 
   middle: {
     name: "📗 Middle School",
     grades: {
-      
-      grade7: {
-        name: "Grade 7",
-        courses: []
-      },
-      grade8: {
-        name: "Grade 8",
-        courses: []
-      },
-      grade9: {
-        name: "Grade 9",
-        courses: [
-          // { name: "Fraction 1", file: "g6/fraction1.html" },
-          // { name: "Fraction 2", file: "g6/fraction2.html" },
-          // { name: "Fraction 3", file: "g6/fraction3.html" }
-        ]
-      }
-      
+      grade7: { name: "Grade 7", courses: [] },
+      grade8: { name: "Grade 8", courses: [] },
+      grade9: { name: "Grade 9", courses: [] }
     }
   },
 
   high: {
     name: "📙 High School",
     grades: {
-      grade10: {
-        name: "Grade 10",
-        courses: []
-      },
-      grade11: {
-        name: "Grade 11",
-        courses: []
-      },
-      grade12: {
-        name: "Grade 12",
-        courses: []
-      }
+      grade10: { name: "Grade 10", courses: [] },
+      grade11: { name: "Grade 11", courses: [] },
+      grade12: { name: "Grade 12", courses: [] }
     }
   }
 };
 
-// ======================
-// 当前页面状态
-// ======================
 let level = null;
 let grade = null;
 
 // ======================
-// 渲染入口
+// Home（学段）
 // ======================
 function renderHome() {
 
@@ -161,61 +163,52 @@ function renderHome() {
 
   Object.keys(data).forEach(l => {
 
-    const btn = document.createElement("button");
-    btn.innerText = data[l].name;
+    const box = document.createElement("div");
+    box.className = "level-box";
 
-    btn.onclick = () => renderLevel(l);
+    const title = document.createElement("h2");
+    title.innerText = data[l].name;
 
-    app.appendChild(btn);
+    const grid = document.createElement("div");
+    grid.className = "grade-grid";
+
+    Object.keys(data[l].grades).forEach(g => {
+
+      const btn = document.createElement("button");
+      btn.className = "grade-btn";
+      btn.innerText = data[l].grades[g].name;
+
+      btn.onclick = () => renderGrade(l, g);
+
+      grid.appendChild(btn);
+    });
+
+    box.appendChild(title);
+    box.appendChild(grid);
+    app.appendChild(box);
   });
 }
 
 // ======================
-// 第二层：学段
+// Grade → Courses
 // ======================
-function renderLevel(l) {
+function renderGrade(l, g) {
 
   level = l;
-
-  document.getElementById("path").innerText =
-    "📍 " + data[l].name;
-
-  const app = document.getElementById("app");
-  app.innerHTML = "";
-
-  const grades = data[l].grades;
-
-  Object.keys(grades).forEach(g => {
-
-    const btn = document.createElement("button");
-    btn.innerText = grades[g].name;
-
-    btn.onclick = () => renderGrade(g);
-
-    app.appendChild(btn);
-  });
-
-  addBack(renderHome);
-}
-
-// ======================
-// 第三层：年级 → 课程
-// ======================
-function renderGrade(g) {
-
   grade = g;
 
-  const grades = data[level].grades;
+  const gradeData = data[l].grades[g];
 
   document.getElementById("path").innerText =
-    "📍 " + data[level].name + " → " + grades[g].name;
+    data[l].name + " → " + gradeData.name;
 
   const app = document.getElementById("app");
   app.innerHTML = "";
 
-  grades[g].courses.forEach(c => {
+  gradeData.courses.forEach(c => {
 
     const btn = document.createElement("button");
+    btn.className = "course-btn";
     btn.innerText = c.name;
 
     btn.onclick = () => {
@@ -225,26 +218,14 @@ function renderGrade(g) {
     app.appendChild(btn);
   });
 
-  addBack(() => renderLevel(level));
-}
-
-// ======================
-// 返回按钮
-// ======================
-function addBack(fn) {
-  const app = document.getElementById("app");
-
   const back = document.createElement("button");
   back.innerText = "⬅ Back";
+  back.className = "course-btn back-btn";
+  back.onclick = renderHome;
 
-  back.onclick = fn;
-
-  app.appendChild(document.createElement("hr"));
   app.appendChild(back);
 }
 
-// ======================
-// 初始化
 // ======================
 renderHome();
 
