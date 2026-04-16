@@ -40,12 +40,12 @@ input {
     color: #94a3b8;
 }
 
-/* 核心结论区 */
+/* ✔ 居中核心结论 */
 .summary {
     margin-top: 30px;
     padding: 20px;
     border-top: 1px solid #334155;
-    text-align: left;
+    text-align: center;
 }
 
 .summary h2 {
@@ -71,14 +71,14 @@ input {
 
 </div>
 
-<!-- 📌 核心结论 -->
+<!-- ✔ 居中 + 图标替换 -->
 <div class="summary">
-<h2>🧠 Core Mathematical Insight</h2>
+<h2>📐 Core Mathematical Insight</h2>
 
 <p>✔ y = a^x and y = (1/a)^x are mirror images across the y-axis</p>
 <p>✔ Reflection rule: x → -x</p>
-<p>✔ a^x = exponential growth/decay depending on a</p>
-<p>✔ Changing a changes the steepness of the curve</p>
+<p>✔ a^x controls growth or decay</p>
+<p>✔ Changing a changes steepness</p>
 <p>✔ Both curves always pass through (0,1)</p>
 </div>
 
@@ -92,27 +92,64 @@ const desc = document.getElementById("desc");
 
 let a = 2;
 
-const scale = 50;
+/* ✔ scale slightly smaller for cleaner view */
+const scale = 40;
 const originX = 400;
 const originY = 225;
 
-function drawAxes() {
-    ctx.strokeStyle = "#475569";
+/* ================= GRID ================= */
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
 
-    ctx.beginPath();
-    ctx.moveTo(0, originY);
-    ctx.lineTo(800, originY);
-    ctx.stroke();
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
 
-    ctx.beginPath();
-    ctx.moveTo(originX, 0);
-    ctx.lineTo(originX, 450);
-    ctx.stroke();
-
-    ctx.fillStyle = "#f59e0b";
-    ctx.fillText("x = 0 (mirror axis)", originX + 10, 20);
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
 }
 
+/* ================= AXES + LABELS ================= */
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#94a3b8";
+
+    // x-axis
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
+
+    // y-axis
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
+
+    // ✔ x labels (-8 ~ 8)
+    for (let i = -8; i <= 8; i++) {
+        let x = originX + i * scale;
+        ctx.fillText(i, x - 5, originY + 15);
+    }
+
+    // ✔ y labels (-5 ~ 5)
+    for (let j = -5; j <= 5; j++) {
+        let y = originY - j * scale;
+        ctx.fillText(j, originX + 5, y + 4);
+    }
+}
+
+/* ================= FUNCTIONS ================= */
 function f1(x) {
     return Math.pow(a, x);
 }
@@ -121,6 +158,7 @@ function f2(x) {
     return Math.pow(1 / a, x);
 }
 
+/* ================= CURVE ================= */
 function drawCurve(func, color) {
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
@@ -128,7 +166,7 @@ function drawCurve(func, color) {
 
     let first = true;
 
-    for (let px = 0; px < 800; px++) {
+    for (let px = 0; px < canvas.width; px++) {
         let x = (px - originX) / scale;
         let y = func(x);
 
@@ -147,12 +185,14 @@ function drawCurve(func, color) {
     ctx.stroke();
 }
 
+/* ================= LABEL ================= */
 function labelText(text, x, y, color) {
     ctx.fillStyle = color;
     ctx.font = "14px Arial";
     ctx.fillText(text, x, y);
 }
 
+/* ================= POINT ================= */
 function drawPoint(x, y, label, color) {
     let px = originX + x * scale;
     let py = originY - y * scale;
@@ -166,19 +206,19 @@ function drawPoint(x, y, label, color) {
     ctx.fillText(label, px + 6, py - 6);
 }
 
+/* ================= DRAW ================= */
 function draw() {
-    ctx.clearRect(0, 0, 800, 450);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
     drawAxes();
 
-    // curves
     drawCurve(f1, "#38bdf8");
     drawCurve(f2, "#22c55e");
 
-    // function labels near curves
-    labelText("y = a^x", 650, 120, "#38bdf8");
-    labelText("y = (1/a)^x", 650, 160, "#22c55e");
+    labelText("y = a^x", 620, 120, "#38bdf8");
+    labelText("y = (1/a)^x", 620, 150, "#22c55e");
 
-    // key points
     drawPoint(0, 1, "(0,1)", "#ffffff");
     drawPoint(1, a, "(1,a)", "#38bdf8");
     drawPoint(-1, 1 / a, "(-1,1/a)", "#38bdf8");
@@ -191,6 +231,7 @@ function draw() {
         " → symmetry across y-axis (x → -x)";
 }
 
+/* ================= EVENT ================= */
 slider.oninput = function() {
     a = parseFloat(this.value);
     aval.innerText = a;
