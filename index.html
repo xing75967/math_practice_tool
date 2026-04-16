@@ -344,7 +344,10 @@ function renderGrade(l, g) {
   const back = document.createElement("button");
   back.className = "back-btn";
   back.innerText = "⬅ Back";
-  back.onclick = renderHome;
+
+  back.onclick = () => {
+    renderHome();
+  };
 
   app.appendChild(back);
 }
