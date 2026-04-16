@@ -12,42 +12,51 @@ body {
   padding: 20px;
 }
 
-h1 {
-  color: #333;
-}
-
 .container {
   display: flex;
   justify-content: center;
   gap: 40px;
   flex-wrap: wrap;
-  margin-top: 20px;
 }
 
 .card {
   background: white;
-  padding: 15px;
+  padding: 18px;
   border-radius: 12px;
+  width: 360px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  width: 320px;
 }
 
+/* ✅ 每一块独立一行 */
+.block {
+  margin: 12px 0;
+}
+
+/* grid */
 .grid {
   display: grid;
-  margin: 10px auto;
-  background: #eee;
-}
-
-.cell {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
-
-label {
-  display: block;
+  justify-content: center;
   margin-top: 10px;
+}
+
+/* cell */
+.cell {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #ccc;
+  background: #eaf2ff;
+}
+
+/* label */
+.label {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+input[type="range"] {
+  width: 80%;
 }
 </style>
 </head>
@@ -58,109 +67,149 @@ label {
 
 <div class="container">
 
-  <!-- Square -->
-  <div class="card">
-    <h2>⬛ Square</h2>
-    <p>Formula: Area = side × side</p>
+<!-- ========= SQUARE ========= -->
+<div class="card">
+  <h2>⬛ Square</h2>
+  <p>Formula: Area = side × side</p>
 
-    <label>
-      Side Length: <span id="sVal">4</span>
-      <input type="range" min="1" max="10" value="4" id="squareSlider">
-    </label>
+  <div class="block">
+    <div>Side: <b id="sVal">4</b></div>
+    <input type="range" min="1" max="10" value="4" id="squareSlider">
+  </div>
 
+  <div class="block">
     <div id="squareGrid" class="grid"></div>
-
-    <h3>Area: <span id="squareArea"></span></h3>
   </div>
 
-  <!-- Rectangle -->
-  <div class="card">
-    <h2>▭ Rectangle</h2>
-    <p>Formula: Area = length × width</p>
+  <div class="block">
+    <div>Area: <b id="squareArea"></b></div>
+  </div>
+</div>
 
-    <label>
-      Length: <span id="lVal">6</span>
-      <input type="range" min="1" max="10" value="6" id="lenSlider">
-    </label>
+<!-- ========= RECTANGLE ========= -->
+<div class="card">
+  <h2>▭ Rectangle</h2>
+  <p>Formula: Area = length × width</p>
 
-    <label>
-      Width: <span id="wVal">3</span>
-      <input type="range" min="1" max="10" value="3" id="widSlider">
-    </label>
+  <div class="block">
+    <div>Length: <b id="lVal">6</b></div>
+    <input type="range" min="1" max="10" value="6" id="lenSlider">
+  </div>
 
+  <div class="block">
+    <div>Width: <b id="wVal">3</b></div>
+    <input type="range" min="1" max="10" value="3" id="widSlider">
+  </div>
+
+  <div class="block">
     <div id="rectGrid" class="grid"></div>
-
-    <h3>Area: <span id="rectArea"></span></h3>
   </div>
+
+  <div class="block">
+    <div>Area: <b id="rectArea"></b></div>
+  </div>
+</div>
 
 </div>
 
 <script>
 
 // =======================
-// Square
+// SQUARE
 // =======================
-const squareSlider = document.getElementById("squareSlider");
-const sVal = document.getElementById("sVal");
-
 function drawSquare(n) {
   const grid = document.getElementById("squareGrid");
   grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `repeat(${n}, 20px)`;
 
-  for (let i = 0; i < n * n; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    grid.appendChild(cell);
+  grid.style.gridTemplateColumns = `30px repeat(${n}, 22px)`;
+
+  grid.appendChild(empty());
+
+  for (let i = 1; i <= n; i++) {
+    grid.appendChild(label(i));
+  }
+
+  for (let r = 1; r <= n; r++) {
+    grid.appendChild(label(r));
+    for (let c = 1; c <= n; c++) {
+      grid.appendChild(cell());
+    }
   }
 
   document.getElementById("squareArea").innerText = n * n;
 }
 
-squareSlider.oninput = function () {
-  sVal.innerText = this.value;
-  drawSquare(parseInt(this.value));
-};
-
 // =======================
-// Rectangle
+// RECTANGLE
 // =======================
-const lenSlider = document.getElementById("lenSlider");
-const widSlider = document.getElementById("widSlider");
-
-const lVal = document.getElementById("lVal");
-const wVal = document.getElementById("wVal");
-
 function drawRect(l, w) {
   const grid = document.getElementById("rectGrid");
   grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `repeat(${l}, 20px)`;
 
-  for (let i = 0; i < l * w; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    grid.appendChild(cell);
+  grid.style.gridTemplateColumns = `30px repeat(${l}, 22px)`;
+
+  grid.appendChild(empty());
+
+  for (let i = 1; i <= l; i++) {
+    grid.appendChild(label(i));
+  }
+
+  for (let r = 1; r <= w; r++) {
+    grid.appendChild(label(r));
+    for (let c = 1; c <= l; c++) {
+      grid.appendChild(cell());
+    }
   }
 
   document.getElementById("rectArea").innerText = l * w;
 }
 
-function updateRect() {
-  const l = parseInt(lenSlider.value);
-  const w = parseInt(widSlider.value);
-
-  lVal.innerText = l;
-  wVal.innerText = w;
-
-  drawRect(l, w);
+// helpers
+function cell() {
+  const d = document.createElement("div");
+  d.className = "cell";
+  return d;
 }
+
+function label(text) {
+  const d = document.createElement("div");
+  d.className = "label";
+  d.innerText = text;
+  return d;
+}
+
+function empty() {
+  const d = document.createElement("div");
+  d.className = "label";
+  return d;
+}
+
+// =======================
+// sliders
+// =======================
+const squareSlider = document.getElementById("squareSlider");
+squareSlider.oninput = function () {
+  document.getElementById("sVal").innerText = this.value;
+  drawSquare(parseInt(this.value));
+};
+
+const lenSlider = document.getElementById("lenSlider");
+const widSlider = document.getElementById("widSlider");
 
 lenSlider.oninput = updateRect;
 widSlider.oninput = updateRect;
 
-// =======================
-// Init
-// =======================
+function updateRect() {
+  const l = parseInt(lenSlider.value);
+  const w = parseInt(widSlider.value);
+
+  document.getElementById("lVal").innerText = l;
+  document.getElementById("wVal").innerText = w;
+
+  drawRect(l, w);
+}
+
+// init
 drawSquare(4);
 updateRect();
 
