@@ -153,6 +153,20 @@ function drawAxes() {
     ctx.moveTo(originX, 0);
     ctx.lineTo(originX, canvas.height);
     ctx.stroke();
+
+    /* ================= ADD AXIS LABELS (ONLY ADDITION) ================= */
+
+    // x-axis numbers
+    for (let i = -10; i <= 10; i++) {
+        let x = originX + i * scale;
+        ctx.fillText(i, x - 5, originY + 15);
+    }
+
+    // y-axis numbers
+    for (let j = -8; j <= 8; j++) {
+        let y = originY - j * scale;
+        ctx.fillText(j, originX + 5, y + 4);
+    }
 }
 
 /* ================= FUNCTION ================= */
