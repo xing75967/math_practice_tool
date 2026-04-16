@@ -3,27 +3,26 @@
   const user = localStorage.getItem("user");
   const grades = JSON.parse(localStorage.getItem("grades") || "[]");
 
-  function goError() {
-    window.location.replace("/error.html");
+  function goLogin() {
+    window.location.replace("/index.html");
   }
 
-  // ❌ 未登录
+  // ⭐ 未登录 → 登录页
   if (!user) {
-    goError();
+    goLogin();
     return;
   }
 
-  // ⭐ teacher 全放行
+  // ⭐ teacher 放行
   if (grades.includes("all")) return;
 
   const pageGrade = window.pageGrade;
 
-  // 没定义权限 → 默认放行（避免误杀）
   if (!pageGrade) return;
 
-  // ❌ 无权限
   if (!grades.includes(pageGrade)) {
-    goError();
+    alert("No permission for this page");
+    goLogin();
     return;
   }
 
