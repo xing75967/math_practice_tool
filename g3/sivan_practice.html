@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <title>乘法练习（Sivan专用）</title>
 
-  <!-- 🔐 guard（必须在head） -->
-  <script src="/js/guard.js" defer></script>
-
-  <!-- ⭐ 页面权限 -->
+  <!-- ⭐ 1. 先定义权限（必须在 guard 前） -->
   <script>
     window.pageGrade = "grade3";
   </script>
+
+  <!-- ⭐ 2. 加载统一守卫 -->
+  <script src="/js/guard.js"></script>
 
 </head>
 
@@ -18,7 +18,7 @@
 
 <h1>乘法口算挑战赛（李晗允专用）</h1>
 
-<!-- 👤 登录显示 -->
+<!-- 显示用户 -->
 <p id="userInfo"></p>
 
 <div id="app"></div>
@@ -26,18 +26,23 @@
 <script>
 
 // ======================
-// 显示当前用户（不影响逻辑）
+// 显示用户（不影响逻辑）
 // ======================
 const user = localStorage.getItem("user");
 
 document.getElementById("userInfo").innerText =
   user ? "👤 User: " + user : "❌ 未登录";
 
-// ===== 可调参数 =====
+// ======================
+// 参数
+// ======================
 const NUM_QUESTIONS = 15;
 const MAX_FACTOR = 10;
 const TIME_PER_QUESTION = 10;
 
+// ======================
+// 状态
+// ======================
 let questions = [];
 let current = 0;
 let correctCount = 0;
@@ -97,7 +102,8 @@ function startTimer() {
 
   timer = setInterval(() => {
     timeLeft--;
-    document.getElementById("timer").innerText = timeLeft;
+    const el = document.getElementById("timer");
+    if (el) el.innerText = timeLeft;
 
     if (timeLeft <= 0) {
       clearInterval(timer);
@@ -110,8 +116,8 @@ function startTimer() {
 // 提交
 // ======================
 function submit() {
-  const input = document.getElementById("answer").value;
-  handleAnswer(parseInt(input));
+  const val = document.getElementById("answer").value;
+  handleAnswer(parseInt(val));
 }
 
 // ======================
@@ -121,6 +127,7 @@ function handleAnswer(userAnswer) {
   clearInterval(timer);
 
   const q = questions[current];
+
   const correct = userAnswer === q.answer;
 
   if (correct) {
@@ -132,6 +139,7 @@ function handleAnswer(userAnswer) {
       correctAnswer: q.answer,
       userAnswer: userAnswer === null ? "超时" : userAnswer
     });
+
     alert(`❌ 错误！正确答案是 ${q.answer}`);
   }
 
