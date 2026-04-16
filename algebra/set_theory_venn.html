@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Set Theory Venn Diagram</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #000;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    width: 900px;
+    margin: auto;
+}
+
+canvas {
+    background: #000;
+    border: 1px solid #334155;
+    margin-top: 15px;
+}
+
+button {
+    margin: 6px;
+    padding: 10px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+}
+
+button:hover {
+    background: #38bdf8;
+    color: black;
+}
+
+.box {
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 1px solid #334155;
+}
+
+h2 {
+    color: #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📚 Set Theory Visual Explorer</h1>
+
+<div class="container">
+
+<canvas id="canvas" width="700" height="400"></canvas>
+
+<div>
+<button onclick="mode='union'; draw()">Union ∪</button>
+<button onclick="mode='intersection'; draw()">Intersection ∩</button>
+<button onclick="mode='complement'; draw()">Complement A'</button>
+<button onclick="mode='universe'; draw()">Universe U</button>
+<button onclick="mode='empty'; draw()">Empty ∅</button>
+</div>
+
+<div class="box">
+<h2 id="title">Set Theory</h2>
+<p id="desc">Click a mode</p>
+</div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let mode = "union";
+
+const U = { x: 60, y: 60, w: 580, h: 280 };
+
+const A = { x: 280, y: 200, r: 90 };
+const B = { x: 420, y: 200, r: 90 };
+
+/* ================= BACKGROUND ================= */
+function drawBackground() {
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+/* ================= UNIVERSE BOX ================= */
+function drawUniverse() {
+    ctx.strokeStyle = "#888";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(U.x, U.y, U.w, U.h);
+
+    // ✅ FIXED: U label moved INSIDE top-left corner
+    ctx.fillStyle = "#888";
+    ctx.font = "14px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText("U", U.x + 10, U.y + 18);
+}
+
+/* ================= CIRCLES ================= */
+function drawCircle(c, color, label) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = color;
+    ctx.fillText(label, c.x - 10, c.y - c.r - 10);
+}
+
+/* ================= LABEL ================= */
+function drawModeLabel() {
+    ctx.fillStyle = "#ffcc00";
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+
+    ctx.fillText(
+        "CURRENT: " + mode.toUpperCase(),
+        U.x + U.w / 2,
+        U.y - 10
+    );
+
+    ctx.textAlign = "start";
+}
+
+/* ================= UNION ================= */
+function drawUnion() {
+    ctx.fillStyle = "rgba(255,80,80,0.35)";
+
+    ctx.beginPath();
+    ctx.arc(A.x, A.y, A.r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(B.x, B.y, B.r, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+/* ================= INTERSECTION ================= */
+function drawIntersection() {
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.arc(A.x, A.y, A.r, 0, Math.PI * 2);
+    ctx.clip();
+
+    ctx.beginPath();
+    ctx.arc(B.x, B.y, B.r, 0, Math.PI * 2);
+
+    ctx.fillStyle = "rgba(255,80,80,0.45)";
+    ctx.fill();
+
+    ctx.restore();
+}
+
+/* ================= COMPLEMENT ================= */
+function drawComplement() {
+    ctx.fillStyle = "rgba(255,80,80,0.25)";
+    ctx.fillRect(U.x, U.y, U.w, U.h);
+
+    ctx.fillStyle = "#000";
+    ctx.beginPath();
+    ctx.arc(A.x, A.y, A.r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "#38bdf8";
+    ctx.beginPath();
+    ctx.arc(A.x, A.y, A.r, 0, Math.PI * 2);
+    ctx.stroke();
+}
+
+/* ================= EMPTY ================= */
+function drawEmpty() {}
+
+/* ================= MAIN ================= */
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawBackground();
+    drawUniverse();
+
+    drawCircle(A, "#38bdf8", "A");
+    drawCircle(B, "#fbbf24", "B");
+
+    drawModeLabel();
+
+    if (mode === "union") {
+        drawUnion();
+        document.getElementById("title").innerText = "Union (A ∪ B)";
+        document.getElementById("desc").innerText = "A or B or both";
+    }
+
+    if (mode === "intersection") {
+        drawIntersection();
+        document.getElementById("title").innerText = "Intersection (A ∩ B)";
+        document.getElementById("desc").innerText = "Only overlap region";
+    }
+
+    if (mode === "complement") {
+        drawComplement();
+        document.getElementById("title").innerText = "Complement A'";
+        document.getElementById("desc").innerText = "U minus A";
+    }
+
+    if (mode === "universe") {
+        ctx.fillStyle = "rgba(255,80,80,0.25)";
+        ctx.fillRect(U.x, U.y, U.w, U.h);
+
+        document.getElementById("title").innerText = "Universal Set (U)";
+        document.getElementById("desc").innerText = "Entire space highlighted";
+    }
+
+    if (mode === "empty") {
+        document.getElementById("title").innerText = "Empty Set (∅)";
+        document.getElementById("desc").innerText = "No elements";
+    }
+}
+
+draw();
+</script>
+
+</body>
+</html>
