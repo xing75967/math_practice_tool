@@ -3,274 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <title>Math Learning System</title>
+
+  <!-- ⭐ 读取“模拟数据库” -->
+  <script src="/js/credentials.js"></script>
 </head>
 
-<body>
+<body style="font-family:Arial; text-align:center; margin-top:60px;">
 
 <h1>🎓 Math Learning System</h1>
 
-<p id="welcome"></p>
+<p id="status">❌ Not logged in</p>
 
-<div id="menu"></div>
+<button onclick="login()">🔐 Login</button>
+<button onclick="logout()">🚪 Logout</button>
 
 <hr>
 
-<p id="last"></p>
+<h2>📚 Courses</h2>
+<div id="menu"></div>
 
 <script>
 
-// ========================
-// 用户系统
-// ========================
-const users = {
-  "admin": "admin",
-  "user": "user123",
-  "userx": "userx123",
-  "sivan": "sivan123"
-};
-
-// ========================
+// ======================
 // 登录
-// ========================
-function login(){
-  let u = prompt("Username:");
-  let p = prompt("Password:");
+// ======================
+function login() {
 
-  if(users[u] && users[u] === p){
+  const u = prompt("Username:");
+  const p = prompt("Password:");
 
-    localStorage.setItem("user", u);
+  const user = window.DB.users[u];
 
-    // 权限初始化（你可后续改数据库）
-    if(u === "admin"){
-      localStorage.setItem("grades", JSON.stringify(["all"]));
-    } else if(u === "sivan"){
-      localStorage.setItem("grades", JSON.stringify(["grade3"]));
-    } else {
-      localStorage.setItem("grades", JSON.stringify(["grade3"]));
-    }
-
-    document.getElementById("welcome").innerText =
-      "Welcome, " + u + " 👋";
-
-  } else {
-    document.body.innerHTML = "<h1>Wrong login ❌</h1>";
+  if (!user || user.password !== p) {
+    alert("❌ Login failed");
+    return;
   }
+
+  // ⭐ 保存登录状态
+  localStorage.setItem("user", u);
+  localStorage.setItem("grades", JSON.stringify(user.grades));
+
+  alert("✅ Welcome " + u);
+
+  renderStatus();
+  renderMenu();
 }
 
-// ========================
-function checkLogin(){
+// ======================
+// 登出
+// ======================
+function logout() {
+  localStorage.removeItem("user");
+  localStorage.removeItem("grades");
+
+  document.getElementById("status").innerText = "❌ Not logged in";
+  document.getElementById("menu").innerHTML = "";
+}
+
+// ======================
+// 状态显示
+// ======================
+function renderStatus() {
+
   const user = localStorage.getItem("user");
 
-  if(!user){
-    login();
-  } else {
-    document.getElementById("welcome").innerText =
-      "Welcome back, " + user + " 👋";
-  }
+  document.getElementById("status").innerText =
+    user ? "👤 Logged in as: " + user : "❌ Not logged in";
 }
 
-checkLogin();
+// ======================
+// 课程列表
+// ======================
+const courses = [
+  {
+    name: "🔢 Multiplication Practice (Grade 3)",
+    file: "g3/sivan_practice.html",
+    grade: "grade3"
+  },
+  {
+    name: "📊 Fraction Practice (Grade 4)",
+    file: "g4/fraction1.html",
+    grade: "grade4"
+  },
+  {
+    name: "🔥 Multiplication Challenge",
+    file: "general/Multiplication_Challenge.html",
+    grade: "grade3"
+  }
+];
 
-// ========================
-// 模块
-// ========================
-const modules = {
-  grade3: [
-    { name: "七星乘法口算", file: "g3/sivan_practice.html" },
-    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
-
-  grade4: [
-    { name: "Fraction Practice", file: "g4/fraction1.html" },
-    { name: "Fraction Scale", file: "g4/fraction2.html" },
-    { name: "Fraction Dynamic", file: "g4/fraction3.html" }
-  ]
-};
-
-// ========================
-// 权限 + 菜单
-// ========================
-function renderMenu(){
+// ======================
+// 渲染菜单
+// ======================
+function renderMenu() {
 
   const menu = document.getElementById("menu");
+  menu.innerHTML = "";
 
+  const user = localStorage.getItem("user");
   const grades = JSON.parse(localStorage.getItem("grades") || "[]");
 
-  Object.keys(modules).forEach(grade => {
+  if (!user) {
+    menu.innerHTML = "<p>🔒 Please login first</p>";
+    return;
+  }
 
-    if(!grades.includes("all") && !grades.includes(grade)) return;
+  courses.forEach(c => {
 
-    modules[grade].forEach(item => {
+    if (grades.includes("all") || grades.includes(c.grade)) {
 
       const btn = document.createElement("button");
-      btn.innerText = item.name;
-      btn.style = "font-size:18px;margin:6px;padding:10px;";
+
+      btn.innerText = c.name;
+      btn.style = "font-size:16px;margin:6px;padding:10px;";
 
       btn.onclick = () => {
-        localStorage.setItem("lastPage", item.file);
-        window.location.href = item.file;
+        window.location.href = c.file;
       };
 
       menu.appendChild(btn);
       menu.appendChild(document.createElement("br"));
-    });
-
+    }
   });
 }
 
+// ======================
+// 初始化
+// ======================
+renderStatus();
 renderMenu();
-
-// 最近访问
-const last = localStorage.getItem("lastPage");
-if(last){
-  document.getElementById("last").innerText =
-    "📌 Recent Practice: " + last;
-}
 
 </script>
 
 </body>
 </html>
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Math Learning System</title>
-</head>
-<body>
-
-<h1> Daniel's Class Funny Tools </h1>
-<h2> ✝️ I am the math magician who can make your math journey easy！！</h2>
-  
-<h1>🎓 Math Learning System</h1>
-<p id="welcome"></p>
-
-<div id="menu"></div>
-
-<hr>
-
-<p id="last"></p>
-
-<script>
-
-// ========================
-// 1. 用户系统（升级版：带权限）
-// ========================
-const users = {
-  "admin": {
-    password: "admin",
-    allowedGrades: ["all"]
-  },
-  "user": {
-    password: "user123",
-    allowedGrades: ["grade3"]
-  },
-  "userx": {
-    password: "userx123",
-    allowedGrades: ["grade1", "grade2"]
-  },
-  "sivan": {
-    password: "sivan123",
-    allowedGrades: ["grade3", "grade6"]
-  }
-};
-
-
-// ========================
-// 2. 登录
-// ========================
-function login(){
-  let u = prompt("Username:");
-  let p = prompt("Password:");
-
-  if(users[u] && users[u].password === p){
-
-    localStorage.setItem("user", u);
-    localStorage.setItem("grades", JSON.stringify(users[u].allowedGrades));
-
-    document.getElementById("welcome").innerText =
-      "Welcome, " + u + " 👋";
-
-  } else {
-    document.body.innerHTML = "<h1>Wrong login ❌</h1>";
-  }
-}
-
-login();
-
-
-// ========================
-// 3. 课程模块（按 grade 分类）
-// ========================
-const modules = {
-  general: [
-    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
-
-  // grade2: [
-  //   { name: "Fraction Scale", file: "g6/fraction2.html" }
-  // ],
-
-  grade3: [
-    { name: "七星乘法口算", file: "g3/sivan_practice.html" },
-    { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" }
-  ],
-
-  grade6: [
-    { name: "Fraction Dynamic", file: "g6/fraction3.html" },
-    { name: "Fraction Basic", file: "g6/fraction1.html" }
-  ]
-};
-
-
-// ========================
-// 4. 根据权限生成菜单（核心升级）
-// ========================
-const menu = document.getElementById("menu");
-const grades = JSON.parse(localStorage.getItem("grades") || "[]");
-
-let list = [];
-
-if(grades.includes("all")){
-  list = Object.values(modules).flat();
-} else {
-  grades.forEach(g => {
-    if(modules[g]){
-      list = list.concat(modules[g]);
-    }
-  });
-}
-
-
-// ========================
-// 5. 渲染按钮
-// ========================
-list.forEach(item => {
-  const btn = document.createElement("button");
-  btn.innerText = item.name;
-  btn.style = "font-size:18px;margin:6px;padding:10px;";
-
-  btn.onclick = () => {
-    localStorage.setItem("lastPage", item.file);
-    window.location.href = item.file;
-  };
-
-  menu.appendChild(btn);
-  menu.appendChild(document.createElement("br"));
-});
-
-
-// ========================
-// 6. 最近访问记录
-// ========================
-const last = localStorage.getItem("lastPage");
-if(last){
-  document.getElementById("last").innerText =
-    "📌 Recent Practice: " + last;
-}
-
-</script>
-
-</body>
-</html> -->
