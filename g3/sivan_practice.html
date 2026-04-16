@@ -2,27 +2,38 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>乘法练习</title>
+  <title>乘法练习（Sivan专用）</title>
 
+  <!-- 🔐 guard（必须在head） -->
   <script src="/js/guard.js" defer></script>
 
+  <!-- ⭐ 页面权限 -->
   <script>
     window.pageGrade = "grade3";
   </script>
+
 </head>
 
-<body>
+<body style="font-family: Arial; text-align:center; margin-top:50px;">
 
-<h1>乘法口算挑战赛（Sivan专用）</h1>
+<h1>乘法口算挑战赛（李晗允专用）</h1>
+
+<!-- 👤 登录显示 -->
+<p id="userInfo"></p>
 
 <div id="app"></div>
 
 <script>
 
-// ===== 你的逻辑完全不改 =====
-
+// ======================
+// 显示当前用户（不影响逻辑）
+// ======================
 const user = localStorage.getItem("user");
 
+document.getElementById("userInfo").innerText =
+  user ? "👤 User: " + user : "❌ 未登录";
+
+// ===== 可调参数 =====
 const NUM_QUESTIONS = 15;
 const MAX_FACTOR = 10;
 const TIME_PER_QUESTION = 10;
@@ -35,16 +46,22 @@ let startTime = 0;
 let timer = null;
 let timeLeft = TIME_PER_QUESTION;
 
-function generateQuestions(){
+// ======================
+// 生成题目
+// ======================
+function generateQuestions() {
   questions = [];
-  for(let i=0;i<NUM_QUESTIONS;i++){
-    let a = Math.floor(Math.random()*MAX_FACTOR)+1;
-    let b = Math.floor(Math.random()*MAX_FACTOR)+1;
-    questions.push({a,b,answer:a*b});
+  for (let i = 0; i < NUM_QUESTIONS; i++) {
+    let a = Math.floor(Math.random() * MAX_FACTOR) + 1;
+    let b = Math.floor(Math.random() * MAX_FACTOR) + 1;
+    questions.push({ a, b, answer: a * b });
   }
 }
 
-function start(){
+// ======================
+// 开始
+// ======================
+function start() {
   generateQuestions();
   current = 0;
   correctCount = 0;
@@ -53,70 +70,118 @@ function start(){
   showQuestion();
 }
 
-function showQuestion(){
+// ======================
+// 显示题目
+// ======================
+function showQuestion() {
   timeLeft = TIME_PER_QUESTION;
 
   const q = questions[current];
 
   document.getElementById("app").innerHTML = `
-    <h2>${q.a} × ${q.b}</h2>
-    <p>⏳ ${timeLeft}s</p>
-    <input id="answer" type="number"/>
+    <h2>第 ${current + 1} 题：${q.a} × ${q.b}</h2>
+    <p>⏳ 剩余时间：<span id="timer">${timeLeft}</span> 秒</p>
+    <input id="answer" type="number" autofocus/>
+    <br/><br/>
     <button onclick="submit()">提交</button>
   `;
 
   startTimer();
 }
 
-function startTimer(){
+// ======================
+// 计时器
+// ======================
+function startTimer() {
   clearInterval(timer);
 
-  timer = setInterval(()=>{
+  timer = setInterval(() => {
     timeLeft--;
-    document.querySelector("p").innerText = `⏳ ${timeLeft}s`;
+    document.getElementById("timer").innerText = timeLeft;
 
-    if(timeLeft<=0){
+    if (timeLeft <= 0) {
       clearInterval(timer);
       handleAnswer(null);
     }
-  },1000);
+  }, 1000);
 }
 
-function submit(){
-  const val = document.getElementById("answer").value;
-  handleAnswer(parseInt(val));
+// ======================
+// 提交
+// ======================
+function submit() {
+  const input = document.getElementById("answer").value;
+  handleAnswer(parseInt(input));
 }
 
-function handleAnswer(userAnswer){
+// ======================
+// 处理答案
+// ======================
+function handleAnswer(userAnswer) {
   clearInterval(timer);
 
   const q = questions[current];
+  const correct = userAnswer === q.answer;
 
-  if(userAnswer === q.answer){
+  if (correct) {
     correctCount++;
+    alert("✅ 正确！");
   } else {
-    wrongQuestions.push(q);
+    wrongQuestions.push({
+      question: `${q.a} × ${q.b}`,
+      correctAnswer: q.answer,
+      userAnswer: userAnswer === null ? "超时" : userAnswer
+    });
+    alert(`❌ 错误！正确答案是 ${q.answer}`);
   }
 
   current++;
 
-  if(current < NUM_QUESTIONS){
+  if (current < NUM_QUESTIONS) {
     showQuestion();
   } else {
     end();
   }
 }
 
-function end(){
+// ======================
+// 结束
+// ======================
+function end() {
+  const endTime = Date.now();
+  const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+  const accuracy = Math.round((correctCount / NUM_QUESTIONS) * 100);
+
+  let wrongHtml = "";
+
+  if (wrongQuestions.length > 0) {
+    wrongHtml = "<h3>❌ 错题总结：</h3>";
+    wrongQuestions.forEach(q => {
+      wrongHtml += `
+        <p>${q.question} = ${q.correctAnswer} （你的答案：${q.userAnswer}）</p>
+      `;
+    });
+  } else {
+    wrongHtml = "<h3>🎉 全部正确！</h3>";
+  }
+
   document.getElementById("app").innerHTML = `
-    <h2>完成</h2>
-    <p>正确率：${Math.round(correctCount/NUM_QUESTIONS*100)}%</p>
+    <h2>挑战完成！</h2>
+    <p>⏱ 总耗时：${totalTime} 秒</p>
+    <p>🎯 正确率：${accuracy}%</p>
+    ${wrongHtml}
+    <br/>
     <button onclick="start()">再来一次</button>
   `;
 }
 
-document.getElementById("app").innerHTML =
-`<button onclick="start()">开始</button>`;
+// ======================
+// 初始界面
+// ======================
+document.getElementById("app").innerHTML = `
+  <p>题目数量：${NUM_QUESTIONS} ｜ 范围：1~${MAX_FACTOR} ｜ 每题${TIME_PER_QUESTION}秒</p>
+  <button onclick="start()">开始练习</button>
+`;
 
 </script>
 
