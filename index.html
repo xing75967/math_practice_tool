@@ -4,6 +4,114 @@
   <meta charset="UTF-8">
   <title>Math Learning System</title>
 
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .grade-box {
+      border: 1px solid #ddd;
+      margin: 20px auto;
+      padding: 15px;
+      width: 60%;
+      border-radius: 10px;
+    }
+
+    .course-btn {
+      display: block;
+      margin: 8px auto;
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      cursor: pointer;
+    }
+
+    h2 {
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+<!-- <body style="font-family:Arial;text-align:center;margin-top:60px;"> -->
+<h1>Daniel's Class Funny Tools</h1>
+  <h2> I am the magician who can make your math journey easy!</h2>
+  </br>
+
+<h1>🎓 Math Learning System</h1>
+
+<p id="status">👤 Guest Mode</p>
+
+<hr>
+
+<div id="app"></div>
+
+<script>
+
+// ======================
+// 数据结构（核心）
+// ======================
+const courses = {
+  grade3: [
+    { name: "七星乘法口算", file: "g3/sivan_practice.html" },
+    { name: "乘法挑战", file: "general/Multiplication_Challenge.html" }
+  ],
+
+  grade4: [
+    { name: "分数练习", file: "g4/fraction1.html" },
+    { name: "分数进阶", file: "g4/fraction2.html" }
+  ]
+};
+
+// ======================
+// 渲染函数
+// ======================
+function render() {
+
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+
+  Object.keys(courses).forEach(grade => {
+
+    const box = document.createElement("div");
+    box.className = "grade-box";
+
+    const title = document.createElement("h2");
+    title.innerText = "📘 " + grade.toUpperCase();
+
+    box.appendChild(title);
+
+    courses[grade].forEach(c => {
+
+      const btn = document.createElement("button");
+      btn.className = "course-btn";
+      btn.innerText = c.name;
+
+      btn.onclick = () => {
+        window.location.href = c.file;
+      };
+
+      box.appendChild(btn);
+    });
+
+    app.appendChild(box);
+  });
+}
+
+render();
+
+</script>
+
+</body>
+</html>
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Math Learning System</title>
+
   <script src="./js/db.js"></script>
 </head>
 
@@ -191,4 +299,4 @@ render();
 </script>
 
 </body>
-</html> -->
+</html> --> -->
