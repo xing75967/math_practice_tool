@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Area Practice (Simplified)</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #f5f6fa;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.grid {
+  display: grid;
+  margin: 15px auto;
+  justify-content: center;
+}
+
+.cell {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #ccc;
+  background: #eaf2ff;
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+  width: 120px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 14px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #4a90e2;
+  color: white;
+}
+
+#feedback {
+  margin-top: 10px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📐 Area Practice (Simplified)</h1>
+
+<p>Look at the rectangle and enter the correct area</p>
+
+<div class="container">
+
+  <!-- Question -->
+  <div class="card">
+    <h2>Question</h2>
+
+    <div id="question"></div>
+
+    <div id="grid" class="grid"></div>
+
+    <input id="answer" type="number" placeholder="Your answer">
+
+    <br>
+
+    <button onclick="check()">Submit</button>
+    <button onclick="next()">Next</button>
+
+    <p id="feedback"></p>
+  </div>
+
+  <!-- Score -->
+  <div class="card">
+    <h2>Score</h2>
+    <p>Correct: <span id="score">0</span></p>
+    <p>Wrong: <span id="wrong">0</span></p>
+  </div>
+
+</div>
+
+<script>
+
+// =====================
+// state
+// =====================
+let w, h;
+let score = 0;
+let wrong = 0;
+
+// =====================
+// generate
+// =====================
+function generate() {
+  w = Math.floor(Math.random() * 8) + 2;
+  h = Math.floor(Math.random() * 8) + 2;
+
+  document.getElementById("question").innerHTML =
+    `<h3>${w} × ${h}</h3>`;
+
+  draw(w, h);
+  document.getElementById("answer").value = "";
+  document.getElementById("feedback").innerText = "";
+}
+
+// =====================
+// draw grid (visual only)
+// =====================
+function draw(w, h) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  grid.style.gridTemplateColumns = `repeat(${w}, 22px)`;
+
+  for (let i = 0; i < w * h; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    grid.appendChild(cell);
+  }
+}
+
+// =====================
+// check answer
+// =====================
+function check() {
+  const ans = Number(document.getElementById("answer").value);
+  const correct = w * h;
+
+  if (ans === correct) {
+    score++;
+    document.getElementById("feedback").innerText = "Correct!";
+  } else {
+    wrong++;
+    document.getElementById("feedback").innerText =
+      `Wrong. Correct answer is ${correct}`;
+  }
+
+  updateScore();
+}
+
+// =====================
+// next
+// =====================
+function next() {
+  generate();
+}
+
+// =====================
+// score
+// =====================
+function updateScore() {
+  document.getElementById("score").innerText = score;
+  document.getElementById("wrong").innerText = wrong;
+}
+
+// init
+generate();
+
+</script>
+
+</body>
+</html>
