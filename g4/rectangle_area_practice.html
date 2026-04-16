@@ -82,6 +82,7 @@ button {
   <br>
 
   <button onclick="check()">Submit</button>
+  <button onclick="next()">Next ▶</button>
 
   <p id="feedback"></p>
 </div>
@@ -106,11 +107,15 @@ let w, h;
 let score = 0;
 let wrong = 0;
 let total = 0;
+let timer = null; // ⭐ 控制自动跳题
 
 // =====================
 // generate question
 // =====================
 function generate() {
+
+  clearTimeout(timer); // ⭐ 防止旧定时器影响
+
   w = Math.floor(Math.random() * 8) + 2;
   h = Math.floor(Math.random() * 8) + 2;
 
@@ -142,32 +147,42 @@ function draw(w, h) {
 // check answer
 // =====================
 function check() {
+
+  clearTimeout(timer); // ⭐ 防止重复提交导致多个timer
+
   const ans = Number(document.getElementById("answer").value);
   const correct = w * h;
 
-  total++; // ⭐ 总题数+1
+  total++;
 
   if (ans === correct) {
     score++;
     document.getElementById("feedback").innerText = "✅ Correct!";
+
+    // ⭐ 正确 → 1秒跳题
+    timer = setTimeout(() => {
+      next();
+    }, 1000);
+
   } else {
     wrong++;
     document.getElementById("feedback").innerText =
       `❌ Wrong! Correct answer is ${correct}`;
+
+    // ⭐ 错误 → 5秒跳题
+    timer = setTimeout(() => {
+      next();
+    }, 5000);
   }
 
   updateScore();
-
-  // ⭐ 1秒自动下一题
-  setTimeout(() => {
-    next();
-  }, 1000);
 }
 
 // =====================
 // next
 // =====================
 function next() {
+  clearTimeout(timer); // ⭐ 手动点击时取消自动跳
   generate();
 }
 
