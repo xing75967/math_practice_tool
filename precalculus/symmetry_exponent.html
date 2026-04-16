@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exponential Symmetry Animation</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    width: 900px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 20px;
+}
+
+.slider-box {
+    margin: 20px;
+}
+
+input {
+    width: 300px;
+}
+
+.info {
+    margin-top: 10px;
+    color: #94a3b8;
+}
+
+/* 核心结论区 */
+.summary {
+    margin-top: 30px;
+    padding: 20px;
+    border-top: 1px solid #334155;
+    text-align: left;
+}
+
+.summary h2 {
+    color: #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Exponential Symmetry Animation</h1>
+
+<div class="container">
+
+<div class="slider-box">
+    <p>a = <span id="aval">2</span></p>
+    <input type="range" min="0.2" max="5" step="0.1" value="2" id="slider">
+</div>
+
+<canvas id="graph" width="800" height="450"></canvas>
+
+<p class="info" id="desc"></p>
+
+</div>
+
+<!-- 📌 核心结论 -->
+<div class="summary">
+<h2>🧠 Core Mathematical Insight</h2>
+
+<p>✔ y = a^x and y = (1/a)^x are mirror images across the y-axis</p>
+<p>✔ Reflection rule: x → -x</p>
+<p>✔ a^x = exponential growth/decay depending on a</p>
+<p>✔ Changing a changes the steepness of the curve</p>
+<p>✔ Both curves always pass through (0,1)</p>
+</div>
+
+<script>
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const slider = document.getElementById("slider");
+const aval = document.getElementById("aval");
+const desc = document.getElementById("desc");
+
+let a = 2;
+
+const scale = 50;
+const originX = 400;
+const originY = 225;
+
+function drawAxes() {
+    ctx.strokeStyle = "#475569";
+
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(800, originY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, 450);
+    ctx.stroke();
+
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillText("x = 0 (mirror axis)", originX + 10, 20);
+}
+
+function f1(x) {
+    return Math.pow(a, x);
+}
+
+function f2(x) {
+    return Math.pow(1 / a, x);
+}
+
+function drawCurve(func, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < 800; px++) {
+        let x = (px - originX) / scale;
+        let y = func(x);
+
+        if (y > 50) continue;
+
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.stroke();
+}
+
+function labelText(text, x, y, color) {
+    ctx.fillStyle = color;
+    ctx.font = "14px Arial";
+    ctx.fillText(text, x, y);
+}
+
+function drawPoint(x, y, label, color) {
+    let px = originX + x * scale;
+    let py = originY - y * scale;
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(px, py, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.fillText(label, px + 6, py - 6);
+}
+
+function draw() {
+    ctx.clearRect(0, 0, 800, 450);
+    drawAxes();
+
+    // curves
+    drawCurve(f1, "#38bdf8");
+    drawCurve(f2, "#22c55e");
+
+    // function labels near curves
+    labelText("y = a^x", 650, 120, "#38bdf8");
+    labelText("y = (1/a)^x", 650, 160, "#22c55e");
+
+    // key points
+    drawPoint(0, 1, "(0,1)", "#ffffff");
+    drawPoint(1, a, "(1,a)", "#38bdf8");
+    drawPoint(-1, 1 / a, "(-1,1/a)", "#38bdf8");
+
+    drawPoint(1, 1 / a, "(1,1/a)", "#22c55e");
+    drawPoint(-1, a, "(-1,a)", "#22c55e");
+
+    desc.innerText =
+        "a = " + a.toFixed(2) +
+        " → symmetry across y-axis (x → -x)";
+}
+
+slider.oninput = function() {
+    a = parseFloat(this.value);
+    aval.innerText = a;
+    draw();
+};
+
+draw();
+</script>
+
+</body>
+</html>
