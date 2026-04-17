@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Divisibility Analyzer</title>
+<title>Divisibility Visualizer</title>
 <style>
     body {
         font-family: Arial;
@@ -34,6 +34,17 @@
         color: gold;
         font-weight: bold;
     }
+
+    /* ✅ 新增颜色 */
+    .true {
+        color: #00ff88;
+        font-weight: bold;
+    }
+    .false {
+        color: #ff6b6b;
+        font-weight: bold;
+    }
+
     .rules {
         margin-top: 40px;
         text-align: left;
@@ -56,7 +67,7 @@
 
 <body>
 
-<h1>🔢 Divisibility Analyzer</h1>
+<h1>🔢 Divisibility Visualizer</h1>
 
 <input type="number" id="numberInput" placeholder="Enter number">
 <br>
@@ -66,7 +77,6 @@
 <div class="box" id="sum"></div>
 <div class="box" id="results"></div>
 
-<!-- 📘 RULES SECTION -->
 <div class="rules">
     <h2>📘 Divisibility Rules Reference</h2>
 
@@ -103,14 +113,12 @@ async function analyze() {
 
     let digits = n.toString().split("").map(Number);
 
-    // Step 1: show digits
     digitsDiv.innerHTML = "Digits: ";
     for (let d of digits) {
         digitsDiv.innerHTML += `<span class="highlight">${d}</span> `;
         await sleep(400);
     }
 
-    // Step 2: sum animation
     let sum = 0;
     sumDiv.innerHTML = "Sum: ";
     for (let d of digits) {
@@ -122,13 +130,14 @@ async function analyze() {
 
     await sleep(600);
 
-    // Step 3: rules
     let lastDigit = digits[digits.length - 1];
     let lastTwo = n % 100;
     let lastThree = n % 1000;
 
     function show(label, condition) {
-        return `<p>${label}: <span class="highlight">${condition}</span></p>`;
+        let className = condition ? "true" : "false";
+        let text = condition ? "✔ True" : "✘ False";
+        return `<p>${label}: <span class="${className}">${text}</span></p>`;
     }
 
     let div2 = lastDigit % 2 === 0;
