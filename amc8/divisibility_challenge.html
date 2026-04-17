@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AMC8 Divisibility Challenge</title>
+<title>Divisibility Challenge</title>
 
 <style>
 body {
@@ -39,17 +39,18 @@ button {
 
 <body>
 
-<h1>🎯 AMC8 Challenge Mode</h1>
+<h1>🎯 Divisibility Challenge Mode</h1>
 
 <div class="box">⏱ Time: <span id="time">60</span>s</div>
 <div class="box">⭐ Score: <span id="score">0</span></div>
 
 <div class="box" id="question"></div>
 
-<button class="choice" onclick="answer(true)">YES</button>
-<button class="choice" onclick="answer(false)">NO</button>
+<button class="choice" id="yesBtn" onclick="answer(true)">YES</button>
+<button class="choice" id="noBtn" onclick="answer(false)">NO</button>
 
 <div class="box" id="feedback"></div>
+<div class="box" id="summary"></div>
 
 <button onclick="startGame()">Start Game</button>
 
@@ -60,12 +61,22 @@ let timeLeft = 60;
 let timer;
 let currentAnswer = false;
 
+// ✅ 新增统计变量
+let totalQuestions = 0;
+let wrongQuestions = [];
+
 function startGame() {
     score = 0;
     timeLeft = 60;
+    totalQuestions = 0;
+    wrongQuestions = [];
+
     document.getElementById("score").innerText = score;
     document.getElementById("time").innerText = timeLeft;
     document.getElementById("feedback").innerHTML = "";
+    document.getElementById("summary").innerHTML = "";
+
+    enableButtons();
 
     nextQuestion();
 
@@ -90,9 +101,16 @@ function nextQuestion() {
 
     document.getElementById("question").innerHTML =
         `Is <span style="color:gold">${n}</span> divisible by <span style="color:gold">${d}</span>?`;
+
+    // 保存当前题用于记录错题
+    currentQuestionText = `${n} ÷ ${d}`;
 }
 
 function answer(choice) {
+    if (timeLeft <= 0) return; // ⛔ 防止结束后点击
+
+    totalQuestions++;
+
     let feedback = document.getElementById("feedback");
 
     if (choice === currentAnswer) {
@@ -100,20 +118,56 @@ function answer(choice) {
         feedback.innerHTML = "<span class='correct'>✔ Correct!</span>";
     } else {
         feedback.innerHTML = "<span class='wrong'>✘ Wrong!</span>";
+
+        // ✅ 记录错题
+        wrongQuestions.push({
+            q: currentQuestionText,
+            correct: currentAnswer ? "YES" : "NO"
+        });
     }
 
     document.getElementById("score").innerText = score;
 
     setTimeout(() => {
         feedback.innerHTML = "";
-        nextQuestion();
+        if (timeLeft > 0) nextQuestion();
     }, 800);
 }
 
 function endGame() {
+    disableButtons();
+
     document.getElementById("question").innerHTML = "⏳ Time's up!";
-    document.getElementById("feedback").innerHTML =
-        `Final Score: <span style="color:gold">${score}</span>`;
+
+    let accuracy = totalQuestions === 0 ? 0 :
+        Math.round((score / totalQuestions) * 100);
+
+    let summaryHTML = `
+        <p>⭐ Final Score: <span style="color:gold">${score}</span></p>
+        <p>📊 Total Questions: ${totalQuestions}</p>
+        <p>✅ Correct: ${score}</p>
+        <p>🎯 Accuracy: ${accuracy}%</p>
+    `;
+
+    // ✅ 错题列表
+    if (wrongQuestions.length > 0) {
+        summaryHTML += "<p style='color:#ff6b6b'>❌ Wrong Questions:</p>";
+        wrongQuestions.forEach(item => {
+            summaryHTML += `<p>${item.q} → Correct: ${item.correct}</p>`;
+        });
+    }
+
+    document.getElementById("summary").innerHTML = summaryHTML;
+}
+
+function disableButtons() {
+    document.getElementById("yesBtn").disabled = true;
+    document.getElementById("noBtn").disabled = true;
+}
+
+function enableButtons() {
+    document.getElementById("yesBtn").disabled = false;
+    document.getElementById("noBtn").disabled = false;
 }
 
 </script>
