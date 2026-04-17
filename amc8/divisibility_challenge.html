@@ -39,7 +39,7 @@ button {
 
 <body>
 
-<h1>🎯 Divisibility Challenge Mode</h1>
+<h1>🎯 Divisibility Rules Challenge Mode</h1>
 
 <div class="box">⏱ Time: <span id="time">60</span>s</div>
 <div class="box">⭐ Score: <span id="score">0</span></div>
@@ -61,7 +61,9 @@ let timeLeft = 60;
 let timer;
 let currentAnswer = false;
 
-// ✅ 新增统计变量
+// ✅ 新增：锁定答案（修复BUG核心）
+let lockedAnswer = false;
+
 let totalQuestions = 0;
 let wrongQuestions = [];
 
@@ -97,32 +99,33 @@ function nextQuestion() {
     let divisors = [2,3,4,5,6,9,10,12,15];
     let d = divisors[Math.floor(Math.random() * divisors.length)];
 
-    currentAnswer = (n % d === 0);
+    // ✅ 修复核心：锁定答案
+    lockedAnswer = (n % d === 0);
+    currentAnswer = lockedAnswer;
 
     document.getElementById("question").innerHTML =
         `Is <span style="color:gold">${n}</span> divisible by <span style="color:gold">${d}</span>?`;
 
-    // 保存当前题用于记录错题
     currentQuestionText = `${n} ÷ ${d}`;
 }
 
 function answer(choice) {
-    if (timeLeft <= 0) return; // ⛔ 防止结束后点击
+    if (timeLeft <= 0) return;
 
     totalQuestions++;
 
     let feedback = document.getElementById("feedback");
 
-    if (choice === currentAnswer) {
+    // ✅ 使用锁定答案（关键修复）
+    if (choice === lockedAnswer) {
         score++;
         feedback.innerHTML = "<span class='correct'>✔ Correct!</span>";
     } else {
         feedback.innerHTML = "<span class='wrong'>✘ Wrong!</span>";
 
-        // ✅ 记录错题
         wrongQuestions.push({
             q: currentQuestionText,
-            correct: currentAnswer ? "YES" : "NO"
+            correct: lockedAnswer ? "YES" : "NO"
         });
     }
 
@@ -149,7 +152,6 @@ function endGame() {
         <p>🎯 Accuracy: ${accuracy}%</p>
     `;
 
-    // ✅ 错题列表
     if (wrongQuestions.length > 0) {
         summaryHTML += "<p style='color:#ff6b6b'>❌ Wrong Questions:</p>";
         wrongQuestions.forEach(item => {
