@@ -36,18 +36,17 @@ button {
     cursor: pointer;
 }
 
+.start-btn {
+    background: #3399ff;
+    color: white;
+}
+
 .correct { color: #00ff88; }
 .wrong { color: #ff6b6b; }
 
 .box {
     margin-top: 20px;
     font-size: 22px;
-}
-
-/* ✅ 新增：Start按钮颜色 */
-.start-btn {
-    background: #3399ff;
-    color: white;
 }
 </style>
 </head>
@@ -68,7 +67,6 @@ button {
 <input id="answerInput" placeholder="Answer">
 <br>
 
-<!-- ✅ 已交换位置 -->
 <button class="start-btn" onclick="startGame()">Start Game</button>
 <button onclick="submitAnswer()">Submit</button>
 
@@ -183,6 +181,14 @@ function endGame() {
 
     document.getElementById("summary").innerHTML = html;
 }
+
+// ===== ✅ Enter键提交功能（新增核心） =====
+document.getElementById("answerInput")
+.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        submitAnswer();
+    }
+});
 
 </script>
 
