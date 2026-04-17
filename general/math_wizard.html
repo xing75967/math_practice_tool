@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Logic Lab: 24-Point Challenge</title>
+    <style>
+        :root { --primary: #1a73e8; --success: #34a853; --danger: #ea4335; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        
+        .game-card { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; }
+        h1 { font-size: 1.8rem; color: #202124; margin-bottom: 0.5rem; }
+        .subtitle { color: #5f6368; font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+        /* Display Area */
+        .screen { background: #f1f3f4; border-radius: 12px; padding: 15px; min-height: 60px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 500; color: var(--primary); border: 2px solid transparent; transition: all 0.3s; word-break: break-all; }
+        .screen.error { border-color: var(--danger); color: var(--danger); }
+        .screen.success { border-color: var(--success); color: var(--success); }
+
+        /* Number Buttons */
+        .grid-numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1rem; }
+        .btn-num { background: var(--primary); color: white; border: none; border-radius: 12px; padding: 15px 5px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-num:disabled { background: #dadce0; cursor: not-allowed; }
+        .btn-num:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(26,115,232,0.3); }
+
+        /* Operator Buttons */
+        .grid-operators { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+        .btn-op { background: #e8f0fe; color: var(--primary); border: none; border-radius: 8px; padding: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .btn-op:hover { background: #d2e3fc; }
+
+        /* Action Buttons */
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-action { padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .btn-clear { background: #f1f3f4; color: #3c4043; }
+        .btn-new { background: var(--success); color: white; }
+        
+        #message { margin-top: 1rem; font-weight: bold; min-height: 1.2rem; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <h1>Math Wizard 🧙‍♂️</h1>
+    <p class="subtitle">Combine 4 numbers to get 24</p>
+
+    <div id="display" class="screen">Select a number</div>
+    <div id="message"></div>
+
+    <div class="grid-numbers" id="number-pad">
+        </div>
+
+    <div class="grid-operators">
+        <button class="btn-op" onclick="addOp('+')">+</button>
+        <button class="btn-op" onclick="addOp('-')">-</button>
+        <button class="btn-op" onclick="addOp('*')">×</button>
+        <button class="btn-op" onclick="addOp('/')">÷</button>
+        <button class="btn-op" onclick="addOp('(')">(</button>
+        <button class="btn-op" onclick="addOp(')')">)</button>
+        <button class="btn-op" style="grid-column: span 2; background: #feefe3; color: #e67e22;" onclick="checkLogic()">Submit Logic</button>
+    </div>
+
+    <div class="actions">
+        <button class="btn-action btn-clear" onclick="clearLast()">Clear</button>
+        <button class="btn-action btn-new" onclick="initGame()">New Challenge</button>
+    </div>
+</div>
+
+<script>
+    let currentNumbers = [];
+    let expression = "";
+    let usedIndices = new Set();
+
+    function initGame() {
+        currentNumbers = Array.from({length: 4}, () => Math.floor(Math.random() * 9) + 1);
+        expression = "";
+        usedIndices.clear();
+        updateDisplay("Start calculating!");
+        renderNumbers();
+        document.getElementById('message').innerText = "";
+        document.getElementById('display').className = "screen";
+    }
+
+    function renderNumbers() {
+        const pad = document.getElementById('number-pad');
+        pad.innerHTML = '';
+        currentNumbers.forEach((num, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-num';
+            btn.innerText = num;
+            btn.disabled = usedIndices.has(idx);
+            btn.onclick = () => addNumber(num, idx);
+            pad.appendChild(btn);
+        });
+    }
+
+    function addNumber(num, idx) {
+        if (expression === "" || expression === "Start calculating!") {
+            expression = num.toString();
+        } else {
+            expression += num.toString();
+        }
+        usedIndices.add(idx);
+        updateDisplay(expression);
+        renderNumbers();
+    }
+
+    function addOp(op) {
+        if (expression === "Start calculating!") expression = "";
+        expression += op;
+        updateDisplay(expression);
+    }
+
+    function clearLast() {
+        initGame(); // Simple clear for this version
+    }
+
+    function updateDisplay(val) {
+        document.getElementById('display').innerText = val;
+    }
+
+    function checkLogic() {
+        const screen = document.getElementById('display');
+        const msg = document.getElementById('message');
+        
+        if (usedIndices.size < 4) {
+            msg.style.color = "#e67e22";
+            msg.innerText = "Wait! You must use all 4 numbers.";
+            return;
+        }
+
+        try {
+            // Convert display operators to JS operators
+            let calcExpr = expression.replace(/×/g, '*').replace(/÷/g, '/');
+            let result = eval(calcExpr);
+
+            if (Math.abs(result - 24) < 0.0001) {
+                screen.className = "screen success";
+                msg.style.color = "#34a853";
+                msg.innerText = "Incredible! Logic is perfect. 🎉";
+            } else {
+                screen.className = "screen error";
+                msg.style.color = "#ea4335";
+                msg.innerText = "Result is " + result + ". Try a different path!";
+            }
+        } catch (e) {
+            screen.className = "screen error";
+            msg.innerText = "Invalid Math Logic!";
+        }
+    }
+
+    // Start
+    initGame();
+
+    console.log("Welcome young Engineer. Logic is the foundation of the world.");
+</script>
+
+</body>
+</html>
