@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AMC8 Divisibility Challenge</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+h1 {
+    color: gold;
+}
+button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+}
+.choice {
+    padding: 10px 30px;
+    font-size: 20px;
+    margin: 10px;
+}
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 24px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 AMC8 Challenge Mode</h1>
+
+<div class="box">⏱ Time: <span id="time">60</span>s</div>
+<div class="box">⭐ Score: <span id="score">0</span></div>
+
+<div class="box" id="question"></div>
+
+<button class="choice" onclick="answer(true)">YES</button>
+<button class="choice" onclick="answer(false)">NO</button>
+
+<div class="box" id="feedback"></div>
+
+<button onclick="startGame()">Start Game</button>
+
+<script>
+
+let score = 0;
+let timeLeft = 60;
+let timer;
+let currentAnswer = false;
+
+function startGame() {
+    score = 0;
+    timeLeft = 60;
+    document.getElementById("score").innerText = score;
+    document.getElementById("time").innerText = timeLeft;
+    document.getElementById("feedback").innerHTML = "";
+
+    nextQuestion();
+
+    clearInterval(timer);
+    timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("time").innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            endGame();
+        }
+    }, 1000);
+}
+
+function nextQuestion() {
+    let n = Math.floor(Math.random() * 900) + 100;
+    let divisors = [2,3,4,5,6,9,10,12,15];
+    let d = divisors[Math.floor(Math.random() * divisors.length)];
+
+    currentAnswer = (n % d === 0);
+
+    document.getElementById("question").innerHTML =
+        `Is <span style="color:gold">${n}</span> divisible by <span style="color:gold">${d}</span>?`;
+}
+
+function answer(choice) {
+    let feedback = document.getElementById("feedback");
+
+    if (choice === currentAnswer) {
+        score++;
+        feedback.innerHTML = "<span class='correct'>✔ Correct!</span>";
+    } else {
+        feedback.innerHTML = "<span class='wrong'>✘ Wrong!</span>";
+    }
+
+    document.getElementById("score").innerText = score;
+
+    setTimeout(() => {
+        feedback.innerHTML = "";
+        nextQuestion();
+    }, 800);
+}
+
+function endGame() {
+    document.getElementById("question").innerHTML = "⏳ Time's up!";
+    document.getElementById("feedback").innerHTML =
+        `Final Score: <span style="color:gold">${score}</span>`;
+}
+
+</script>
+
+</body>
+</html>
