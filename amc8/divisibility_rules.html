@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Divisibility Visualizer</title>
+<title>Divisibility Analyzer</title>
 <style>
     body {
         font-family: Arial;
@@ -34,12 +34,29 @@
         color: gold;
         font-weight: bold;
     }
+    .rules {
+        margin-top: 40px;
+        text-align: left;
+        width: 60%;
+        margin-left: auto;
+        margin-right: auto;
+        background: #1a1a1a;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .rules h2 {
+        color: gold;
+        text-align: center;
+    }
+    .rule-item {
+        margin: 8px 0;
+    }
 </style>
 </head>
 
 <body>
 
-<h1>🔢 Divisibility Visualizer</h1>
+<h1>🔢 Divisibility Analyzer</h1>
 
 <input type="number" id="numberInput" placeholder="Enter number">
 <br>
@@ -48,6 +65,23 @@
 <div class="box" id="digits"></div>
 <div class="box" id="sum"></div>
 <div class="box" id="results"></div>
+
+<!-- 📘 RULES SECTION -->
+<div class="rules">
+    <h2>📘 Divisibility Rules Reference</h2>
+
+    <div class="rule-item"><span class="highlight">2:</span> Last digit is even (0,2,4,6,8)</div>
+    <div class="rule-item"><span class="highlight">3:</span> Sum of digits is divisible by 3</div>
+    <div class="rule-item"><span class="highlight">4:</span> Last 2 digits form a number divisible by 4</div>
+    <div class="rule-item"><span class="highlight">5:</span> Last digit is 0 or 5</div>
+    <div class="rule-item"><span class="highlight">6:</span> Divisible by both 2 and 3</div>
+    <div class="rule-item"><span class="highlight">7:</span> No simple rule → use division</div>
+    <div class="rule-item"><span class="highlight">8:</span> Last 3 digits form a number divisible by 8</div>
+    <div class="rule-item"><span class="highlight">9:</span> Sum of digits is divisible by 9</div>
+    <div class="rule-item"><span class="highlight">10:</span> Last digit is 0</div>
+    <div class="rule-item"><span class="highlight">12:</span> Divisible by both 3 and 4</div>
+    <div class="rule-item"><span class="highlight">15:</span> Divisible by both 3 and 5</div>
+</div>
 
 <script>
 
@@ -65,13 +99,15 @@ async function analyze() {
     sumDiv.innerHTML = "";
     resultsDiv.innerHTML = "";
 
+    if (n === "") return;
+
     let digits = n.toString().split("").map(Number);
 
     // Step 1: show digits
     digitsDiv.innerHTML = "Digits: ";
     for (let d of digits) {
         digitsDiv.innerHTML += `<span class="highlight">${d}</span> `;
-        await sleep(500);
+        await sleep(400);
     }
 
     // Step 2: sum animation
@@ -80,29 +116,47 @@ async function analyze() {
     for (let d of digits) {
         sum += d;
         sumDiv.innerHTML += `<span class="highlight">${d}</span> `;
-        await sleep(500);
+        await sleep(400);
     }
     sumDiv.innerHTML += ` = <span class="highlight">${sum}</span>`;
 
-    await sleep(800);
+    await sleep(600);
 
-    // Step 3: check rules
-    let div9 = sum % 9 === 0;
-    let div3 = sum % 3 === 0;
+    // Step 3: rules
     let lastDigit = digits[digits.length - 1];
     let lastTwo = n % 100;
+    let lastThree = n % 1000;
 
+    function show(label, condition) {
+        return `<p>${label}: <span class="highlight">${condition}</span></p>`;
+    }
+
+    let div2 = lastDigit % 2 === 0;
+    let div3 = sum % 3 === 0;
     let div4 = lastTwo % 4 === 0;
     let div5 = lastDigit === 0 || lastDigit === 5;
-
+    let div6 = div2 && div3;
+    let div7 = n % 7 === 0;
+    let div8 = lastThree % 8 === 0;
+    let div9 = sum % 9 === 0;
+    let div10 = lastDigit === 0;
     let div12 = div3 && div4;
     let div15 = div3 && div5;
 
-    resultsDiv.innerHTML = `
-        <p>Divisible by 9: <span class="highlight">${div9}</span></p>
-        <p>Divisible by 12: <span class="highlight">${div12}</span></p>
-        <p>Divisible by 15: <span class="highlight">${div15}</span></p>
-    `;
+    let resultsHTML = "";
+    resultsHTML += show("Divisible by 2", div2);
+    resultsHTML += show("Divisible by 3", div3);
+    resultsHTML += show("Divisible by 4", div4);
+    resultsHTML += show("Divisible by 5", div5);
+    resultsHTML += show("Divisible by 6", div6);
+    resultsHTML += show("Divisible by 7", div7);
+    resultsHTML += show("Divisible by 8", div8);
+    resultsHTML += show("Divisible by 9", div9);
+    resultsHTML += show("Divisible by 10", div10);
+    resultsHTML += show("Divisible by 12", div12);
+    resultsHTML += show("Divisible by 15", div15);
+
+    resultsDiv.innerHTML = resultsHTML;
 }
 
 </script>
