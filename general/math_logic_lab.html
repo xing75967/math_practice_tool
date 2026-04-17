@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guaranteed Solvable Math Lab</title>
+    <style>
+        :root { --primary: #1a73e8; --success: #34a853; --danger: #ea4335; --bg: #f8f9fa; --target-color: #f39c12; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .game-card { background: white; padding: 2rem; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 420px; text-align: center; }
+        .target-box { background: var(--target-color); color: white; display: inline-block; padding: 8px 20px; border-radius: 50px; font-weight: bold; margin-bottom: 1.5rem; font-size: 1.2rem; }
+        .screen { background: #f1f3f4; border-radius: 12px; padding: 15px; min-height: 60px; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 500; color: var(--primary); border: 2px solid transparent; transition: all 0.3s; word-break: break-all; }
+        .grid-numbers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1rem; }
+        .btn-num { background: var(--primary); color: white; border: none; border-radius: 12px; padding: 15px 5px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-num:disabled { background: #dadce0; cursor: not-allowed; transform: none; }
+        .grid-operators { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+        .btn-op { background: #e8f0fe; color: var(--primary); border: none; border-radius: 8px; padding: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .btn-new { background: var(--success); color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+        .screen.success { border-color: var(--success); color: var(--success); }
+        .screen.error { border-color: var(--danger); color: var(--danger); }
+    </style>
+</head>
+<body>
+
+<div class="game-card">
+    <h1 style="margin-top:0;">MathX Logic Lab 🧙‍♂️</h1>
+    <div class="target-box">Target: <span id="target-num">?</span></div>
+    <div id="display" class="screen">Press New Challenge</div>
+    <div id="message" style="margin-bottom:10px; font-weight:bold; font-size:0.9rem;"></div>
+
+    <div class="grid-numbers" id="number-pad"></div>
+
+    <div class="grid-operators">
+        <button class="btn-op" onclick="addOp('+')">+</button>
+        <button class="btn-op" onclick="addOp('-')">-</button>
+        <button class="btn-op" onclick="addOp('*')">×</button>
+        <button class="btn-op" onclick="addOp('/')">÷</button>
+        <button class="btn-op" onclick="addOp('(')">(</button>
+        <button class="btn-op" onclick="addOp(')')">)</button>
+        <button class="btn-op" style="grid-column: span 2; background: #feefe3; color: #e67e22;" onclick="checkLogic()">Submit</button>
+    </div>
+
+    <button class="btn-new" onclick="initGame()">New Challenge</button>
+</div>
+
+<script>
+    let currentNumbers = [];
+    let expression = "";
+    let usedIndices = new Set();
+    let targetValue = 0;
+
+    function initGame() {
+        generateSolvableSet();
+        expression = "";
+        usedIndices.clear();
+        document.getElementById('display').innerText = "Reach " + targetValue + "!";
+        document.getElementById('display').className = "screen";
+        document.getElementById('message').innerText = "";
+        renderNumbers();
+    }
+
+    function generateSolvableSet() {
+        const ops = ['+', '-', '*']; // Use basic ops to ensure integer targets
+        let success = false;
+        
+        while (!success) {
+            let nums = Array.from({length: 4}, () => Math.floor(Math.random() * 9) + 1);
+            let tempExpr = `((${nums[0]}${ops[Math.floor(Math.random()*3)]}${nums[1]})${ops[Math.floor(Math.random()*3)]}${nums[2]})${ops[Math.floor(Math.random()*3)]}${nums[3]}`;
+            let result = eval(tempExpr);
+            
+            // We want positive integer targets between 10 and 50
+            if (Number.isInteger(result) && result > 10 && result <= 50) {
+                currentNumbers = nums;
+                targetValue = result;
+                document.getElementById('target-num').innerText = targetValue;
+                success = true;
+            }
+        }
+    }
+
+    function renderNumbers() {
+        const pad = document.getElementById('number-pad');
+        pad.innerHTML = '';
+        currentNumbers.forEach((num, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn-num';
+            btn.innerText = num;
+            btn.disabled = usedIndices.has(idx);
+            btn.onclick = () => {
+                if (document.getElementById('display').innerText.includes("Reach")) expression = "";
+                expression += num;
+                usedIndices.add(idx);
+                renderNumbers();
+                document.getElementById('display').innerText = expression;
+            };
+            pad.appendChild(btn);
+        });
+    }
+
+    function addOp(op) {
+        if (document.getElementById('display').innerText.includes("Reach")) expression = "";
+        expression += op;
+        document.getElementById('display').innerText = expression;
+    }
+
+    function checkLogic() {
+        const screen = document.getElementById('display');
+        const msg = document.getElementById('message');
+        try {
+            if (usedIndices.size < 4) throw new Error("Use all numbers!");
+            let result = eval(expression.replace(/×/g, '*').replace(/÷/g, '/'));
+            if (Math.abs(result - targetValue) < 0.0001) {
+                screen.className = "screen success";
+                msg.style.color = "#34a853";
+                msg.innerText = "Correct! Mission Accomplished.";
+            } else {
+                screen.className = "screen error";
+                msg.style.color = "#ea4335";
+                msg.innerText = "Result is " + result + ". Try again!";
+            }
+        } catch (e) {
+            screen.className = "screen error";
+            msg.innerText = e.message || "Invalid Logic!";
+        }
+    }
+
+    initGame();
+</script>
+</body>
+</html>
