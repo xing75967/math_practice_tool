@@ -43,6 +43,12 @@ button {
     margin-top: 20px;
     font-size: 22px;
 }
+
+/* ✅ 新增：Start按钮颜色 */
+.start-btn {
+    background: #3399ff;
+    color: white;
+}
 </style>
 </head>
 
@@ -61,8 +67,10 @@ button {
 
 <input id="answerInput" placeholder="Answer">
 <br>
+
+<!-- ✅ 已交换位置 -->
+<button class="start-btn" onclick="startGame()">Start Game</button>
 <button onclick="submitAnswer()">Submit</button>
-<button onclick="startGame()">Start Game</button>
 
 <div class="box" id="feedback"></div>
 <div class="box" id="summary"></div>
