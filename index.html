@@ -196,21 +196,23 @@ const data = {
       general: { // start general
         name: "General",
         modules: {
-          challenge: {
+
+          mathgames: { // start
+            title: "📌 Math Games",
+            courses: [
+              { name: "MathX Logic Lab", file: "general/math_logic_lab.html" },
+              { name: "", file: "" },
+              { name: "", file: "" }
+            ]
+          }, // end 
+
+          challenge: { // start challenge
             title: "📌 Multiplication",
             courses: [
               { name: "Multiplication Challenge", file: "general/Multiplication_Challenge.html" },
               { name: "", file: "" }
             ]
           }, // end challenge
-          mathgames: {
-            title: "📌 Math Games",
-            courses: [
-              { name: "MathX Logic Lab", file: "general/math_logic_lab.html" },
-              { name: "module name 1", file: "" },
-              { name: "module name 2", file: "" }
-            ]
-          } // end placeholder
           
         } // end modules
       } // end general
