@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multiplication Table & Challenge</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+h1 { color: gold; }
+
+.table {
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+.table td {
+    border: 1px solid #444;
+    padding: 8px 12px;
+}
+
+input {
+    padding: 10px;
+    font-size: 18px;
+    width: 80px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 22px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📘 Multiplication Table (1–9)</h1>
+
+<table class="table" id="table"></table>
+
+<h1>🎮 Challenge Mode</h1>
+
+<div class="box">⏱ Time: <span id="time">60</span>s</div>
+<div class="box">⭐ Score: <span id="score">0</span></div>
+
+<div class="box" id="question"></div>
+
+<input id="answerInput" placeholder="Answer">
+<br>
+<button onclick="submitAnswer()">Submit</button>
+<button onclick="startGame()">Start Game</button>
+
+<div class="box" id="feedback"></div>
+<div class="box" id="summary"></div>
+
+<script>
+
+// ===== 生成九九乘法表 =====
+let table = document.getElementById("table");
+for (let i = 1; i <= 9; i++) {
+    let row = "<tr>";
+    for (let j = 1; j <= i; j++) {
+        row += `<td>${j} × ${i} = ${i*j}</td>`;
+    }
+    row += "</tr>";
+    table.innerHTML += row;
+}
+
+// ===== 游戏变量 =====
+let score = 0;
+let timeLeft = 60;
+let timer;
+let correctAnswer = 0;
+
+let total = 0;
+let wrongList = [];
+
+function startGame() {
+    score = 0;
+    timeLeft = 60;
+    total = 0;
+    wrongList = [];
+
+    document.getElementById("score").innerText = score;
+    document.getElementById("time").innerText = timeLeft;
+    document.getElementById("summary").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
+
+    nextQuestion();
+
+    clearInterval(timer);
+    timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("time").innerText = timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            endGame();
+        }
+    }, 1000);
+}
+
+function nextQuestion() {
+    let a = Math.floor(Math.random() * 9) + 1;
+    let b = Math.floor(Math.random() * 9) + 1;
+
+    correctAnswer = a * b;
+
+    document.getElementById("question").innerHTML =
+        `${a} × ${b} = ?`;
+
+    currentQuestion = `${a} × ${b}`;
+    document.getElementById("answerInput").value = "";
+}
+
+function submitAnswer() {
+    if (timeLeft <= 0) return;
+
+    let userAnswer = Number(document.getElementById("answerInput").value);
+    total++;
+
+    let feedback = document.getElementById("feedback");
+
+    if (userAnswer === correctAnswer) {
+        score++;
+        feedback.innerHTML = "<span class='correct'>✔ Correct!</span>";
+    } else {
+        feedback.innerHTML = "<span class='wrong'>✘ Wrong!</span>";
+        wrongList.push({
+            q: currentQuestion,
+            correct: correctAnswer
+        });
+    }
+
+    document.getElementById("score").innerText = score;
+
+    setTimeout(() => {
+        feedback.innerHTML = "";
+        if (timeLeft > 0) nextQuestion();
+    }, 600);
+}
+
+function endGame() {
+    document.getElementById("question").innerHTML = "⏳ Time's up!";
+
+    let accuracy = total === 0 ? 0 :
+        Math.round((score / total) * 100);
+
+    let html = `
+        <p>⭐ Score: ${score}</p>
+        <p>📊 Total: ${total}</p>
+        <p>🎯 Accuracy: ${accuracy}%</p>
+    `;
+
+    if (wrongList.length > 0) {
+        html += "<p class='wrong'>❌ Wrong Questions:</p>";
+        wrongList.forEach(item => {
+            html += `<p>${item.q} = ${item.correct}</p>`;
+        });
+    }
+
+    document.getElementById("summary").innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
