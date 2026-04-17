@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Divisibility Visualizer</title>
+<style>
+    body {
+        font-family: Arial;
+        text-align: center;
+        background: #111;
+        color: #fff;
+    }
+    h1 {
+        color: gold;
+    }
+    input {
+        padding: 10px;
+        font-size: 18px;
+        width: 120px;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+        margin: 10px;
+        background: gold;
+        border: none;
+        cursor: pointer;
+    }
+    .box {
+        margin-top: 20px;
+        font-size: 22px;
+    }
+    .highlight {
+        color: gold;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>🔢 Divisibility Visualizer</h1>
+
+<input type="number" id="numberInput" placeholder="Enter number">
+<br>
+<button onclick="analyze()">Analyze</button>
+
+<div class="box" id="digits"></div>
+<div class="box" id="sum"></div>
+<div class="box" id="results"></div>
+
+<script>
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function analyze() {
+    let n = document.getElementById("numberInput").value;
+    let digitsDiv = document.getElementById("digits");
+    let sumDiv = document.getElementById("sum");
+    let resultsDiv = document.getElementById("results");
+
+    digitsDiv.innerHTML = "";
+    sumDiv.innerHTML = "";
+    resultsDiv.innerHTML = "";
+
+    let digits = n.toString().split("").map(Number);
+
+    // Step 1: show digits
+    digitsDiv.innerHTML = "Digits: ";
+    for (let d of digits) {
+        digitsDiv.innerHTML += `<span class="highlight">${d}</span> `;
+        await sleep(500);
+    }
+
+    // Step 2: sum animation
+    let sum = 0;
+    sumDiv.innerHTML = "Sum: ";
+    for (let d of digits) {
+        sum += d;
+        sumDiv.innerHTML += `<span class="highlight">${d}</span> `;
+        await sleep(500);
+    }
+    sumDiv.innerHTML += ` = <span class="highlight">${sum}</span>`;
+
+    await sleep(800);
+
+    // Step 3: check rules
+    let div9 = sum % 9 === 0;
+    let div3 = sum % 3 === 0;
+    let lastDigit = digits[digits.length - 1];
+    let lastTwo = n % 100;
+
+    let div4 = lastTwo % 4 === 0;
+    let div5 = lastDigit === 0 || lastDigit === 5;
+
+    let div12 = div3 && div4;
+    let div15 = div3 && div5;
+
+    resultsDiv.innerHTML = `
+        <p>Divisible by 9: <span class="highlight">${div9}</span></p>
+        <p>Divisible by 12: <span class="highlight">${div12}</span></p>
+        <p>Divisible by 15: <span class="highlight">${div15}</span></p>
+    `;
+}
+
+</script>
+
+</body>
+</html>
