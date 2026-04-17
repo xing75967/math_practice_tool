@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multiplication Practice</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+h1 { color: gold; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input {
+    padding: 10px;
+    font-size: 18px;
+    width: 100px;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 22px;
+}
+
+/* ✅ 当前Level高亮（圈圈） */
+.level-btn.active {
+    border: 3px solid gold;
+    transform: scale(1.1);
+}
+
+/* ✅ Start按钮单独颜色 */
+.start-btn {
+    background: #00cc66;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Multiplication Practice</h1>
+
+<div>
+    <button class="level-btn" id="lvl10" onclick="setLevel(10, this)">Level: 10以内</button>
+    <button class="level-btn" id="lvl20" onclick="setLevel(20, this)">Level: 20以内</button>
+
+    <!-- ✅ Start移到这里 -->
+    <button class="start-btn" onclick="startGame()">Start</button>
+</div>
+
+<div class="box" id="progress"></div>
+<div class="box" id="question"></div>
+
+<input id="answerInput" placeholder="Answer">
+<br>
+<button onclick="submitAnswer()">Submit</button>
+
+<div class="box" id="feedback"></div>
+<div class="box" id="summary"></div>
+
+<script>
+
+let maxNum = 10;
+let totalQuestions = 20;
+
+let currentIndex = 0;
+let correctAnswer = 0;
+let startTime;
+
+let correctCount = 0;
+let wrongList = [];
+let currentQuestion = "";
+
+// ===== Level选择 =====
+function setLevel(n, btn) {
+    maxNum = n;
+
+    // 清除所有按钮高亮
+    document.querySelectorAll(".level-btn").forEach(b => {
+        b.classList.remove("active");
+    });
+
+    // 当前按钮加高亮
+    btn.classList.add("active");
+}
+
+// 默认选中Level 10
+window.onload = () => {
+    document.getElementById("lvl10").classList.add("active");
+};
+
+// ===== 开始 =====
+function startGame() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongList = [];
+    startTime = Date.now();
+
+    document.getElementById("summary").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
+
+    nextQuestion();
+}
+
+// ===== 出题 =====
+function nextQuestion() {
+    if (currentIndex >= totalQuestions) {
+        endGame();
+        return;
+    }
+
+    let a = Math.floor(Math.random() * maxNum) + 1;
+    let b = Math.floor(Math.random() * maxNum) + 1;
+
+    correctAnswer = a * b;
+    currentQuestion = `${a} × ${b}`;
+
+    document.getElementById("question").innerHTML =
+        `${currentQuestion} = ?`;
+
+    document.getElementById("progress").innerHTML =
+        `Question ${currentIndex + 1} / ${totalQuestions}`;
+
+    document.getElementById("answerInput").value = "";
+}
+
+// ===== 提交 =====
+function submitAnswer() {
+    let input = document.getElementById("answerInput");
+    let user = Number(input.value);
+
+    let feedback = document.getElementById("feedback");
+
+    if (user === correctAnswer) {
+        correctCount++;
+        feedback.innerHTML =
+            `<span class="correct">✔ Correct! (${currentQuestion} = ${correctAnswer})</span>`;
+    } else {
+        feedback.innerHTML =
+            `<span class="wrong">✘ Wrong! (${currentQuestion} = ${correctAnswer})</span>`;
+
+        wrongList.push({
+            q: currentQuestion,
+            correct: correctAnswer
+        });
+    }
+
+    currentIndex++;
+
+    setTimeout(() => {
+        feedback.innerHTML = "";
+        nextQuestion();
+    }, 800);
+}
+
+// ===== 结束 =====
+function endGame() {
+    let endTime = Date.now();
+    let seconds = ((endTime - startTime) / 1000).toFixed(1);
+
+    let accuracy = Math.round((correctCount / totalQuestions) * 100);
+
+    let html = `
+        <p>⏱ Time: ${seconds}s</p>
+        <p>⭐ Correct: ${correctCount} / ${totalQuestions}</p>
+        <p>🎯 Accuracy: ${accuracy}%</p>
+    `;
+
+    if (wrongList.length > 0) {
+        html += "<p class='wrong'>❌ Wrong Questions:</p>";
+        wrongList.forEach(item => {
+            html += `<p>${item.q} = ${item.correct}</p>`;
+        });
+    }
+
+    document.getElementById("summary").innerHTML = html;
+    document.getElementById("question").innerHTML = "✅ Finished!";
+}
+
+// ===== Enter 提交 =====
+document.getElementById("answerInput")
+.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        submitAnswer();
+    }
+});
+
+</script>
+
+</body>
+</html>
