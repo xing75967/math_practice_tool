@@ -1,1 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Subtraction Practice (Grade 1)</title>
 
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+h1 { color: gold; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.start-btn {
+    background: #00cc66;
+    color: white;
+}
+
+.level-btn.active {
+    border: 3px solid gold;
+    transform: scale(1.1);
+}
+
+input {
+    padding: 10px;
+    font-size: 20px;
+    width: 100px;
+    text-align: center;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 24px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>➖ Subtraction Practice</h1>
+
+<div>
+    <button class="level-btn" id="lvl10" onclick="setLevel(10, this)">Within 10</button>
+    <button class="level-btn" id="lvl20" onclick="setLevel(20, this)">Within 20</button>
+
+    <button class="start-btn" onclick="startGame()">Start</button>
+</div>
+
+<div class="box" id="progress"></div>
+<div class="box" id="question"></div>
+
+<input id="answerInput" placeholder="Answer">
+<br>
+<button onclick="submitAnswer()">Submit</button>
+
+<!-- Next按钮 -->
+<button id="nextBtn" onclick="goNext()" style="display:none;">Next</button>
+
+<div class="box" id="feedback"></div>
+<div class="box" id="summary"></div>
+
+<script>
+
+let maxNum = 10;
+let totalQuestions = 20;
+
+let currentIndex = 0;
+let correctAnswer = 0;
+let startTime;
+
+let correctCount = 0;
+let wrongList = [];
+let currentQuestion = "";
+
+let timerHandle = null;
+
+// ===== Level选择 =====
+function setLevel(n, btn) {
+    maxNum = n;
+
+    document.querySelectorAll(".level-btn").forEach(b => {
+        b.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+}
+
+window.onload = () => {
+    document.getElementById("lvl10").classList.add("active");
+};
+
+// ===== 开始 =====
+function startGame() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongList = [];
+    startTime = Date.now();
+
+    document.getElementById("summary").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
+    document.getElementById("nextBtn").style.display = "none";
+
+    nextQuestion();
+}
+
+// ===== 出题 =====
+function nextQuestion() {
+    if (currentIndex >= totalQuestions) {
+        endGame();
+        return;
+    }
+
+    let a = Math.floor(Math.random() * maxNum) + 1;
+    let b = Math.floor(Math.random() * a); // 确保不为负
+
+    correctAnswer = a - b;
+    currentQuestion = `${a} - ${b}`;
+
+    document.getElementById("question").innerHTML =
+        `${currentQuestion} = ?`;
+
+    document.getElementById("progress").innerHTML =
+        `Question ${currentIndex + 1} / ${totalQuestions}`;
+
+    document.getElementById("answerInput").value = "";
+    document.getElementById("nextBtn").style.display = "none";
+}
+
+// ===== 提交 =====
+function submitAnswer() {
+    let user = Number(document.getElementById("answerInput").value);
+    let feedback = document.getElementById("feedback");
+
+    if (user === correctAnswer) {
+        correctCount++;
+        feedback.innerHTML =
+            `<span class="correct">✔ Correct! 🎉 (${currentQuestion} = ${correctAnswer})</span>`;
+    } else {
+        feedback.innerHTML =
+            `<span class="wrong">✘ Wrong! 💪 (${currentQuestion} = ${correctAnswer})</span>`;
+
+        wrongList.push({
+            q: currentQuestion,
+            correct: correctAnswer
+        });
+    }
+
+    currentIndex++;
+
+    // 显示Next按钮
+    document.getElementById("nextBtn").style.display = "inline-block";
+
+    clearTimeout(timerHandle);
+
+    // 10秒自动
+    timerHandle = setTimeout(() => {
+        goNext();
+    }, 10000);
+}
+
+// ===== 手动Next =====
+function goNext() {
+    clearTimeout(timerHandle);
+    document.getElementById("feedback").innerHTML = "";
+    nextQuestion();
+}
+
+// ===== 结束 =====
+function endGame() {
+    let endTime = Date.now();
+    let seconds = ((endTime - startTime) / 1000).toFixed(1);
+
+    let accuracy = Math.round((correctCount / totalQuestions) * 100);
+
+    let html = `
+        <p>⏱ Time: ${seconds}s</p>
+        <p>⭐ Correct: ${correctCount} / ${totalQuestions}</p>
+        <p>🎯 Accuracy: ${accuracy}%</p>
+    `;
+
+    if (wrongList.length > 0) {
+        html += "<p class='wrong'>❌ Wrong Questions:</p>";
+        wrongList.forEach(item => {
+            html += `<p>${item.q} = ${item.correct}</p>`;
+        });
+    }
+
+    document.getElementById("summary").innerHTML = html;
+    document.getElementById("question").innerHTML = "✅ Finished!";
+}
+
+// ===== Enter提交 =====
+document.getElementById("answerInput")
+.addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        submitAnswer();
+    }
+});
+
+</script>
+
+</body>
+</html>
