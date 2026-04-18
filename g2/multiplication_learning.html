@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Multiplication Visual Learning</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+h1 { color: gold; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+}
+
+input {
+    padding: 10px;
+    font-size: 18px;
+    width: 100px;
+    text-align: center;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 22px;
+}
+
+.visual {
+    margin-top: 20px;
+    font-size: 30px;
+    line-height: 40px;
+}
+
+/* ✅ 按钮同一水平线 */
+.button-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>✖ Multiplication Visual Learning</h1>
+
+<div class="box" id="question"></div>
+
+<div class="visual" id="visual"></div>
+
+<input id="answerInput" placeholder="Answer">
+
+<div class="button-area">
+    <button onclick="submitAnswer()">Submit</button>
+    <button onclick="nextQuestion()">Next</button>
+</div>
+
+<div class="box" id="feedback"></div>
+
+<script>
+
+let a, b, correctAnswer;
+
+// ===== 10种颜色（关键升级🔥）=====
+const colors = [
+    "🟡", "🟢", "🔵", "🟣", "🟠",
+    "🔴", "🟤", "⚫", "⚪", "🟦"
+];
+
+// ===== 出题 =====
+function nextQuestion() {
+
+    a = Math.floor(Math.random() * 5) + 2;
+    b = Math.floor(Math.random() * 5) + 1;
+
+    correctAnswer = a * b;
+
+    document.getElementById("question").innerHTML =
+        `${a} × ${b} = ?`;
+
+    drawVisual();
+
+    document.getElementById("answerInput").value = "";
+    document.getElementById("feedback").innerHTML = "";
+}
+
+// ===== 视觉结构 =====
+function drawVisual() {
+    let html = "";
+
+    for (let i = 0; i < a; i++) {
+
+        let color = colors[i % colors.length];
+
+        for (let j = 0; j < b; j++) {
+            html += color;
+        }
+
+        html += "<br>";
+    }
+
+    document.getElementById("visual").innerHTML = html;
+}
+
+// ===== 提示 =====
+function getExplanation() {
+    return `👉 ${a} × ${b} means:<br>
+    ${a} equal groups with ${b} objects in each group,<br>
+    each group is shown using a different color.`;
+}
+
+// ===== 提交 =====
+function submitAnswer() {
+    let user = Number(document.getElementById("answerInput").value);
+    let feedback = document.getElementById("feedback");
+
+    let explanation = getExplanation();
+
+    if (user === correctAnswer) {
+        feedback.innerHTML =
+            `<span class='correct'>✔ Correct! 🎉</span><br><br>${explanation}`;
+    } else {
+        feedback.innerHTML =
+            `<span class='wrong'>✘ Try again 💪</span><br><br>${explanation}`;
+    }
+}
+
+// ===== Enter支持 =====
+document.getElementById("answerInput")
+.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") submitAnswer();
+});
+
+nextQuestion();
+
+</script>
+
+</body>
+</html>
