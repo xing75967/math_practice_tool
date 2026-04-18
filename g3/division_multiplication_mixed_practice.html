@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grade 3 Multiplication & Division Practice</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+h1 { color: gold; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.level-btn.active {
+    border: 3px solid gold;
+    transform: scale(1.1);
+}
+
+.start-btn {
+    background: #00cc66;
+    color: white;
+}
+
+input {
+    padding: 10px;
+    font-size: 20px;
+    width: 140px;
+    text-align: center;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 24px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>✖ ➗ Safe Mixed Practice (Grade 3)</h1>
+
+<div>
+    <button class="level-btn" id="easy" onclick="setLevel('easy', this)">EASY (1–9)</button>
+    <button class="level-btn" id="medium" onclick="setLevel('medium', this)">MEDIUM (≤100)</button>
+
+    <button class="start-btn" onclick="startGame()">Start</button>
+</div>
+
+<div class="box" id="progress"></div>
+<div class="box" id="question"></div>
+
+<input id="answerInput" placeholder="Answer">
+<br>
+<button onclick="submitAnswer()">Submit</button>
+
+<div class="box" id="feedback"></div>
+<div class="box" id="summary"></div>
+
+<script>
+
+let level = "easy";
+let totalQuestions = 20;
+let currentIndex = 0;
+
+let correctAnswer = 0;
+let correctCount = 0;
+let wrongList = [];
+let startTime;
+
+// ===== Level =====
+function setLevel(lv, btn) {
+    level = lv;
+
+    document.querySelectorAll(".level-btn").forEach(b => {
+        b.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+}
+
+window.onload = () => {
+    document.getElementById("easy").classList.add("active");
+};
+
+// ===== Start =====
+function startGame() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongList = [];
+    startTime = Date.now();
+
+    document.getElementById("summary").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
+
+    nextQuestion();
+}
+
+// ===== 出题（核心：保证整除）=====
+function nextQuestion() {
+
+    if (currentIndex >= totalQuestions) {
+        endGame();
+        return;
+    }
+
+    let a, b, c;
+    let type = Math.floor(Math.random() * 3);
+
+    if (level === "easy") {
+        a = rand(2, 9);
+        b = rand(2, 9);
+        c = rand(2, 9);
+    } else {
+        a = rand(10, 100);
+        b = rand(2, 20);
+        c = rand(2, 10);
+    }
+
+    let expr;
+
+    // ===== 关键：全部保证整数 =====
+
+    if (type === 0) {
+        // a × b ÷ c（保证整除）
+        c = findDivisor(a * b);
+        correctAnswer = (a * b) / c;
+        expr = `${a} × ${b} ÷ ${c}`;
+    }
+
+    else if (type === 1) {
+        // a ÷ b × c（保证整除）
+        b = findDivisor(a);
+        correctAnswer = (a / b) * c;
+        expr = `${a} ÷ ${b} × ${c}`;
+    }
+
+    else {
+        // a × b × c（纯乘法）
+        correctAnswer = a * b * c;
+        expr = `${a} × ${b} × ${c}`;
+    }
+
+    document.getElementById("question").innerHTML =
+        `${expr} = ?`;
+
+    document.getElementById("answerInput").value = "";
+
+    document.getElementById("progress").innerHTML =
+        `Question ${currentIndex + 1} / ${totalQuestions}`;
+}
+
+// ===== 提交 =====
+function submitAnswer() {
+
+    let user = Number(document.getElementById("answerInput").value);
+    let feedback = document.getElementById("feedback");
+
+    if (user === correctAnswer) {
+        correctCount++;
+        feedback.innerHTML =
+            `<span class="correct">✔ Correct! 🎉</span>`;
+    } else {
+        feedback.innerHTML =
+            `<span class="wrong">✘ Wrong! Correct: ${correctAnswer}</span>`;
+
+        wrongList.push({
+            q: document.getElementById("question").innerText,
+            correct: correctAnswer
+        });
+    }
+
+    currentIndex++;
+
+    setTimeout(() => {
+        feedback.innerHTML = "";
+        nextQuestion();
+    }, 1000);
+}
+
+// ===== 结束 =====
+function endGame() {
+
+    let seconds = ((Date.now() - startTime) / 1000).toFixed(1);
+    let accuracy = Math.round((correctCount / totalQuestions) * 100);
+
+    let html = `
+        <p>⏱ Time: ${seconds}s</p>
+        <p>⭐ Correct: ${correctCount} / ${totalQuestions}</p>
+        <p>🎯 Accuracy: ${accuracy}%</p>
+    `;
+
+    if (wrongList.length > 0) {
+        html += "<p class='wrong'>❌ Wrong Questions:</p>";
+        wrongList.forEach(i => {
+            html += `<p>${i.q} = ${i.correct}</p>`;
+        });
+    }
+
+    document.getElementById("summary").innerHTML = html;
+    document.getElementById("question").innerHTML = "✅ Finished!";
+}
+
+// ===== 工具函数：找因子（保证整除）=====
+function findDivisor(n) {
+    let factors = [];
+    for (let i = 2; i <= 10; i++) {
+        if (n % i === 0) factors.push(i);
+    }
+    if (factors.length === 0) return 1;
+    return factors[Math.floor(Math.random() * factors.length)];
+}
+
+// ===== helper =====
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// ===== Enter =====
+document.getElementById("answerInput")
+.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") submitAnswer();
+});
+
+</script>
+
+</body>
+</html>
