@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Subtraction Visual Learning</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+h1 { color: gold; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+}
+
+input {
+    padding: 10px;
+    font-size: 18px;
+    width: 80px;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 22px;
+}
+
+.visual {
+    margin-top: 20px;
+    font-size: 30px;
+}
+
+.button-area {
+    position: relative;
+    margin-top: 10px;
+}
+
+.submit-btn {
+    display: block;
+    margin: 10px auto;
+}
+
+.next-btn {
+    position: absolute;
+    right: 30%;
+}
+</style>
+</head>
+
+<body>
+
+<h1>➖ Subtraction Learning</h1>
+
+<div class="box" id="question"></div>
+
+<div class="visual" id="visual"></div>
+
+<input id="answerInput" placeholder="Answer">
+
+<div class="button-area">
+    <button class="submit-btn" onclick="submitAnswer()">Submit</button>
+    <button class="next-btn" onclick="nextQuestion()">Next</button>
+</div>
+
+<div class="box" id="feedback"></div>
+
+<script>
+
+let total, remove, correctAnswer;
+
+function nextQuestion() {
+    total = Math.floor(Math.random() * 6) + 5; // 5–10
+    remove = Math.floor(Math.random() * total);
+
+    correctAnswer = total - remove;
+
+    document.getElementById("question").innerHTML =
+        `${total} − ${remove} = ?`;
+
+    drawVisual();
+
+    document.getElementById("answerInput").value = "";
+    document.getElementById("feedback").innerHTML = "";
+}
+
+function drawVisual() {
+    let html = "";
+
+    for (let i = 0; i < total; i++) {
+        if (i < remove) {
+            html += "❌"; // 被拿走
+        } else {
+            html += "🟢"; // 剩下
+        }
+    }
+
+    document.getElementById("visual").innerHTML = html;
+}
+
+function getExplanation() {
+    return `👉 ${total} minus ${remove} means:<br>
+    we take away ${remove} objects from ${total},<br>
+    ${correctAnswer} objects are left.`;
+}
+
+function submitAnswer() {
+    let user = Number(document.getElementById("answerInput").value);
+    let feedback = document.getElementById("feedback");
+
+    let explanation = getExplanation();
+
+    if (user === correctAnswer) {
+        feedback.innerHTML =
+            `<span class='correct'>✔ Correct! 🎉</span><br><br>${explanation}`;
+    } else {
+        feedback.innerHTML =
+            `<span class='wrong'>✘ Try again 💪</span><br><br>${explanation}`;
+    }
+}
+
+document.getElementById("answerInput")
+.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") submitAnswer();
+});
+
+nextQuestion();
+
+</script>
+
+</body>
+</html>
