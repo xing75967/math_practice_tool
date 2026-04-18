@@ -1,1 +1,165 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Division Visual Learning</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+h1 { color: gold; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+}
+
+input {
+    padding: 10px;
+    font-size: 18px;
+    width: 80px;
+}
+
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 22px;
+}
+
+.visual {
+    margin-top: 20px;
+    line-height: 30px;
+    font-size: 28px;
+}
+
+.button-area {
+    position: relative;
+    margin-top: 10px;
+}
+
+.submit-btn {
+    display: block;
+    margin: 10px auto;
+}
+
+/* ✅ Next往左一点 */
+.next-btn {
+    position: absolute;
+    right: 30%;
+    top: 0;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🍎 Division Visual Learning</h1>
+
+<div class="box" id="question"></div>
+
+<div class="visual" id="visual"></div>
+
+<input id="answerInput" placeholder="Answer">
+
+<div class="button-area">
+    <button class="submit-btn" onclick="submitAnswer()">Submit</button>
+    <button class="next-btn" onclick="nextQuestion()">Next</button>
+</div>
+
+<div class="box" id="feedback"></div>
+
+<script>
+
+let correctAnswer = 0;
+let currentDividend = 0;
+let currentDivisor = 0;
+
+// ===== 出题 =====
+function nextQuestion() {
+
+    let divisor = Math.floor(Math.random() * 5) + 2;
+    let quotient = Math.floor(Math.random() * 5) + 2;
+
+    let dividend = divisor * quotient;
+
+    correctAnswer = quotient;
+    currentDividend = dividend;
+    currentDivisor = divisor;
+
+    document.getElementById("question").innerHTML =
+        `${dividend} ÷ ${divisor} = ?`;
+
+    drawVisual(dividend, divisor);
+
+    document.getElementById("answerInput").value = "";
+    document.getElementById("feedback").innerHTML = "";
+}
+
+// ===== 图形展示（第一行高亮🔥）=====
+function drawVisual(total, groups) {
+    let perGroup = total / groups;
+
+    let html = "";
+
+    for (let i = 0; i < groups; i++) {
+
+        let color = (i === 0) ? "🟡" : "🟢"; // 第一组高亮
+
+        for (let j = 0; j < perGroup; j++) {
+            html += color;
+        }
+        html += "<br>";
+    }
+
+    document.getElementById("visual").innerHTML = html;
+}
+
+// ===== 英文解释（优化版🔥）=====
+function getExplanation() {
+    return `👉 ${currentDividend} divided by ${currentDivisor} means:<br>
+    ${currentDividend} objects shared into ${currentDivisor} equal groups,<br>
+    each group has ${correctAnswer}.`;
+}
+
+// ===== 提交 =====
+function submitAnswer() {
+    let user = Number(document.getElementById("answerInput").value);
+    let feedback = document.getElementById("feedback");
+
+    let explanation = getExplanation();
+
+    if (user === correctAnswer) {
+        feedback.innerHTML =
+            `<span class='correct'>✔ Correct! 🎉</span><br><br>${explanation}`;
+    } else {
+        feedback.innerHTML =
+            `<span class='wrong'>✘ Try again 💪</span><br><br>${explanation}`;
+    }
+}
+
+// ===== Enter提交 =====
+document.getElementById("answerInput")
+.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+        submitAnswer();
+    }
+});
+
+// 初始化
+nextQuestion();
+
+</script>
+
+</body>
+</html>
