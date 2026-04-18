@@ -137,13 +137,40 @@ const data = {
 
       grade1: {
         name: "Grade 1",
-        modules: {}
+        modules: {
+
+
+          addition: {
+            title: "📌 Addition",
+            courses: [
+              { name: "Addition Learning", file: "g1/addition_learning.html" },
+              { name: "Addition Practice", file: "g1/addition_practice.html" },
+            ]
+          },
+
+          subtraction: {
+            title: "📌 Subtraction",
+            courses: [
+              { name: "Subtraction Learning", file: "g1/subtraction_learning.html" },
+              { name: "Subtraction Practice", file: "g1/subtraction_practice.html" },
+            ]
+          },
+
+          xined: {
+            title: "📌 Addition & Subtraction Mixed",
+            courses: [
+              { name: "Mixed Practice", file: "g1/add_subtract_mixed_practice.html" },
+            ]
+          },
+          
+        }
       },
+      
       grade2: {
         name: "Grade 2",
         modules: {
           // 
-          calculation: {
+          addsubtract: {
             title: "📌 Addition & Subtraction",
             courses: [
               { name: "", file: "" },
@@ -153,9 +180,11 @@ const data = {
           multiplication: {
             title: "📌 Multiplication",
             courses: [
+              { name: "Multiplication Learning", file: "g2/multiplication_learning.html" },
               { name: "Multiplication Table", file: "g2/multiplication_table.html" },
               { name: "Multiplication Practice", file: "g2/multiplication_practice.html" },
-              { name: "", file: "" }
+              { name: "", file: "" },
+              { name: "", file: "" },
             ]
           },
           
