@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grade 4 Mixed Operations Practice</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+h1 {
+    color: gold;
+}
+
+/* ✅ 统一符号颜色 */
+.title-symbols {
+    color: gold;
+}
+
+/* 按钮 */
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: gold;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.level-btn.active {
+    border: 3px solid gold;
+    transform: scale(1.1);
+}
+
+.start-btn {
+    background: #00cc66;
+    color: white;
+}
+
+/* 输入框 */
+input {
+    padding: 10px;
+    font-size: 20px;
+    width: 160px;
+    text-align: center;
+}
+
+/* 反馈 */
+.correct { color: #00ff88; }
+.wrong { color: #ff6b6b; }
+
+.box {
+    margin-top: 20px;
+    font-size: 24px;
+}
+
+/* ===== 规则区居中 ===== */
+.rule-box {
+    margin-top: 40px;
+    padding: 20px;
+    border-top: 1px solid #444;
+    font-size: 16px;
+    color: #ccc;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;   /* ✅ 改为居中 */
+}
+
+.rule-box h3 {
+    color: gold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>
+    <span class="title-symbols">➕➖✖➗</span>
+    Mixed Operations <br>(Order of Operations)
+</h1>
+
+<div>
+    <button class="level-btn" id="easy" onclick="setLevel('easy', this)">EASY</button>
+    <button class="level-btn" id="medium" onclick="setLevel('medium', this)">MEDIUM</button>
+
+    <button class="start-btn" onclick="startGame()">Start</button>
+</div>
+
+<div class="box" id="progress"></div>
+<div class="box" id="question"></div>
+
+<input id="answerInput" placeholder="Answer">
+<br>
+<button onclick="submitAnswer()">Submit</button>
+
+<div class="box" id="feedback"></div>
+<div class="box" id="summary"></div>
+
+<script>
+
+let level = "easy";
+let totalQuestions = 20;
+let currentIndex = 0;
+
+let correctAnswer = 0;
+let correctCount = 0;
+let wrongList = [];
+let startTime;
+
+// ===== Level =====
+function setLevel(lv, btn) {
+    level = lv;
+
+    document.querySelectorAll(".level-btn").forEach(b => {
+        b.classList.remove("active");
+    });
+
+    btn.classList.add("active");
+}
+
+window.onload = () => {
+    document.getElementById("easy").classList.add("active");
+};
+
+// ===== Start =====
+function startGame() {
+    currentIndex = 0;
+    correctCount = 0;
+    wrongList = [];
+    startTime = Date.now();
+
+    document.getElementById("summary").innerHTML = "";
+    document.getElementById("feedback").innerHTML = "";
+
+    nextQuestion();
+}
+
+// ===== 出题 =====
+function nextQuestion() {
+
+    if (currentIndex >= totalQuestions) {
+        endGame();
+        return;
+    }
+
+    let a, b, c;
+    let expr;
+    let type = Math.floor(Math.random() * 3);
+
+    if (level === "easy") {
+        a = rand(2, 9);
+        b = rand(2, 9);
+        c = rand(2, 9);
+    } else {
+        a = rand(10, 60);
+        b = rand(2, 12);
+        c = rand(2, 10);
+    }
+
+    if (type === 0) {
+        let temp = a * b;
+        c = findDivisor(temp);
+        let d = rand(1, 9);
+
+        correctAnswer = temp / c + d;
+
+        expr = `${a} × ${b} ÷ ${c} + ${d}`;
+    }
+
+    else if (type === 1) {
+        let temp = b * c;
+        let d = findDivisor(temp);
+        let a2 = rand(1, 20);
+
+        correctAnswer = a2 + temp / d;
+
+        expr = `${a2} + ${b} × ${c} ÷ ${d}`;
+    }
+
+    else {
+        let temp = b * c;
+        let a2 = rand(temp + 5, temp + 30);
+        let d = rand(1, 9);
+
+        correctAnswer = a2 - temp + d;
+
+        expr = `${a2} − ${b} × ${c} + ${d}`;
+    }
+
+    document.getElementById("question").innerHTML =
+        `${expr} = ?`;
+
+    document.getElementById("answerInput").value = "";
+
+    document.getElementById("progress").innerHTML =
+        `Question ${currentIndex + 1} / ${totalQuestions}`;
+}
+
+// ===== 提交 =====
+function submitAnswer() {
+
+    let user = Number(document.getElementById("answerInput").value);
+    let feedback = document.getElementById("feedback");
+
+    if (user === correctAnswer) {
+        correctCount++;
+        feedback.innerHTML =
+            `<span class="correct">✔ Correct! 🎉</span>`;
+    } else {
+        feedback.innerHTML =
+            `<span class="wrong">✘ Wrong! Correct: ${correctAnswer}</span>`;
+
+        wrongList.push({
+            q: document.getElementById("question").innerText,
+            correct: correctAnswer
+        });
+    }
+
+    currentIndex++;
+
+    setTimeout(() => {
+        feedback.innerHTML = "";
+        nextQuestion();
+    }, 1000);
+}
+
+// ===== 结束 =====
+function endGame() {
+
+    let seconds = ((Date.now() - startTime) / 1000).toFixed(1);
+    let accuracy = Math.round((correctCount / totalQuestions) * 100);
+
+    let html = `
+        <p>⏱ Time: ${seconds}s</p>
+        <p>⭐ Correct: ${correctCount} / ${totalQuestions}</p>
+        <p>🎯 Accuracy: ${accuracy}%</p>
+    `;
+
+    if (wrongList.length > 0) {
+        html += "<p class='wrong'>❌ Wrong Questions:</p>";
+        wrongList.forEach(i => {
+            html += `<p>${i.q} = ${i.correct}</p>`;
+        });
+    }
+
+    document.getElementById("summary").innerHTML = html;
+    document.getElementById("question").innerHTML = "✅ Finished!";
+}
+
+// ===== 工具 =====
+function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function findDivisor(n) {
+    let arr = [];
+    for (let i = 2; i <= 10; i++) {
+        if (n % i === 0) arr.push(i);
+    }
+    return arr.length ? arr[Math.floor(Math.random() * arr.length)] : 1;
+}
+
+// Enter
+document.getElementById("answerInput")
+.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") submitAnswer();
+});
+
+</script>
+
+<!-- ===== RULES ===== -->
+<div class="rule-box">
+    <h3>📘 Order of Operations</h3>
+
+    <p><b>1️⃣ Multiplication and Division first</b></p>
+    <p>× and ÷ are calculated from left to right.</p>
+
+    <p><b>2️⃣ Then Addition and Subtraction</b></p>
+    <p>+ and − are calculated from left to right.</p>
+
+    <p><b>3️⃣ Step-by-step rule</b></p>
+    <p>Always solve one operation at a time, from left to right.</p>
+
+    <hr>
+
+    <p><b>中文：</b>先乘除后加减，同级从左到右计算</p>
+</div>
+
+</body>
+</html>
