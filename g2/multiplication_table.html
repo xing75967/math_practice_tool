@@ -59,8 +59,12 @@ button {
 
 <h1>🎮 Challenge Mode</h1>
 
-<div class="box">⏱ Time: <span id="time">60</span>s</div>
+<!-- ✅ 统一为3分钟 -->
+<div class="box">⏱ Time: <span id="time">180</span>s</div>
 <div class="box">⭐ Score: <span id="score">0</span></div>
+
+<!-- ✅ 移动后的反馈区（核心改动） -->
+<div class="box" id="feedback"></div>
 
 <div class="box" id="question"></div>
 
@@ -70,7 +74,6 @@ button {
 <button class="start-btn" onclick="startGame()">Start Game</button>
 <button onclick="submitAnswer()">Submit</button>
 
-<div class="box" id="feedback"></div>
 <div class="box" id="summary"></div>
 
 <script>
@@ -88,7 +91,7 @@ for (let i = 1; i <= 9; i++) {
 
 // ===== 游戏变量 =====
 let score = 0;
-let timeLeft = 180;
+let timeLeft = 180; // ✅ 改成3分钟
 let timer;
 let correctAnswer = 0;
 
@@ -97,7 +100,7 @@ let wrongList = [];
 
 function startGame() {
     score = 0;
-    timeLeft = 60;
+    timeLeft = 180; // ✅ 同步修正
     total = 0;
     wrongList = [];
 
@@ -141,12 +144,15 @@ function submitAnswer() {
 
     let feedback = document.getElementById("feedback");
 
-    // ✅ 只改这里：增强情绪反馈
+    // ===== 情绪反馈 =====
     if (userAnswer === correctAnswer) {
         score++;
-        feedback.innerHTML = "<span class='correct'>✔ Correct! 🎉 Congratulations！</span>";
+        feedback.innerHTML =
+            "<span class='correct'>✔ Correct! 🎉 Congratulations!</span>";
     } else {
-        feedback.innerHTML = "<span class='wrong'>✘ Wrong! 💪 Keep trying!</span>";
+        feedback.innerHTML =
+            "<span class='wrong'>✘ Wrong! 💪 Keep trying!</span>";
+
         wrongList.push({
             q: currentQuestion,
             correct: correctAnswer
@@ -158,7 +164,7 @@ function submitAnswer() {
     setTimeout(() => {
         feedback.innerHTML = "";
         if (timeLeft > 0) nextQuestion();
-    }, 3000); // wait for 3000ms and move to next question.
+    }, 3000);
 }
 
 function endGame() {
@@ -183,7 +189,7 @@ function endGame() {
     document.getElementById("summary").innerHTML = html;
 }
 
-// ===== Enter键提交功能 =====
+// ===== Enter键提交 =====
 document.getElementById("answerInput")
 .addEventListener("keydown", function(event) {
     if (event.key === "Enter") {
