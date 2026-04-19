@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quadratic Function: Monotonicity & Symmetry</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 { color: gold; }
+
+.container {
+    width: 820px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 10px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.control input {
+    width: 180px;
+}
+
+.summary {
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #334155;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Quadratic Function: Monotonicity & Symmetry</h1>
+
+<div class="container">
+
+<canvas id="graph" width="800" height="420"></canvas>
+
+<div class="controls">
+
+<div class="control">
+<p>a = <span id="aval">1</span></p>
+<input type="range" min="-3" max="3" step="0.1" value="1" id="aSlider">
+</div>
+
+<div class="control">
+<p>b = <span id="bval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="bSlider">
+</div>
+
+<div class="control">
+<p>c = <span id="cval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="cSlider">
+</div>
+
+</div>
+
+</div>
+
+<div class="summary" id="summary"></div>
+
+<script>
+
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const aSlider = document.getElementById("aSlider");
+const bSlider = document.getElementById("bSlider");
+const cSlider = document.getElementById("cSlider");
+
+const aval = document.getElementById("aval");
+const bval = document.getElementById("bval");
+const cval = document.getElementById("cval");
+
+let a = 1, b = 0, c = 0;
+
+const scale = 25;
+const originX = 400;
+const originY = 210;
+
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
+}
+
+function f(x) {
+    return a * x * x + b * x + c;
+}
+
+function drawGraph() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawAxes();
+
+    let vx = -b / (2 * a);
+    let vy = f(vx);
+
+    ctx.strokeStyle = "#ff6b6b";
+    ctx.beginPath();
+    let started = false;
+
+    for (let px = 0; px < canvas.width; px++) {
+        let x = (px - originX) / scale;
+
+        if (x > vx) continue;
+
+        let y = f(x);
+        let py = originY - y * scale;
+
+        if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+    ctx.stroke();
+
+    ctx.strokeStyle = "#00ff88";
+    ctx.beginPath();
+    started = false;
+
+    for (let px = 0; px < canvas.width; px++) {
+        let x = (px - originX) / scale;
+
+        if (x < vx) continue;
+
+        let y = f(x);
+        let py = originY - y * scale;
+
+        if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+    ctx.stroke();
+
+    ctx.setLineDash([5,5]);
+    ctx.strokeStyle = "#fbbf24";
+    ctx.beginPath();
+
+    let vx_px = originX + vx * scale;
+    ctx.moveTo(vx_px, 0);
+    ctx.lineTo(vx_px, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(vx_px, originY - vy * scale, 5, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = "rgba(15,23,42,0.85)";
+    ctx.fillRect(500, 20, 250, 50);
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "15px Arial";
+    ctx.fillText(
+        `y = ${a.toFixed(1)}·x² ${b>=0?'+':''}${b}·x ${c>=0?'+':''}${c}`,
+        510,
+        50
+    );
+
+    updateSummary(vx);
+
+    aval.innerText = a.toFixed(1);
+    bval.innerText = b;
+    cval.innerText = c;
+}
+
+function updateSummary(vx) {
+
+    let monotonic = "";
+
+    if (a > 0) {
+        monotonic = `Decreasing on (-∞, ${vx.toFixed(2)})<br>
+                     Increasing on (${vx.toFixed(2)}, +∞)`;
+    } else {
+        monotonic = `Increasing on (-∞, ${vx.toFixed(2)})<br>
+                     Decreasing on (${vx.toFixed(2)}, +∞)`;
+    }
+
+    let symmetry = "";
+
+    // ✅ 修复后的正确逻辑
+    if (b === 0) {
+        symmetry = "Even Function (y-axis symmetry)";
+    } else {
+        symmetry = "Neither even nor odd";
+    }
+
+    document.getElementById("summary").innerHTML = `
+        <b>Monotonicity:</b><br>${monotonic}<br><br>
+        <b>Symmetry:</b> ${symmetry}
+    `;
+}
+
+aSlider.oninput = () => { a = parseFloat(aSlider.value); drawGraph(); };
+bSlider.oninput = () => { b = parseInt(bSlider.value); drawGraph(); };
+cSlider.oninput = () => { c = parseInt(cSlider.value); drawGraph(); };
+
+drawGraph();
+
+</script>
+
+</body>
+</html>
