@@ -2,203 +2,195 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Power Function Explorer (Final)</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Power Function Explorer (Canvas Version)</title>
 
 <style>
 body {
     font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
     text-align: center;
-    background: #111;
-    color: white;
 }
 
-h1 { color: gold; }
+h1 {
+    color: gold;
+}
 
-.slider {
-    width: 300px;
+.container {
+    width: 950px;
+    margin: auto;
 }
 
 canvas {
-    background: white;
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 15px;
+}
+
+.controls {
+    margin-top: 10px;
+}
+
+.summary {
     margin-top: 20px;
-}
-
-.box {
-    margin: 15px;
-    font-size: 20px;
-}
-
-.highlight {
-    color: #00ffcc;
+    padding: 15px;
+    border-top: 1px solid #334155;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📈 Power Function Explorer (y = xⁿ)</h1>
+<h1>📈 Power Function Explorer</h1>
 
-<div class="box">
-    n = <span id="nValue" class="highlight">1</span>
+<div class="container">
+
+<canvas id="graph" width="950" height="500"></canvas>
+
+<div class="controls">
+<p>n = <span id="nval">1</span></p>
+<input type="range" min="-5" max="5" step="0.1" value="1" id="slider">
 </div>
 
-<input type="range" min="-5" max="5" step="0.1" value="1"
-       class="slider" id="slider" oninput="updatePower(this.value)">
+</div>
 
-<canvas id="chart" width="700" height="450"></canvas>
-
-<div class="box" id="explanation"></div>
+<div class="summary" id="explain"></div>
 
 <script>
 
-// ===== 坐标轴插件（加粗 x=0 和 y=0）=====
-const axisPlugin = {
-    id: 'axisLines',
-    afterDraw(chart) {
-        const {ctx, scales: {x, y}} = chart;
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
 
-        ctx.save();
-        ctx.strokeStyle = 'black';
-        ctx.lineWidth = 3;
+const slider = document.getElementById("slider");
+const nval = document.getElementById("nval");
 
-        // y=0 横轴
-        let yZero = y.getPixelForValue(0);
+let n = 1;
+
+/* ===== 坐标系统（和你给的一样）===== */
+const scale = 30;
+const originX = 475;
+const originY = 250;
+
+/* ===== GRID ===== */
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x < canvas.width; x += scale) {
         ctx.beginPath();
-        ctx.moveTo(x.left, yZero);
-        ctx.lineTo(x.right, yZero);
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
         ctx.stroke();
+    }
 
-        // x=0 纵轴
-        let xZero = x.getPixelForValue(0);
+    for (let y = 0; y < canvas.height; y += scale) {
         ctx.beginPath();
-        ctx.moveTo(xZero, y.top);
-        ctx.lineTo(xZero, y.bottom);
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
         ctx.stroke();
-
-        ctx.restore();
     }
-};
-
-// ===== 函数标签插件 =====
-const labelPlugin = {
-    id: 'functionLabel',
-    afterDraw(chart) {
-        const {ctx} = chart;
-
-        ctx.save();
-        ctx.fillStyle = "black";
-        ctx.font = "16px Arial";
-
-        ctx.fillText(currentLabel, 550, 40);
-
-        ctx.restore();
-    }
-};
-
-let chart;
-let currentLabel = "y = x^1";
-
-// ===== 初始化 =====
-function initChart() {
-    let ctx = document.getElementById("chart").getContext("2d");
-
-    chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            datasets: [
-                {
-                    data: [],
-                    borderColor: "lime",
-                    fill: false,
-                    pointRadius: 0,
-                    tension: 0
-                },
-                {
-                    data: [],
-                    type: 'scatter',
-                    backgroundColor: "red",
-                    pointRadius: 5
-                }
-            ]
-        },
-        options: {
-            animation: { duration: 800 },
-            plugins: {
-                legend: { display: false }
-            },
-            scales: {
-                x: {
-                    type: 'linear',
-                    min: -10,
-                    max: 10,
-                    grid: { color: '#ddd' }
-                },
-                y: {
-                    min: -10,
-                    max: 10,
-                    grid: { color: '#ddd' }
-                }
-            }
-        },
-        plugins: [axisPlugin, labelPlugin]
-    });
 }
 
-initChart();
+/* ===== AXES（加粗）===== */
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
 
-// ===== 更新函数 =====
-function updatePower(n) {
+    // x-axis
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
 
-    n = parseFloat(n);
-    document.getElementById("nValue").innerText = n.toFixed(1);
+    // y-axis
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
 
-    let dataPoints = [];
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "12px Arial";
 
-    for (let x = -10; x <= 10; x += 0.05) {
+    for (let i = -10; i <= 10; i++) {
+        let x = originX + i * scale;
+        ctx.fillText(i, x - 5, originY + 15);
+    }
 
+    for (let j = -8; j <= 8; j++) {
+        let y = originY - j * scale;
+        ctx.fillText(j, originX + 5, y + 4);
+    }
+}
+
+/* ===== 函数 ===== */
+function f(x) {
+    return Math.pow(x, n);
+}
+
+/* ===== 绘图 ===== */
+function drawGraph() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawAxes();
+
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < canvas.width; px++) {
+
+        let x = (px - originX) / scale;
+
+        // 🔥 n<0断开
         if (n < 0 && Math.abs(x) < 0.05) {
-            dataPoints.push({x: x, y: null});
+            first = true;
             continue;
         }
 
+        // 分数指数限制
         if (n % 1 !== 0 && x < 0) continue;
 
-        let y = Math.pow(x, n);
+        let y = f(x);
 
-        if (!isFinite(y) || Math.abs(y) > 50) continue;
+        if (!isFinite(y) || Math.abs(y) > 50) {
+            first = true;
+            continue;
+        }
 
-        dataPoints.push({x: x, y: y});
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
     }
 
-    chart.data.datasets[0].data = dataPoints;
+    ctx.stroke();
 
-    // ===== 关键点 =====
-    let points = [];
-
-    if (n >= 0) {
-        points.push({x: 0, y: 0});
-    }
-
-    points.push({x: 1, y: 1});
-
-    if (Number.isInteger(n)) {
-        points.push({x: -1, y: Math.pow(-1, n)});
-    }
-
-    chart.data.datasets[1].data = points;
-
-    // ===== 更新函数表达式 =====
-    currentLabel = formatLabel(n);
-
-    chart.update();
-
-    explain(n);
+    drawFormula();
+    explain();
 }
 
-// ===== 格式化函数表达式 =====
-function formatLabel(n) {
+/* ===== 公式显示 ===== */
+function drawFormula() {
+
+    ctx.fillStyle = "rgba(15,23,42,0.9)";
+    ctx.fillRect(originX + 150, 10, 300, 50);
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "16px Arial";
+
+    ctx.fillText(formatLabel(), originX + 170, 40);
+}
+
+/* ===== 格式化 ===== */
+function formatLabel() {
 
     if (n === 1) return "y = x";
     if (n === -1) return "y = 1/x";
@@ -210,29 +202,35 @@ function formatLabel(n) {
     }
 }
 
-// ===== 解释 =====
-function explain(n) {
+/* ===== 解释 ===== */
+function explain() {
 
     let text = "";
 
     if (n > 0 && Number.isInteger(n) && n % 2 === 0) {
-        text = "📘 Even Function → symmetric about y-axis";
+        text = "Even function → symmetric about y-axis";
     }
-    else if (n > 0 && Number.isInteger(n) && n % 2 !== 0) {
-        text = "📘 Odd Function → passes origin";
+    else if (n > 0 && Number.isInteger(n)) {
+        text = "Odd function → passes origin";
     }
     else if (n < 0) {
-        text = "📘 Negative Power → undefined at x = 0";
+        text = "Negative power → undefined at x = 0";
     }
-    else if (n > 0 && n % 1 !== 0) {
-        text = "📘 Fraction Power → domain: x ≥ 0";
+    else {
+        text = "Fraction power → domain x ≥ 0";
     }
 
-    document.getElementById("explanation").innerHTML = text;
+    document.getElementById("explain").innerHTML = text;
 }
 
-// 初始
-updatePower(1);
+/* ===== 事件 ===== */
+slider.oninput = () => {
+    n = parseFloat(slider.value);
+    nval.innerText = n.toFixed(1);
+    drawGraph();
+};
+
+drawGraph();
 
 </script>
 
