@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Linear Function Explorer</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 { color: gold; }
+
+.container {
+    width: 820px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 10px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.control input {
+    width: 180px;
+}
+
+.summary {
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #334155;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Linear Function: y = kx + b</h1>
+
+<div class="container">
+
+<canvas id="graph" width="800" height="420"></canvas>
+
+<div class="controls">
+
+<div class="control">
+<p>k (slope) = <span id="kval">1</span></p>
+<input type="range" min="-5" max="5" step="0.1" value="1" id="kSlider">
+</div>
+
+<div class="control">
+<p>b (intercept) = <span id="bval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="bSlider">
+</div>
+
+</div>
+
+</div>
+
+<div class="summary" id="summary"></div>
+
+<script>
+
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const kSlider = document.getElementById("kSlider");
+const bSlider = document.getElementById("bSlider");
+
+const kval = document.getElementById("kval");
+const bval = document.getElementById("bval");
+
+let k = 1, b = 0;
+
+const scale = 25;
+const originX = 400;
+const originY = 210;
+
+/* ===== GRID ===== */
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
+/* ===== AXES ===== */
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
+}
+
+/* ===== FUNCTION ===== */
+function f(x) {
+    return k * x + b;
+}
+
+/* ===== DRAW ===== */
+function drawGraph() {
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawAxes();
+
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < canvas.width; px++) {
+        let x = (px - originX) / scale;
+        let y = f(x);
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.stroke();
+
+    /* ===== 截距点 ===== */
+    let yIntercept = b;
+    let xIntercept = (k !== 0) ? -b / k : null;
+
+    drawPoint(0, yIntercept, "(0,b)");
+
+    if (xIntercept !== null) {
+        drawPoint(xIntercept, 0, "(x,0)");
+    }
+
+    /* ===== 函数表达式 ===== */
+    ctx.fillStyle = "rgba(15,23,42,0.85)";
+    ctx.fillRect(480, 20, 260, 50);
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "15px Arial";
+
+    ctx.fillText(
+        `y = ${k.toFixed(1)}x ${b>=0?'+':''}${b}`,
+        490,
+        50
+    );
+
+    updateSummary();
+
+    kval.innerText = k.toFixed(1);
+    bval.innerText = b;
+}
+
+/* ===== POINT ===== */
+function drawPoint(x, y, label) {
+    let px = originX + x * scale;
+    let py = originY - y * scale;
+
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(px, py, 5, 0, Math.PI*2);
+    ctx.fill();
+
+    ctx.fillStyle = "white";
+    ctx.fillText(label, px + 6, py - 6);
+}
+
+/* ===== SUMMARY ===== */
+function updateSummary() {
+
+    let monotonic = "";
+
+    if (k > 0) monotonic = "Increasing (↗)";
+    else if (k < 0) monotonic = "Decreasing (↘)";
+    else monotonic = "Constant function";
+
+    let special = "";
+
+    if (k === 0) special = "Horizontal line (y = b)";
+    else if (b === 0) special = "Passes through origin";
+
+    document.getElementById("summary").innerHTML = `
+        <b>Slope (k):</b> Controls steepness and direction<br>
+        <b>Intercept (b):</b> Where graph crosses y-axis<br><br>
+
+        <b>Monotonicity:</b> ${monotonic}<br>
+        <b>Special Case:</b> ${special}
+    `;
+}
+
+/* ===== EVENTS ===== */
+kSlider.oninput = () => { k = parseFloat(kSlider.value); drawGraph(); };
+bSlider.oninput = () => { b = parseInt(bSlider.value); drawGraph(); };
+
+drawGraph();
+
+</script>
+
+</body>
+</html>
