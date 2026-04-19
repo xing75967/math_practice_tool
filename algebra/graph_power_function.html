@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Power Function Explorer (Final)</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #111;
+    color: white;
+}
+
+h1 { color: gold; }
+
+.slider {
+    width: 300px;
+}
+
+canvas {
+    background: white;
+    margin-top: 20px;
+}
+
+.box {
+    margin: 15px;
+    font-size: 20px;
+}
+
+.highlight {
+    color: #00ffcc;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📈 Power Function Explorer (y = xⁿ)</h1>
+
+<div class="box">
+    n = <span id="nValue" class="highlight">1</span>
+</div>
+
+<input type="range" min="-5" max="5" step="0.1" value="1"
+       class="slider" id="slider" oninput="updatePower(this.value)">
+
+<canvas id="chart" width="700" height="450"></canvas>
+
+<div class="box" id="explanation"></div>
+
+<script>
+
+// ===== 坐标轴插件（加粗 x=0 和 y=0）=====
+const axisPlugin = {
+    id: 'axisLines',
+    afterDraw(chart) {
+        const {ctx, scales: {x, y}} = chart;
+
+        ctx.save();
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 3;
+
+        // y=0 横轴
+        let yZero = y.getPixelForValue(0);
+        ctx.beginPath();
+        ctx.moveTo(x.left, yZero);
+        ctx.lineTo(x.right, yZero);
+        ctx.stroke();
+
+        // x=0 纵轴
+        let xZero = x.getPixelForValue(0);
+        ctx.beginPath();
+        ctx.moveTo(xZero, y.top);
+        ctx.lineTo(xZero, y.bottom);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+};
+
+// ===== 函数标签插件 =====
+const labelPlugin = {
+    id: 'functionLabel',
+    afterDraw(chart) {
+        const {ctx} = chart;
+
+        ctx.save();
+        ctx.fillStyle = "black";
+        ctx.font = "16px Arial";
+
+        ctx.fillText(currentLabel, 550, 40);
+
+        ctx.restore();
+    }
+};
+
+let chart;
+let currentLabel = "y = x^1";
+
+// ===== 初始化 =====
+function initChart() {
+    let ctx = document.getElementById("chart").getContext("2d");
+
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+                {
+                    data: [],
+                    borderColor: "lime",
+                    fill: false,
+                    pointRadius: 0,
+                    tension: 0
+                },
+                {
+                    data: [],
+                    type: 'scatter',
+                    backgroundColor: "red",
+                    pointRadius: 5
+                }
+            ]
+        },
+        options: {
+            animation: { duration: 800 },
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    type: 'linear',
+                    min: -10,
+                    max: 10,
+                    grid: { color: '#ddd' }
+                },
+                y: {
+                    min: -10,
+                    max: 10,
+                    grid: { color: '#ddd' }
+                }
+            }
+        },
+        plugins: [axisPlugin, labelPlugin]
+    });
+}
+
+initChart();
+
+// ===== 更新函数 =====
+function updatePower(n) {
+
+    n = parseFloat(n);
+    document.getElementById("nValue").innerText = n.toFixed(1);
+
+    let dataPoints = [];
+
+    for (let x = -10; x <= 10; x += 0.05) {
+
+        if (n < 0 && Math.abs(x) < 0.05) {
+            dataPoints.push({x: x, y: null});
+            continue;
+        }
+
+        if (n % 1 !== 0 && x < 0) continue;
+
+        let y = Math.pow(x, n);
+
+        if (!isFinite(y) || Math.abs(y) > 50) continue;
+
+        dataPoints.push({x: x, y: y});
+    }
+
+    chart.data.datasets[0].data = dataPoints;
+
+    // ===== 关键点 =====
+    let points = [];
+
+    if (n >= 0) {
+        points.push({x: 0, y: 0});
+    }
+
+    points.push({x: 1, y: 1});
+
+    if (Number.isInteger(n)) {
+        points.push({x: -1, y: Math.pow(-1, n)});
+    }
+
+    chart.data.datasets[1].data = points;
+
+    // ===== 更新函数表达式 =====
+    currentLabel = formatLabel(n);
+
+    chart.update();
+
+    explain(n);
+}
+
+// ===== 格式化函数表达式 =====
+function formatLabel(n) {
+
+    if (n === 1) return "y = x";
+    if (n === -1) return "y = 1/x";
+
+    if (Number.isInteger(n)) {
+        return `y = x^${n}`;
+    } else {
+        return `y = x^(${n.toFixed(1)})`;
+    }
+}
+
+// ===== 解释 =====
+function explain(n) {
+
+    let text = "";
+
+    if (n > 0 && Number.isInteger(n) && n % 2 === 0) {
+        text = "📘 Even Function → symmetric about y-axis";
+    }
+    else if (n > 0 && Number.isInteger(n) && n % 2 !== 0) {
+        text = "📘 Odd Function → passes origin";
+    }
+    else if (n < 0) {
+        text = "📘 Negative Power → undefined at x = 0";
+    }
+    else if (n > 0 && n % 1 !== 0) {
+        text = "📘 Fraction Power → domain: x ≥ 0";
+    }
+
+    document.getElementById("explanation").innerHTML = text;
+}
+
+// 初始
+updatePower(1);
+
+</script>
+
+</body>
+</html>
