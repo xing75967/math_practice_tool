@@ -3,99 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visual Prime Factor Tree</title>
+    <title>Prime Factorization</title>
     <style>
+        :root {
+            --primary: #007aff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --bg: #f8f9fa;
+        }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
-            margin: 0;
         }
-        .controls {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            text-align: center;
-            margin-bottom: 30px;
+        .app-container {
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
+            text-align: center;
+        }
+        .header-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 { margin-top: 0; color: #1c1e21; }
+        .input-group {
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         input {
-            width: 80%;
-            padding: 12px;
+            width: 100%;
+            padding: 14px;
             border: 2px solid #eee;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
-            margin-bottom: 15px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
         }
+        input:focus { border-color: var(--primary); }
         button {
-            background: #007aff;
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 16px;
+            transition: background 0.2s;
         }
-        
-        /* Tree Styling */
-        .tree {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        .node-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .branches {
+        button:hover { background-color: #0056b3; }
+
+        /* Tree Visualization */
+        #treeContainer {
+            margin: 40px 0;
             display: flex;
             justify-content: center;
-            gap: 40px;
-            position: relative;
-            margin-top: 10px;
+            overflow-x: auto;
+            width: 100%;
         }
-        /* Connection lines using pseudo-elements */
+        .node-container { display: flex; flex-direction: column; align-items: center; }
+        .branches { display: flex; gap: 30px; position: relative; margin-top: 15px; }
         .branches::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            width: 60%;
-            height: 2px;
-            background: #ccc;
+            content: ''; position: absolute; top: -10px; width: 70%; height: 2px; background: #ddd;
         }
         .node {
-            padding: 10px 15px;
-            border: 2px solid #007aff;
-            border-radius: 8px;
-            background: white;
-            min-width: 40px;
-            text-align: center;
-            font-weight: bold;
+            padding: 8px 12px; border: 2px solid var(--primary);
+            border-radius: 6px; background: white; font-weight: bold;
         }
         .prime {
-            background: #e1f5fe;
-            border-color: #0288d1;
-            color: #0277bd;
-            border-radius: 50%; /* Primes are circles */
+            background: #e7f3ff; border-color: var(--success);
+            color: var(--success); border-radius: 50%; min-width: 35px;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            margin-top: 40px;
+            text-align: left;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .tips-section h3 { margin-top: 0; color: #333; }
+        .tips-list { list-style: none; padding: 0; }
+        .tips-list li {
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.5;
+            color: #555;
+        }
+        .tips-list li::before {
+            content: '💡'; position: absolute; left: 0;
+        }
+        .shortcut {
+            background: #f1f1f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
 
-<div class="controls">
-    <h2>Prime Factorization Tree Visulization </h2>
-    <input type="number" id="numInput" placeholder="Enter number (e.g., 60)" min="2">
-    <button id="calcBtn">Generate Primes</button>
-</div>
+<div class="app-container">
+    <div class="header-card">
+        <h2>Prime Factorization Tree</h2>
+        <p style="color: #666; margin-bottom: 1.5rem;">Decompose numbers into their atomic parts.</p>
+        
+        <div class="input-group">
+            <input type="number" id="numInput" placeholder="Enter a number (e.g. 120)" min="2">
+            <button id="calcBtn">Generate Factors</button>
+        </div>
+    </div>
 
-<div id="treeContainer" class="tree"></div>
+    <div id="treeContainer"></div>
+
+    <div class="tips-section">
+        <h3>🚀 Pro-Tips: Efficient Factorization</h3>
+        <ul class="tips-list">
+            <li><strong>The "2-3-5" Rule:</strong> Check the last digit. Even? Use 2. Ends in 0 or 5? Use 5. Sum of digits divisible by 3? Use 3.</li>
+            <li><strong>Smallest to Largest:</strong> Always start with the smallest prime. It keeps the engineering logic clean and organized.</li>
+            <li><strong>Square Root Limit:</strong> You only need to check primes up to the <strong>square root</strong> of the number.</li>
+            <li><strong>Final Verification:</strong> Multiply all circular (prime) nodes; they must equal your original input.</li>
+        </ul>
+        <div style="margin-top: 15px; font-size: 0.85em; color: #888;">
+            Keyboard Shortcut: Press <span class="shortcut">Enter</span> to run.
+        </div>
+    </div>
+</div>
 
 <script>
     const inputField = document.getElementById('numInput');
@@ -109,11 +162,9 @@
         return true;
     }
 
-    // Recursive function to build the Tree UI
     function buildTree(n) {
         const nodeGroup = document.createElement('div');
         nodeGroup.className = 'node-container';
-
         const nodeValue = document.createElement('div');
         nodeValue.className = 'node';
         nodeValue.textContent = n;
@@ -124,20 +175,14 @@
             return nodeGroup;
         }
 
-        // Find the smallest prime factor to split
         let divisor = 2;
         while (n % divisor !== 0) divisor++;
 
         nodeGroup.appendChild(nodeValue);
-
         const branches = document.createElement('div');
         branches.className = 'branches';
-
-        // Left Branch (The Prime Factor)
         branches.appendChild(buildTree(divisor));
-        // Right Branch (The Remainder)
         branches.appendChild(buildTree(n / divisor));
-
         nodeGroup.appendChild(branches);
         return nodeGroup;
     }
@@ -145,12 +190,9 @@
     function startProcess() {
         const val = parseInt(inputField.value);
         container.innerHTML = '';
-        if (isNaN(val) || val < 2) {
-            container.innerHTML = '<p style="color:red">Please enter a number > 1</p>';
-            return;
-        }
-        if (val > 10000) {
-            container.innerHTML = '<p style="color:orange">Number too large for visual tree. Try < 10000.</p>';
+        if (isNaN(val) || val < 2) return;
+        if (val > 5000) {
+            container.innerHTML = '<p style="color:orange">Please use numbers < 5000 for visualization.</p>';
             return;
         }
         container.appendChild(buildTree(val));
