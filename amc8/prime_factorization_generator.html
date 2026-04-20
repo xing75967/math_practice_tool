@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Prime Factor Tree</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+        input {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        /* Tree Styling */
+        .tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .node-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .branches {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            position: relative;
+            margin-top: 10px;
+        }
+        /* Connection lines using pseudo-elements */
+        .branches::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            width: 60%;
+            height: 2px;
+            background: #ccc;
+        }
+        .node {
+            padding: 10px 15px;
+            border: 2px solid #007aff;
+            border-radius: 8px;
+            background: white;
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .prime {
+            background: #e1f5fe;
+            border-color: #0288d1;
+            color: #0277bd;
+            border-radius: 50%; /* Primes are circles */
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <h2>Prime Factorization Tree Visulization </h2>
+    <input type="number" id="numInput" placeholder="Enter number (e.g., 60)" min="2">
+    <button id="calcBtn">Generate Primes</button>
+</div>
+
+<div id="treeContainer" class="tree"></div>
+
+<script>
+    const inputField = document.getElementById('numInput');
+    const container = document.getElementById('treeContainer');
+
+    function isPrime(n) {
+        if (n < 2) return false;
+        for (let i = 2; i * i <= n; i++) {
+            if (n % i === 0) return false;
+        }
+        return true;
+    }
+
+    // Recursive function to build the Tree UI
+    function buildTree(n) {
+        const nodeGroup = document.createElement('div');
+        nodeGroup.className = 'node-container';
+
+        const nodeValue = document.createElement('div');
+        nodeValue.className = 'node';
+        nodeValue.textContent = n;
+
+        if (isPrime(n)) {
+            nodeValue.classList.add('prime');
+            nodeGroup.appendChild(nodeValue);
+            return nodeGroup;
+        }
+
+        // Find the smallest prime factor to split
+        let divisor = 2;
+        while (n % divisor !== 0) divisor++;
+
+        nodeGroup.appendChild(nodeValue);
+
+        const branches = document.createElement('div');
+        branches.className = 'branches';
+
+        // Left Branch (The Prime Factor)
+        branches.appendChild(buildTree(divisor));
+        // Right Branch (The Remainder)
+        branches.appendChild(buildTree(n / divisor));
+
+        nodeGroup.appendChild(branches);
+        return nodeGroup;
+    }
+
+    function startProcess() {
+        const val = parseInt(inputField.value);
+        container.innerHTML = '';
+        if (isNaN(val) || val < 2) {
+            container.innerHTML = '<p style="color:red">Please enter a number > 1</p>';
+            return;
+        }
+        if (val > 10000) {
+            container.innerHTML = '<p style="color:orange">Number too large for visual tree. Try < 10000.</p>';
+            return;
+        }
+        container.appendChild(buildTree(val));
+    }
+
+    document.getElementById('calcBtn').onclick = startProcess;
+    inputField.onkeypress = (e) => { if (e.key === 'Enter') startProcess(); };
+</script>
+
+</body>
+</html>
