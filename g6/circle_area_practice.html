@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Circle Area Practice</title>
+
+<style>
+body{
+    font-family: "Segoe UI", Arial;
+    background: linear-gradient(to right, #eaf4ff, #f9fcff);
+    text-align:center;
+}
+
+.container{
+    background:white;
+    width:520px;
+    margin:30px auto;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
+}
+
+h1{
+    margin-bottom:10px;
+}
+
+canvas{
+    margin-top:15px;
+    border-radius:10px;
+    border:1px solid #ddd;
+}
+
+button{
+    padding:10px 16px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#4a90e2;
+    color:white;
+    cursor:pointer;
+}
+
+input{
+    padding:8px;
+    width:140px;
+    margin-top:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎯 Circle Area Practice</h1>
+
+<canvas id="c" width="400" height="400"></canvas>
+
+<p id="question"></p>
+
+<input id="answer" placeholder="Enter area">
+<br>
+<button onclick="check()">Check</button>
+
+<p id="feedback"></p>
+
+</div>
+
+<script>
+let canvas = document.getElementById("c");
+let ctx = canvas.getContext("2d");
+
+let r, d, correctAnswer, mode;
+
+// ===== 画图 =====
+function drawCircle(){
+    ctx.clearRect(0,0,400,400);
+
+    let cx = 200;
+    let cy = 200;
+
+    // 自动缩放（保证大且不超界）
+    let scale = Math.min(120 / r, 30);
+
+    // ===== 面积填充 =====
+    ctx.beginPath();
+    ctx.arc(cx, cy, r*scale, 0, Math.PI*2);
+    ctx.fillStyle="rgba(255,200,0,0.4)";
+    ctx.fill();
+
+    // 圆边
+    ctx.beginPath();
+    ctx.arc(cx, cy, r*scale, 0, Math.PI*2);
+    ctx.strokeStyle="#ff6b6b";
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    ctx.fillStyle="black";
+
+    // ===== 根据题型画 =====
+    if(mode === "r"){
+        // 半径
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + r*scale, cy);
+        ctx.strokeStyle="blue";
+        ctx.lineWidth=3;
+        ctx.stroke();
+
+        ctx.fillText("r = " + r, cx + r*scale/2 - 10, cy - 10);
+    }
+    else{
+        // 直径
+        ctx.beginPath();
+        ctx.moveTo(cx - r*scale, cy);
+        ctx.lineTo(cx + r*scale, cy);
+        ctx.strokeStyle="green";
+        ctx.lineWidth=3;
+        ctx.stroke();
+
+        ctx.fillText("d = " + d, cx - 20, cy + 20);
+    }
+
+    // 面积文字
+    ctx.fillStyle="#333";
+    ctx.font="16px Arial";
+    ctx.fillText("Area", cx - 20, cy);
+}
+
+// ===== 出题 =====
+function newQuestion(){
+    r = Math.floor(Math.random()*8)+3;
+    d = 2*r;
+
+    mode = Math.random() > 0.5 ? "r" : "d";
+
+    drawCircle();
+
+    if(mode === "r"){
+        correctAnswer = Math.PI * r * r;
+        document.getElementById("question").innerHTML =
+        "Find the AREA (given r = " + r + ")";
+    }else{
+        correctAnswer = Math.PI * (d/2)*(d/2);
+        document.getElementById("question").innerHTML =
+        "Find the AREA (given d = " + d + ")";
+    }
+
+    document.getElementById("feedback").innerHTML = "";
+    document.getElementById("answer").value = "";
+}
+
+// ===== 检查 =====
+function check(){
+    let user = document.getElementById("answer").value;
+
+    if(Math.abs(user - correctAnswer) < 1){
+        document.getElementById("feedback").innerHTML = "✅ Correct!";
+    }else{
+        document.getElementById("feedback").innerHTML =
+        "❌ Answer ≈ " + correctAnswer.toFixed(2);
+    }
+
+    setTimeout(newQuestion, 1500);
+}
+
+// 初始化
+newQuestion();
+</script>
+
+</body>
+</html>
