@@ -3,45 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <title>Circle Circumference Practice</title>
+
 <style>
 body{
-    font-family: Arial;
+    font-family: "Segoe UI", Arial;
+    background: linear-gradient(to right, #eaf4ff, #f9fcff);
     text-align:center;
-    background:#f4f9ff;
 }
-.box{
+
+.container{
     background:white;
-    margin:20px auto;
-    padding:20px;
-    width:480px;
-    border-radius:12px;
+    width:520px;
+    margin:30px auto;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
 }
+
 canvas{
-    border:1px solid #ccc;
-    margin-top:10px;
+    margin-top:15px;
+    border-radius:10px;
+    border:1px solid #ddd;
 }
+
 button{
-    padding:8px 12px;
+    padding:10px 16px;
     margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#4a90e2;
+    color:white;
+    cursor:pointer;
 }
+
 input{
-    padding:5px;
-    width:100px;
+    padding:8px;
+    width:160px;
+    margin-top:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
 }
 </style>
 </head>
 
 <body>
 
+<div class="container">
+
 <h1>🎯 Circle Circumference Practice</h1>
 
-<div class="box">
-
-<canvas id="c" width="300" height="300"></canvas>
+<canvas id="c" width="400" height="400"></canvas>
 
 <p id="question"></p>
 
-<input id="answer" placeholder="Enter answer">
+<input id="answer" placeholder="Enter answer (decimal)">
 <br>
 <button onclick="check()">Check</button>
 
@@ -54,77 +69,105 @@ let canvas = document.getElementById("c");
 let ctx = canvas.getContext("2d");
 
 let r, d, correctAnswer, mode;
+let attempts = 0;
 
 // ===== 画图 =====
 function drawCircle(){
-    ctx.clearRect(0,0,300,300);
+    ctx.clearRect(0,0,400,400);
 
-    let cx = 150;
-    let cy = 150;
-    let scale = 10;
+    let cx = 200;
+    let cy = 200;
+
+    let scale = Math.min(120 / r, 30);
 
     // 圆
     ctx.beginPath();
     ctx.arc(cx, cy, r*scale, 0, Math.PI*2);
-    ctx.strokeStyle="red";
+    ctx.strokeStyle="#ff6b6b";
+    ctx.lineWidth=2;
     ctx.stroke();
 
-    // 半径
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx + r*scale, cy);
-    ctx.strokeStyle="blue";
-    ctx.stroke();
-    ctx.fillText("r = " + r, cx + r*scale/2, cy - 10);
+    ctx.fillStyle="black";
+    ctx.font="16px Arial";
 
-    // 直径
-    ctx.beginPath();
-    ctx.moveTo(cx - r*scale, cy);
-    ctx.lineTo(cx + r*scale, cy);
-    ctx.strokeStyle="green";
-    ctx.stroke();
-    ctx.fillText("d = " + d, cx - 20, cy + 15);
+    if(mode === "r"){
+        // 半径
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + r*scale, cy);
+        ctx.strokeStyle="blue";
+        ctx.lineWidth=3;
+        ctx.stroke();
 
-    // 周长提示
-    ctx.fillStyle="red";
-    ctx.fillText("Circumference", 90, 30);
+        ctx.fillText("r = " + r, cx + r*scale/2 - 10, cy - 10);
+    }
+    else{
+        // 直径
+        ctx.beginPath();
+        ctx.moveTo(cx - r*scale, cy);
+        ctx.lineTo(cx + r*scale, cy);
+        ctx.strokeStyle="green";
+        ctx.lineWidth=3;
+        ctx.stroke();
+
+        ctx.fillText("d = " + d, cx - 20, cy + 20);
+    }
+
+    ctx.fillStyle="#333";
+    ctx.fillText("Circumference ?", cx - 65, cy - r*scale - 10);
 }
 
 // ===== 出题 =====
 function newQuestion(){
-    r = Math.floor(Math.random()*8)+2;
+    r = Math.floor(Math.random()*8)+3;
     d = 2*r;
+
+    mode = Math.random() > 0.5 ? "r" : "d";
 
     drawCircle();
 
-    if(Math.random() > 0.5){
-        mode = "r";
+    if(mode === "r"){
         correctAnswer = 2 * Math.PI * r;
         document.getElementById("question").innerHTML =
-        "Find the circumference. (Given r = " + r + ")";
+        "Find the circumference (given r = " + r + ")";
     }else{
-        mode = "d";
         correctAnswer = Math.PI * d;
         document.getElementById("question").innerHTML =
-        "Find the circumference. (Given d = " + d + ")";
+        "Find the circumference (given d = " + d + ")";
     }
 
     document.getElementById("feedback").innerHTML = "";
     document.getElementById("answer").value = "";
+    attempts = 0;
 }
 
-// ===== 检查 =====
+// ===== 检查答案 =====
 function check(){
-    let user = document.getElementById("answer").value;
+    let user = parseFloat(document.getElementById("answer").value);
 
-    if(Math.abs(user - correctAnswer) < 1){
-        document.getElementById("feedback").innerHTML = "✅ Correct!";
-    }else{
-        document.getElementById("feedback").innerHTML =
-        "❌ Answer ≈ " + correctAnswer.toFixed(2);
+    // 输入检测
+    if(isNaN(user)){
+        document.getElementById("feedback").innerHTML = "⚠️ Please enter a number!";
+        return;
     }
 
-    setTimeout(newQuestion, 1500);
+    // 判断正确
+    if(Math.abs(user - correctAnswer) < 0.2){
+        document.getElementById("feedback").innerHTML = "🎉 Correct!";
+        setTimeout(newQuestion, 1200);
+        attempts = 0;
+    }else{
+        attempts++;
+
+        if(attempts < 2){
+            document.getElementById("feedback").innerHTML = "❌ Try again!";
+        }else{
+            document.getElementById("feedback").innerHTML =
+            "❌ Answer ≈ " + correctAnswer.toFixed(2);
+            setTimeout(newQuestion, 1500);
+            attempts = 0;
+        }
+    }
 }
 
 // 初始化
