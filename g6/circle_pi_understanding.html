@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pi Precision Demo</title>
+<style>
+body{
+    font-family: Arial;
+    text-align:center;
+    background:#eef7ff;
+}
+.box{
+    background:white;
+    margin:20px auto;
+    padding:20px;
+    width:600px;
+    border-radius:12px;
+}
+canvas{
+    border:1px solid #ccc;
+    cursor:pointer;
+}
+button{
+    padding:8px 12px;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎯 Measure π Yourself</h1>
+
+<div class="box">
+<p>👉 Drag around the circle to measure π</p>
+
+<canvas id="c" width="560" height="360"></canvas><br>
+
+<button onclick="reset()">Reset</button>
+<button onclick="changeSize()">Change Circle Size</button>
+
+<p id="info"></p>
+</div>
+
+<script>
+let canvas = document.getElementById("c");
+let ctx = canvas.getContext("2d");
+
+let cx = 280, cy = 150;
+
+let radii = [40, 70, 100];
+let rIndex = 0;
+let r = radii[rIndex];
+
+let angleCovered = 0;
+let dragging = false;
+
+function getAngle(x,y){
+    return Math.atan2(y-cy, x-cx);
+}
+
+function draw(){
+    ctx.clearRect(0,0,560,360);
+
+    // 圆
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle="#ccc";
+    ctx.stroke();
+
+    // 撕开的部分
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,angleCovered);
+    ctx.strokeStyle="red";
+    ctx.lineWidth=3;
+    ctx.stroke();
+
+    // 半径
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+r,cy);
+    ctx.strokeStyle="green";
+    ctx.stroke();
+
+    // 直径
+    ctx.beginPath();
+    ctx.moveTo(cx-r,cy);
+    ctx.lineTo(cx+r,cy);
+    ctx.strokeStyle="blue";
+    ctx.stroke();
+
+    ctx.fillText("r="+r, cx+10, cy-10);
+    ctx.fillText("D="+(2*r), cx-20, cy+15);
+
+    // ===== 展开 =====
+    let C_partial = (angleCovered/(Math.PI*2))*(2*Math.PI*r);
+
+    ctx.beginPath();
+    ctx.moveTo(80,310);
+    ctx.lineTo(80+C_partial,310);
+    ctx.strokeStyle="red";
+    ctx.lineWidth=2;
+    ctx.stroke();
+
+    ctx.fillText("C ≈ "+C_partial.toFixed(1), 80,290);
+
+    // ===== π计算 =====
+    let D = 2*r;
+    let pi_now = C_partial / D;
+
+    let text = `
+    Circumference (C) = ${C_partial.toFixed(1)}<br>
+    Diameter (D) = ${D}<br><br>
+    π = C ÷ D = ${C_partial.toFixed(1)} ÷ ${D} ≈ ${pi_now.toFixed(3)}
+    `;
+
+    // 精度提示
+    if(angleCovered < Math.PI*1.8){
+        text += "<br>⚠️ Not accurate yet — keep dragging!";
+    } else if(angleCovered < Math.PI*2){
+        text += "<br>🎯 Getting closer to π ≈ 3.1415926...";
+    } else {
+        text += "<br>🎉 Great! π ≈ 3.1415926...";
+    }
+
+    document.getElementById("info").innerHTML = text;
+}
+
+// 鼠标
+canvas.addEventListener("mousedown", ()=> dragging=true);
+canvas.addEventListener("mouseup", ()=> dragging=false);
+
+canvas.addEventListener("mousemove", (e)=>{
+    if(!dragging) return;
+
+    let rect = canvas.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    let y = e.clientY - rect.top;
+
+    let ang = getAngle(x,y);
+    if(ang < 0) ang += Math.PI*2;
+
+    if(ang > angleCovered){
+        angleCovered = ang;
+    }
+
+    draw();
+});
+
+// 控制
+function reset(){
+    angleCovered = 0;
+    draw();
+}
+
+function changeSize(){
+    rIndex = (rIndex + 1) % radii.length;
+    r = radii[rIndex];
+    reset();
+}
+
+// 初始
+draw();
+</script>
+
+</body>
+</html>
