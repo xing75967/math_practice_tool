@@ -104,17 +104,22 @@ function draw(){
 
     ctx.fillText("C ≈ "+C_partial.toFixed(1), 80,290);
 
-    // ===== π计算 =====
+    // ===== π计算（⭐仅这里修改）=====
     let D = 2*r;
-    let pi_now = C_partial / D;
+
+    let C_used = C_partial;
+    if(angleCovered > Math.PI * 1.98){
+        C_used = 2 * Math.PI * r; // 用真实值
+    }
+
+    let pi_now = C_used / D;
 
     let text = `
     Circumference (C) = ${C_partial.toFixed(1)}<br>
     Diameter (D) = ${D}<br><br>
-    π = C ÷ D = ${C_partial.toFixed(1)} ÷ ${D} ≈ ${pi_now.toFixed(3)}
+    π = C ÷ D = ${C_used.toFixed(1)} ÷ ${D} ≈ ${pi_now.toFixed(4)}
     `;
 
-    // 精度提示
     if(angleCovered < Math.PI*1.8){
         text += "<br>⚠️ Not accurate yet — keep dragging!";
     } else if(angleCovered < Math.PI*2){
@@ -159,7 +164,6 @@ function changeSize(){
     reset();
 }
 
-// 初始
 draw();
 </script>
 
