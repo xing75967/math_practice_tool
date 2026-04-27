@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathX Addition Subtraction</title>
+
+<style>
+:root{
+    --primary:#1a73e8;
+    --success:#34a853;
+    --danger:#ea4335;
+    --bg:#f8f9fa;
+    --target:#f39c12;
+}
+
+body{
+    font-family:Segoe UI,system-ui,sans-serif;
+    background:var(--bg);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+}
+
+.card{
+    background:white;
+    padding:2rem;
+    border-radius:24px;
+    width:100%;
+    max-width:460px;
+    text-align:center;
+    box-shadow:0 15px 35px rgba(0,0,0,0.1);
+}
+
+.target{
+    background:var(--target);
+    color:white;
+    padding:10px 18px;
+    border-radius:50px;
+    font-weight:bold;
+    display:inline-block;
+    margin:10px 0;
+}
+
+.rule{
+    font-size:0.85rem;
+    font-weight:bold;
+    margin-bottom:10px;
+    color:#444;
+}
+
+.screen{
+    background:#f1f3f4;
+    padding:15px;
+    border-radius:12px;
+    min-height:60px;
+    margin-bottom:1rem;
+    font-size:1.3rem;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    word-break:break-all;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:1rem;
+}
+
+.btn-num{
+    background:var(--primary);
+    color:white;
+    border:none;
+    padding:15px;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn-op{
+    background:#e8f0fe;
+    color:var(--primary);
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.btn-submit{
+    grid-column:span 4;
+    background:#ffe8e0;
+    color:#e67e22;
+}
+
+.btn-new{
+    background:var(--success);
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:8px;
+    width:100%;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+select{
+    padding:8px;
+    border-radius:8px;
+    margin-bottom:10px;
+    font-weight:bold;
+}
+
+.success{border:2px solid var(--success);color:var(--success);}
+.error{border:2px solid var(--danger);color:var(--danger);}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Mixed Operation Challenge</h2>
+
+<!-- 🎚 MODE -->
+<select id="level" onchange="init()">
+    <option value="easy">🟢 Easy (1–20)</option>
+    <option value="medium" selected>🟡 Medium (15–30)</option>
+</select>
+
+<div class="rule" id="rule">Rule: Flexible structure allowed</div>
+
+<div class="target">Target: <span id="target">?</span></div>
+
+<div id="screen" class="screen">Press New Challenge</div>
+<div id="msg" style="font-weight:bold;font-size:0.9rem;margin-bottom:10px;"></div>
+
+<div class="grid" id="nums"></div>
+
+<div class="grid">
+    <button class="btn-op" onclick="add('+')">+</button>
+    <button class="btn-op" onclick="add('-')">-</button>
+    <button class="btn-op" onclick="add('(')">(</button>
+    <button class="btn-op" onclick="add(')')">)</button>
+
+    <button class="btn-op btn-submit" onclick="submit()">Submit</button>
+</div>
+
+<button class="btn-new" onclick="init()">New Challenge</button>
+
+</div>
+
+<script>
+
+let nums=[];
+let used=[];
+let expr="";
+let target=0;
+let requireBracket=false;
+
+function rand(){ return Math.floor(Math.random()*9+1); }
+
+function range(){
+    let level=document.getElementById("level").value;
+    if(level==="easy") return [1,20];
+    return [15,30]; // medium（你要的20左右）
+}
+
+function init(){
+    generate();
+    used=[];
+    expr="";
+    document.getElementById("msg").innerText="";
+    document.getElementById("screen").className="screen";
+    document.getElementById("screen").innerText="Reach " + target;
+    render();
+}
+
+function generate(){
+
+    const patterns = [
+        "((A+B)-C)+D",
+        "(A+(B-C))+D",
+        "A+((B+C)-D)",
+        "(A+B)-(C-D)"
+    ];
+
+    let ok=false;
+    let [min,max]=range();
+
+    // ⭐ 防卡死保护（关键优化）
+    let tries=0;
+
+    while(!ok && tries<1000){
+
+        tries++;
+
+        let a=rand(), b=rand(), c=rand(), d=rand();
+
+        let p=patterns[Math.floor(Math.random()*patterns.length)];
+
+        let exprStr=p.replace("A",a).replace("B",b).replace("C",c).replace("D",d);
+
+        let res=eval(exprStr);
+
+        if(Number.isInteger(res) && res>=min && res<=max){
+
+            nums=[a,b,c,d];
+            target=res;
+
+            // medium略更强调结构
+            let level=document.getElementById("level").value;
+            requireBracket = (level==="medium") && Math.random()<0.6;
+
+            document.getElementById("target").innerText=target;
+
+            document.getElementById("rule").innerText =
+                requireBracket ? "⚠ Rule: Brackets are required！" : "Rule: Flexible structure";
+
+            ok=true;
+        }
+    }
+}
+
+function render(){
+    let box=document.getElementById("nums");
+    box.innerHTML="";
+
+    nums.forEach((n,i)=>{
+        let b=document.createElement("button");
+        b.className="btn-num";
+        b.innerText=n;
+        b.disabled=used.includes(i);
+
+        b.onclick=()=>{
+            expr+=n;
+            used.push(i);
+            document.getElementById("screen").innerText=expr;
+            render();
+        };
+
+        box.appendChild(b);
+    });
+}
+
+function add(op){
+    expr+=op;
+    document.getElementById("screen").innerText=expr;
+}
+
+function submit(){
+
+    let screen=document.getElementById("screen");
+    let msg=document.getElementById("msg");
+
+    try{
+
+        if(used.length<4){
+            throw new Error("Use all numbers!");
+        }
+
+        let result=eval(expr);
+
+        if(Math.abs(result-target)<0.0001){
+
+            if(requireBracket && !expr.includes("(")){
+                screen.className="screen error";
+                msg.innerText="❌ Missing required structure (brackets)";
+                return;
+            }
+
+            screen.className="screen success";
+            msg.innerText="Correct ✔";
+
+        }else{
+            screen.className="screen error";
+            msg.innerText="Result = " + result;
+        }
+
+    }catch(e){
+        screen.className="screen error";
+        msg.innerText="Invalid expression!";
+    }
+}
+
+init();
+
+</script>
+</body>
+</html>
