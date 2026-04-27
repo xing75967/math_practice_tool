@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discovering e - Interactive Lesson</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+}
+button {
+  padding: 10px 18px;
+  margin: 8px;
+  font-size: 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  opacity: 0.85;
+}
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 14px;
+  margin-top: 20px;
+}
+.value {
+  font-size: 2.2em;
+  margin: 10px 0;
+  color: #38bdf8;
+}
+.formula {
+  margin-top: 20px;
+  font-size: 1.1em;
+  color: #cbd5f5;
+}
+.small {
+  font-size: 0.9em;
+  color: #94a3b8;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>💰 Discovering the Number e</h1>
+  <p>What happens when money grows more and more frequently?</p>
+
+  <div class="card">
+    <h2>Choose Compounding Frequency</h2>
+    <button onclick="simulate(1)">1 time (yearly)</button>
+    <button onclick="simulate(2)">2 times</button>
+    <button onclick="simulate(4)">4 times (quarterly)</button>
+    <button onclick="simulate(12)">12 times (monthly)</button>
+    <button onclick="simulate(365)">365 times (daily)</button>
+    <button onclick="simulate(8760)">8760 times (hourly)</button>
+    <button onclick="simulate(525600)">525,600 times (minute)</button>
+    <button onclick="simulate(10000000)">Continuous (very large)</button>
+  </div>
+
+  <div class="card">
+    <h2>Result</h2>
+    <p>Final Amount from $1 at 100% annual interest:</p>
+    <div id="result" class="value">$1.00000</div>
+    <p id="explanation"></p>
+  </div>
+
+  <div class="card">
+    <h2>What is happening?</h2>
+    <p class="small">We are splitting the year into n equal parts and applying interest each time.</p>
+    <div class="formula">
+      (1 + 1/n)<sup>n</sup>
+    </div>
+    <p class="small">As n → ∞, the value approaches e ≈ 2.71828</p>
+  </div>
+</div>
+
+<script>
+function simulate(n) {
+  let amount = Math.pow((1 + 1/n), n);
+  document.getElementById("result").innerText = "$" + amount.toFixed(5);
+
+  let explanation = "";
+
+  if (n === 1) explanation = "Interest applied once.";
+  else if (n === 2) explanation = "Interest applied twice. Notice it grows more.";
+  else if (n === 4) explanation = "Quarterly compounding increases growth further.";
+  else if (n === 12) explanation = "Monthly compounding keeps increasing.";
+  else if (n === 365) explanation = "Daily compounding gets closer to a limit.";
+  else if (n === 8760) explanation = "Hourly compounding is very close to continuous growth.";
+  else if (n === 525600) explanation = "Minute compounding is extremely close to e.";
+  else explanation = "This is almost continuous growth → approaching e (~2.71828).";
+
+  document.getElementById("explanation").innerText = explanation;
+}
+</script>
+</body>
+</html>
