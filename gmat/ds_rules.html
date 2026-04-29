@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GMAT Data Sufficiency Interactive</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #0b0b0b;
+        color: white;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1, h2 {
+        color: #D4AF37;
+        text-align: center;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .card {
+        background: #1a1a1a;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 0 15px rgba(212,175,55,0.2);
+    }
+
+    .btn {
+        display: inline-block;
+        margin: 5px;
+        padding: 12px 20px;
+        border-radius: 10px;
+        background-color: #D4AF37;
+        color: black;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .btn:hover {
+        background-color: #f0d67a;
+    }
+
+    .feedback {
+        margin-top: 15px;
+        font-weight: bold;
+    }
+
+    .correct {
+        color: #4CAF50;
+    }
+
+    .wrong {
+        color: #ff4d4d;
+    }
+
+    .rule {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-left: 4px solid #D4AF37;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔥 Data Sufficiency Interactive Lesson</h1>
+
+<div class="card">
+<h2>Core Mindset</h2>
+<p><b>Don’t solve. Check if the answer is UNIQUE.</b></p>
+</div>
+
+<div class="card">
+<h2>6 Core Rules</h2>
+
+<div class="rule">1. One answer only → sufficient</div>
+<div class="rule">2. Analyze ONE statement at a time</div>
+<div class="rule">3. One counterexample = NOT sufficient</div>
+<div class="rule">4. Yes/No must be consistent</div>
+<div class="rule">5. Test different types (±, even/odd, 0)</div>
+<div class="rule">6. Watch hidden restrictions</div>
+
+</div>
+
+<div class="card">
+<h2>Practice Question</h2>
+
+<p><b>Is x > 0?</b></p>
+
+<p>(1) x² = 4</p>
+<p>(2) x > -1</p>
+
+<div>
+    <div class="btn" onclick="checkAnswer('A')">A</div>
+    <div class="btn" onclick="checkAnswer('B')">B</div>
+    <div class="btn" onclick="checkAnswer('C')">C</div>
+    <div class="btn" onclick="checkAnswer('D')">D</div>
+    <div class="btn" onclick="checkAnswer('E')">E</div>
+</div>
+
+<div id="feedback" class="feedback"></div>
+
+</div>
+
+</div>
+
+<script>
+function checkAnswer(choice) {
+    let feedback = document.getElementById("feedback");
+
+    if (choice === "C") {
+        feedback.innerHTML = "✅ Correct! (1) gives x = ±2 → not sufficient. (2) alone not sufficient. Together → x = 2 → sufficient.";
+        feedback.className = "feedback correct";
+    } else {
+        feedback.innerHTML = "❌ Not quite. Try again! Think: Can you get more than one value?";
+        feedback.className = "feedback wrong";
+    }
+}
+</script>
+
+</body>
+</html>

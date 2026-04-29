@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GMAT DS Progressive Module</title>
+
+<style>
+body {
+    font-family: Arial;
+    background:#0b0b0b;
+    color:white;
+    margin:0;
+    padding:20px;
+}
+
+h1 {
+    text-align:center;
+    color:#D4AF37;
+}
+
+.container {
+    max-width:900px;
+    margin:auto;
+}
+
+.card {
+    background:#1a1a1a;
+    padding:20px;
+    margin:15px 0;
+    border-radius:15px;
+    box-shadow:0 0 12px rgba(212,175,55,0.15);
+}
+
+.btn {
+    display:inline-block;
+    margin:5px;
+    padding:10px 16px;
+    background:#D4AF37;
+    color:black;
+    font-weight:bold;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.btn:hover { background:#f0d67a; }
+
+.feedback {
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.correct { color:#4CAF50; }
+.wrong { color:#ff4d4d; }
+
+.progress {
+    text-align:center;
+    color:#D4AF37;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔥 Data Sufficiency Progressive Module</h1>
+
+<div class="progress">
+Score: <span id="score">0</span> / 10
+</div>
+
+<div id="quiz"></div>
+
+</div>
+
+<script>
+
+let score = 0;
+let current = 0;
+
+const questions = [
+
+{
+q: "Is x > 0?<br><br>(1) x² = 4<br>(2) x > -1",
+ans:"C",
+exp:"(1) x = ±2 → not unique. (2) alone insufficient. Together → x = 2."
+},
+
+{
+q: "Is n an even integer?<br><br>(1) n² is even<br>(2) n is divisible by 4",
+ans:"A",
+exp:"(1) n must be even → sufficient."
+},
+
+{
+q: "Is x = 0?<br><br>(1) x² = x<br>(2) x(x-1)=0",
+ans:"C",
+exp:"Both allow multiple values alone."
+},
+
+{
+q: "Is a + b even?<br><br>(1) a and b are integers<br>(2) a and b have same parity",
+ans:"B",
+exp:"Same parity guarantees even sum → sufficient."
+},
+
+{
+q: "Is x > y?<br><br>(1) x - y > 0<br>(2) x² > y²",
+ans:"A",
+exp:"(1) directly sufficient."
+},
+
+{
+q: "Is x positive?<br><br>(1) x³ > 0<br>(2) x² > 0",
+ans:"A",
+exp:"(1) preserves sign → sufficient."
+},
+
+{
+q: "Is ab = 0?<br><br>(1) a = 0<br>(2) b = 0",
+ans:"D",
+exp:"Either statement alone sufficient."
+},
+
+{
+q: "Is x = y?<br><br>(1) x - y = 0<br>(2) x/y = 1",
+ans:"D",
+exp:"Each alone sufficient."
+},
+
+{
+q: "Is n divisible by 3?<br><br>(1) n mod 6 = 0<br>(2) n mod 9 = 0",
+ans:"A",
+exp:"(1) guarantees divisibility by 3."
+},
+
+{
+q: "Is x > 1?<br><br>(1) x > 0<br>(2) x² > 1",
+ans:"E",
+exp:"Still ambiguous even together."
+}
+
+];
+
+function loadQ() {
+    let q = questions[current];
+
+    document.getElementById("quiz").innerHTML = `
+    <div class="card">
+        <h2>Question ${current+1}</h2>
+        <p>${q.q}</p>
+
+        <div>
+            <div class="btn" onclick="check('A')">A</div>
+            <div class="btn" onclick="check('B')">B</div>
+            <div class="btn" onclick="check('C')">C</div>
+            <div class="btn" onclick="check('D')">D</div>
+            <div class="btn" onclick="check('E')">E</div>
+        </div>
+
+        <div id="fb" class="feedback"></div>
+
+        <button class="btn" onclick="nextQ()">Next</button>
+    </div>
+    `;
+}
+
+function check(choice){
+    let q = questions[current];
+    let fb = document.getElementById("fb");
+
+    if(choice === q.ans){
+        fb.innerHTML = "✅ Correct! " + q.exp;
+        fb.className = "feedback correct";
+        if(!q.done){
+            score++;
+            q.done = true;
+        }
+        document.getElementById("score").innerText = score;
+    } else {
+        fb.innerHTML = "❌ Trap! " + q.exp;
+        fb.className = "feedback wrong";
+    }
+}
+
+function nextQ(){
+    current++;
+    if(current >= questions.length){
+        document.getElementById("quiz").innerHTML =
+        `<div class="card"><h2>Finished 🎯</h2><p>Final Score: ${score}/10</p></div>`;
+    } else {
+        loadQ();
+    }
+}
+
+loadQ();
+
+</script>
+
+<!-- 🔥 ADDED FOOTER ONLY (A-E EXPLANATION) -->
+<div style="max-width:900px;margin:30px auto 0 auto;padding:20px;border-top:1px solid #D4AF37;color:#ccc;font-size:14px;line-height:1.8;">
+
+    <b style="color:#D4AF37;">Answer Choice Meaning:</b><br><br>
+
+    A → Statement (1) alone is sufficient, (2) alone is not sufficient<br>
+    B → Statement (2) alone is sufficient, (1) alone is not sufficient<br>
+    C → Both statements together are sufficient, neither alone is sufficient<br>
+    D → Each statement alone is sufficient<br>
+    E → Even together, statements are not sufficient<br>
+
+</div>
+
+</body>
+</html>
