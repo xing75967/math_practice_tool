@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GMAT Parity Mastery Lesson</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #0b0b0b;
+    color: #f1f5f9;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #D4AF37;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.card {
+    background: #111827;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+
+.rule {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.rule b {
+    display: inline-block;
+    width: 90px;
+}
+.example {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background: #020617;
+    border-left: 4px solid #22c55e;
+}
+
+button {
+    background: #D4AF37;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+button:hover {
+    background: #facc15;
+}
+
+.highlight {
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+.trap {
+    margin-top: 10px;
+    padding: 10px;
+    background: #450a0a;
+    border-left: 4px solid #ef4444;
+}
+.or {
+    color: #6b7280;   /* 柔和灰色： #9ca3af 更暗一点： #6b7280 高级一点：#94a3b8*/ 
+    font-weight: normal;
+}
+</style>
+</head>
+
+<body>
+
+<h1> GMAT Parity Rules (Odd & Even) </h1>
+
+<div class="container">
+
+<!-- Rule 1 -->
+<div class="card">
+	
+	<div class="rule">
+	    <div style="display:flex; align-items:flex-start;">
+	        <b style="width:90px;">Rule 1:</b>
+	        <div>
+	            Even = Even + Even <span class="or">OR</span> Odd + Odd<br>
+	            Even = Even × Even <span class="or">OR</span> Odd × Even
+	        </div>
+	    </div>
+	</div>
+
+
+    
+    
+    <button onclick="toggle('r1')">Show Examples</button>
+    <div id="r1" class="example">
+        4 + 6 = <span class="highlight">10 (Even)</span><br>
+        3 + 5 = <span class="highlight">8 (Even)</span><br>
+        2 × 6 = <span class="highlight">12 (Even)</span><br>
+        3 × 4 = <span class="highlight">12 (Even)</span>
+    </div>
+</div>
+
+<!-- Rule 2 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 2: </b> Odd = Odd + Even
+    </div>
+    <button onclick="toggle('r2')">Show Example</button>
+    <div id="r2" class="example">
+        3 + 4 = <span class="highlight">7 (Odd)</span>
+    </div>
+</div>
+
+<!-- Rule 3 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 3:</b> Sum of an odd number of odd integers is <span class="highlight">odd</span>
+    </div>
+    <button onclick="toggle('r3')">Show Example</button>
+    <div id="r3" class="example">
+        3 + 5 + 7 = <span class="highlight">15 (Odd)</span>
+    </div>
+</div>
+
+<!-- Rule 4 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 4:</b> Sum of an even number of odd integers is <span class="highlight">even</span>
+    </div>
+    <button onclick="toggle('r4')">Show Example</button>
+    <div id="r4" class="example">
+        3 + 5 = <span class="highlight">8 (Even)</span>
+    </div>
+</div>
+
+<!-- Rule 5 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 5:</b> Any number of even integers added/subtracted is <span class="highlight">even</span>
+    </div>
+    <button onclick="toggle('r5')">Show Example</button>
+    <div id="r5" class="example">
+        2 + 4 + 6 = <span class="highlight">12 (Even)</span>
+    </div>
+</div>
+
+<!-- Rule 6 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 6:</b> If a product of n integers is odd, then <span class="highlight">all must be odd</span>
+    </div>
+    <button onclick="toggle('r6')">Show Example</button>
+    <div id="r6" class="example">
+        3 × 5 × 7 = <span class="highlight">105 (Odd)</span><br>
+        If any number is even → result becomes even
+    </div>
+</div>
+
+<!-- Rule 7 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 7:</b> If n consecutive integers sum to 0, then n is <span class="highlight">odd</span>
+    </div>
+    <button onclick="toggle('r7')">Show Example</button>
+    <div id="r7" class="example">
+        (-2) + (-1) + 0 + 1 + 2 = <span class="highlight">0</span><br>
+        Count = 5 (odd)
+    </div>
+</div>
+
+<!-- Rule 8 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 8:</b> If n consecutive odd integers sum to 0, then n is <span class="highlight">even</span>
+    </div>
+    <button onclick="toggle('r8')">Show Example</button>
+    <div id="r8" class="example">
+        (-3) + (-1) + 1 + 3 = <span class="highlight">0</span><br>
+        Count = 4 (even)
+    </div>
+</div>
+
+<!-- Rule 9 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 9:</b> If n consecutive even integers sum to 0, then n is <span class="highlight">odd</span>
+    </div>
+    <button onclick="toggle('r9')">Show Example</button>
+    <div id="r9" class="example">
+        (-4) + (-2) + 0 + 2 + 4 = <span class="highlight">0</span><br>
+        Count = 5 (odd)
+    </div>
+</div>
+
+<!-- Rule 10 -->
+<div class="card">
+    <div class="rule">
+        <b>Rule 10:</b> If the sum of two prime numbers is odd, one of them must be <span class="highlight">2</span>
+    </div>
+    <button onclick="toggle('r10')">Show Example</button>
+    <div id="r10" class="example">
+        2 + 3 = <span class="highlight">5 (Odd)</span><br>
+        3 + 5 = 8 (Even) ❌
+    </div>
+
+    <div class="trap">
+        ⚠️ Trap: Students forget that ALL primes except 2 are odd!
+    </div>
+</div>
+
+</div>
+
+<script>
+function toggle(id) {
+    var el = document.getElementById(id);
+    el.style.display = (el.style.display === "block") ? "none" : "block";
+}
+</script>
+
+</body>
+</html>
