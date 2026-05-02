@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Log Function Transformation Lab</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0b1020;
+    color: #e2e8f0;
+    text-align: center;
+}
+
+h1 {
+    color: gold;
+}
+
+.container {
+    width: 980px;
+    margin: auto;
+}
+
+canvas {
+    background: #0f172a;
+    border: 1px solid #334155;
+    margin-top: 10px;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.control {
+    margin: 10px;
+}
+
+input {
+    width: 200px;
+}
+
+.summary {
+    margin-top: 25px;
+    text-align: center;
+    border-top: 1px solid #334155;
+    padding: 20px;
+}
+
+.summary h2 {
+    color: #38bdf8;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📊 Logarithmic Transformation Lab</h1>
+
+<div class="container">
+
+<canvas id="graph" width="950" height="500"></canvas>
+
+<div class="controls">
+
+<div class="control">
+<p>a = <span id="aval">2</span></p>
+<input type="range" min="0.2" max="5" step="0.1" value="2" id="aSlider">
+</div>
+
+<div class="control">
+<p>h = <span id="hval">0</span></p>
+<input type="range" min="-10" max="10" step="1" value="0" id="hSlider">
+</div>
+
+<div class="control">
+<p>k = <span id="kval">1</span></p>
+<input type="range" min="-3" max="3" step="0.1" value="1" id="kSlider">
+</div>
+
+</div>
+
+</div>
+
+<div class="summary">
+<h2>📐 Core Idea</h2>
+<p>✔ All transformations act on the SAME base function</p>
+<p>✔ y = k · logₐ(x - h)</p>
+<p>✔ Each parameter modifies the same structure</p>
+</div>
+
+<script>
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+const aSlider = document.getElementById("aSlider");
+const hSlider = document.getElementById("hSlider");
+const kSlider = document.getElementById("kSlider");
+
+const aval = document.getElementById("aval");
+const hval = document.getElementById("hval");
+const kval = document.getElementById("kval");
+
+let a = 2;
+let h = 0;
+let k = 1;
+
+const scale = 20;
+const originX = 475;
+const originY = 250;
+
+/* ================= GRID ================= */
+function drawGrid() {
+    ctx.strokeStyle = "#1f2937";
+
+    for (let x = 0; x < canvas.width; x += scale) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < canvas.height; y += scale) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+}
+
+/* ================= AXES ================= */
+function drawAxes() {
+    ctx.strokeStyle = "#94a3b8";
+    ctx.lineWidth = 2;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#94a3b8";
+
+    ctx.beginPath();
+    ctx.moveTo(0, originY);
+    ctx.lineTo(canvas.width, originY);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(originX, 0);
+    ctx.lineTo(originX, canvas.height);
+    ctx.stroke();
+}
+
+/* ================= LOG ================= */
+function logBase(x, base) {
+    return Math.log(x) / Math.log(base);
+}
+
+/* ================= CURVE ================= */
+function drawCurve(func, color) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    let first = true;
+
+    for (let px = 0; px < canvas.width; px++) {
+        let x = (px - originX) / scale;
+        if (x <= 0) continue;
+
+        let y = func(x);
+        if (y > 100 || y < -100) continue;
+
+        let py = originY - y * scale;
+
+        if (first) {
+            ctx.moveTo(px, py);
+            first = false;
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+
+    ctx.stroke();
+}
+
+/* ================= FUNCTIONS (TRUE TRANSFORM CHAIN) ================= */
+function base(x) {
+    return logBase(x, a);
+}
+
+function shifted(x) {
+    return logBase(x - h, a);
+}
+
+function fullTransform(x) {
+    return k * logBase(x - h, a);
+}
+
+/* ================= LABELS ================= */
+function drawLabels() {
+    ctx.font = "16px Arial";
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText("y = logₐ(x)", 700, 60);
+
+    ctx.fillStyle = "#22c55e";
+    ctx.fillText("y = logₐ(x - h)", 700, 85);
+
+    ctx.fillStyle = "#a855f7";
+    ctx.fillText("y = k·logₐ(x - h)", 700, 110);
+}
+
+/* ================= DRAW ================= */
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    drawGrid();
+    drawAxes();
+
+    drawCurve(base, "#38bdf8");       // blue
+    drawCurve(shifted, "#22c55e");    // green
+    drawCurve(fullTransform, "#a855f7"); // purple (correct chain)
+
+    drawLabels();
+
+    aval.innerText = a.toFixed(2);
+    hval.innerText = h;
+    kval.innerText = k.toFixed(2);
+}
+
+/* ================= EVENTS ================= */
+aSlider.oninput = () => { a = parseFloat(aSlider.value); draw(); };
+hSlider.oninput = () => { h = parseInt(hSlider.value); draw(); };
+kSlider.oninput = () => { k = parseFloat(kSlider.value); draw(); };
+
+draw();
+</script>
+
+</body>
+</html>
