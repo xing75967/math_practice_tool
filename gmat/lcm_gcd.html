@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LCM Divisibility Lesson</title>
+
+<style>
+body{
+    font-family: "Segoe UI", Arial;
+    background: linear-gradient(to right, #e3f2fd, #fce4ec);
+    text-align:center;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    background:white;
+    width:650px;
+    margin:auto;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+h1{
+    color:#1976d2;
+}
+
+.box{
+    background:#f1f8ff;
+    padding:15px;
+    margin:15px 0;
+    border-radius:10px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    background:#1976d2;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0d47a1;
+}
+
+input{
+    padding:8px;
+    font-size:16px;
+    width:100px;
+    text-align:center;
+}
+
+#result{
+    font-weight:bold;
+    margin-top:10px;
+    font-size:18px;
+}
+
+.fade{
+    animation: fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎯 Divisibility & LCM Game</h1>
+
+<div class="box">
+<b>Rule:</b><br>
+If a number is divisible by <b>a</b> and <b>b</b>,  
+then it must be divisible by <b>LCM(a, b)</b>
+</div>
+
+<div class="box">
+<b>Formula:</b><br>
+LCM(a,b) = (a × b) ÷ GCD(a,b)
+</div>
+
+<button onclick="generateQuestion()">🎲 Generate Question</button>
+
+<div id="question" class="box fade"></div>
+
+<input id="answer" placeholder="Answer">
+
+<br><br>
+
+<button onclick="checkAnswer()">✅ Submit</button>
+
+<div id="result"></div>
+
+<div id="explain" class="box"></div>
+
+</div>
+
+<script>
+
+// --- Helper Functions ---
+function gcd(a, b){
+    while(b !== 0){
+        let temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+function lcm(a, b){
+    return (a * b) / gcd(a, b);
+}
+
+// --- Global variables ---
+let a, b, correct;
+
+// --- Generate Question ---
+function generateQuestion(){
+    a = Math.floor(Math.random()*15)+2;
+    b = Math.floor(Math.random()*15)+2;
+
+    correct = lcm(a,b);
+
+    document.getElementById("question").innerHTML =
+        `If n is divisible by <b>${a}</b> and <b>${b}</b>,<br>
+        what MUST n be divisible by?`;
+
+    document.getElementById("result").innerHTML = "";
+    document.getElementById("explain").innerHTML = "";
+    document.getElementById("answer").value = "";
+}
+
+// --- Check Answer ---
+function checkAnswer(){
+    let user = Number(document.getElementById("answer").value);
+
+    if(user === correct){
+        document.getElementById("result").innerHTML = "🎉 Correct!";
+        document.getElementById("result").style.color = "green";
+    }else{
+        document.getElementById("result").innerHTML = "❌ Try again!";
+        document.getElementById("result").style.color = "red";
+    }
+
+    showExplanation();
+}
+
+// --- Explanation ---
+function showExplanation(){
+    let g = gcd(a,b);
+
+    document.getElementById("explain").innerHTML =
+        `<b>Step-by-step:</b><br>
+        GCD(${a}, ${b}) = ${g}<br>
+        LCM = (${a} × ${b}) ÷ ${g} = <b>${correct}</b><br><br>
+        👉 So n must be divisible by <b>${correct}</b>`;
+}
+
+// --- Auto start ---
+generateQuestion();
+
+</script>
+
+</body>
+</html>

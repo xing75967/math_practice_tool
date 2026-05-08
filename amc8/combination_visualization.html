@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Food Combo Connection Builder</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6f8;
+    color:#222;
+}
+
+h1{
+    margin:0;
+    padding:16px;
+    text-align:center;
+    background:#ff9800;
+    color:white;
+    font-size:34px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:16px;
+}
+
+.intro{
+    background:white;
+    border-radius:18px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+    line-height:1.6;
+}
+
+.intro h2{
+    margin-top:0;
+    margin-bottom:10px;
+    font-size:28px;
+}
+
+.highlight{
+    color:#e65100;
+    font-weight:bold;
+}
+
+.combo-area{
+    position:relative;
+    background:white;
+    border-radius:20px;
+    padding:24px;
+    min-height:480px;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.columns{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    position:relative;
+    z-index:2;
+}
+
+.column{
+    width:32%;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.column h2{
+    text-align:center;
+    margin:0 0 10px 0;
+    font-size:24px;
+}
+
+.item{
+    padding:14px;
+    border-radius:16px;
+    text-align:center;
+    font-size:20px;
+    font-weight:bold;
+    background:#fff3e0;
+    border:3px solid transparent;
+    transition:0.2s;
+    position:relative;
+}
+
+.item:hover{
+    transform:scale(1.03);
+}
+
+.result-box{
+    background:#e8f5e9;
+}
+
+svg{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:1;
+    pointer-events:none;
+}
+
+.controls{
+    margin-top:18px;
+    text-align:center;
+}
+
+button{
+    padding:12px 22px;
+    font-size:18px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    background:#ff9800;
+    color:white;
+    margin:6px;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#f57c00;
+    transform:translateY(-2px);
+}
+
+.explain{
+    margin-top:18px;
+    background:#fffde7;
+    border-radius:18px;
+    padding:20px;
+    font-size:20px;
+    line-height:1.8;
+    box-shadow:0 3px 10px rgba(0,0,0,0.08);
+}
+
+.explain h2{
+    margin-top:0;
+}
+
+ul{
+    margin-top:10px;
+    padding-left:25px;
+}
+
+.all-results{
+    margin-top:18px;
+    font-size:24px;
+    text-align:center;
+    line-height:1.8;
+    font-weight:bold;
+}
+
+.math{
+    font-size:34px;
+    text-align:center;
+    margin-top:18px;
+    font-weight:bold;
+    color:#d84315;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🍔 Food Combo Connection Machine</h1>
+
+<div class="container">
+
+<div class="intro">
+
+<h2>🎯 Big Math Idea</h2>
+
+<p>
+Each <span class="highlight">Main Dish</span> can connect to MANY drinks.
+Every connection creates a NEW two-digit number.
+</p>
+
+<p>
+The left side is the <b>TENS digit</b>.
+The middle side is the <b>ONES digit</b>.
+</p>
+
+<p style="font-size:28px;text-align:center;margin-bottom:0;">
+3 × 4 = 12 combinations
+</p>
+
+</div>
+
+<div class="combo-area">
+
+<svg id="lines"></svg>
+
+<div class="columns">
+
+<!-- LEFT -->
+<div class="column">
+
+<h2>🍔 Tens Digit</h2>
+
+<div class="item" id="t1">
+🍔 Burger = 1
+</div>
+
+<div class="item" id="t2">
+🍕 Pizza = 2
+</div>
+
+<div class="item" id="t3">
+🌭 Hot Dog = 3
+</div>
+
+</div>
+
+<!-- MIDDLE -->
+<div class="column">
+
+<h2>🥤 Ones Digit</h2>
+
+<div class="item" id="o1">
+🥤 Cola = 1
+</div>
+
+<div class="item" id="o2">
+🧃 Juice = 2
+</div>
+
+<div class="item" id="o3">
+🥛 Milk = 3
+</div>
+
+<div class="item" id="o4">
+🍵 Tea = 4
+</div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="column">
+
+<h2>🍽 Numbers</h2>
+
+<div class="item result-box" id="r1">❓</div>
+<div class="item result-box" id="r2">❓</div>
+<div class="item result-box" id="r3">❓</div>
+<div class="item result-box" id="r4">❓</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="controls">
+
+<button onclick="showConnections(1)">
+Burger
+</button>
+
+<button onclick="showConnections(2)">
+Pizza
+</button>
+
+<button onclick="showConnections(3)">
+Hot Dog
+</button>
+
+<button onclick="showAll()">
+Show ALL
+</button>
+
+<button onclick="clearLines()">
+Clear
+</button>
+
+</div>
+
+<div class="explain">
+
+<h2>🧠 What Students Should Notice</h2>
+
+<ul>
+<li>One tens digit can connect to MANY ones digits.</li>
+
+<li>Every new connection creates a NEW number.</li>
+
+<li>1 makes: 11, 12, 13, 14</li>
+
+<li>2 makes: 21, 22, 23, 24</li>
+
+<li>3 makes: 31, 32, 33, 34</li>
+
+<li>So we get 12 total combinations.</li>
+
+</ul>
+
+<div class="all-results">
+11 · 12 · 13 · 14
+<br>
+21 · 22 · 23 · 24
+<br>
+31 · 32 · 33 · 34
+</div>
+
+<div class="math">
+3 × 4 = 12
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const svg = document.getElementById("lines");
+
+function getColor(tens){
+
+    if(tens === 1){
+        return "#e53935";
+    }
+
+    if(tens === 2){
+        return "#1e88e5";
+    }
+
+    return "#43a047";
+
+}
+
+function drawLine(fromId,toId,color){
+
+    const from = document.getElementById(fromId);
+    const to = document.getElementById(toId);
+
+    const rect1 = from.getBoundingClientRect();
+    const rect2 = to.getBoundingClientRect();
+
+    const parentRect = document.querySelector('.combo-area').getBoundingClientRect();
+
+    const x1 = rect1.right - parentRect.left;
+    const y1 = rect1.top + rect1.height/2 - parentRect.top;
+
+    const x2 = rect2.left - parentRect.left;
+    const y2 = rect2.top + rect2.height/2 - parentRect.top;
+
+    const line = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line"
+    );
+
+    line.setAttribute("x1",x1);
+    line.setAttribute("y1",y1);
+    line.setAttribute("x2",x2);
+    line.setAttribute("y2",y2);
+
+    line.setAttribute("stroke",color);
+    line.setAttribute("stroke-width","5");
+    line.setAttribute("stroke-linecap","round");
+
+    svg.appendChild(line);
+
+}
+
+function showConnections(tens){
+
+    clearLines();
+
+    const color = getColor(tens);
+
+    for(let i=1;i<=4;i++){
+
+        drawLine("t"+tens,"o"+i,color);
+        drawLine("o"+i,"r"+i,color);
+
+        document.getElementById("r"+i).innerHTML =
+        tens.toString() + i.toString();
+
+    }
+
+}
+
+function showAll(){
+
+    clearLines();
+
+    for(let t=1;t<=3;t++){
+
+        const color = getColor(t);
+
+        for(let o=1;o<=4;o++){
+
+            drawLine("t"+t,"o"+o,color);
+
+        }
+
+    }
+
+    document.getElementById("r1").innerHTML = "11 12 13 14";
+    document.getElementById("r2").innerHTML = "21 22 23 24";
+    document.getElementById("r3").innerHTML = "31 32 33 34";
+    document.getElementById("r4").innerHTML = "12 TOTAL";
+
+}
+
+function clearLines(){
+
+    svg.innerHTML = "";
+
+    for(let i=1;i<=4;i++){
+
+        document.getElementById("r"+i).innerHTML = "❓";
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
