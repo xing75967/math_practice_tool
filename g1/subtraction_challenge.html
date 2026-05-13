@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Subtraction Thinking Lab</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#0b1020;
+    color:white;
+    text-align:center;
+    margin:0;
+    padding:20px;
+}
+
+h1{
+    color:gold;
+    margin-bottom:10px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.top-panel{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    background:gold;
+    font-weight:bold;
+}
+
+.level-btn.active{
+    border:3px solid white;
+    transform:scale(1.08);
+}
+
+.start-btn{
+    background:#22c55e;
+    color:white;
+}
+
+.main-area{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-top:15px;
+}
+
+.card{
+    background:#111827;
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:18px;
+    min-height:360px;
+}
+
+h2{
+    color:#38bdf8;
+    margin-top:0;
+    margin-bottom:8px;
+    font-size:24px;
+}
+
+.question{
+    font-size:44px;
+    margin:10px 0;
+    color:gold;
+}
+
+.vertical{
+    font-size:38px;
+    line-height:1.15;
+    margin-top:6px;
+    margin-bottom:10px;
+    font-family:monospace;
+    white-space:pre;
+}
+
+input{
+    padding:12px;
+    width:140px;
+    font-size:24px;
+    text-align:center;
+    border-radius:10px;
+    border:none;
+}
+
+.submit-btn{
+    background:#38bdf8;
+    color:white;
+    margin-top:12px;
+}
+
+.next-btn{
+    background:#a855f7;
+    color:white;
+}
+
+.correct{
+    color:#22c55e;
+    font-size:22px;
+}
+
+.wrong{
+    color:#ff6b6b;
+    font-size:22px;
+}
+
+.timer{
+    font-size:22px;
+    color:gold;
+}
+
+.progress{
+    font-size:20px;
+}
+
+.summary{
+    margin-top:25px;
+    background:#111827;
+    border:1px solid #334155;
+    border-radius:18px;
+    padding:20px;
+    font-size:22px;
+}
+
+.visual{
+    margin-top:0;
+    padding-top:0;
+    font-size:18px;
+    line-height:1.2;
+}
+
+.blocks{
+    font-size:24px;
+    letter-spacing:2px;
+    line-height:1.25;
+    margin-top:4px;
+    margin-bottom:8px;
+    word-wrap:break-word;
+}
+
+.equation{
+    font-size:22px;
+    color:gold;
+    margin-top:8px;
+    margin-bottom:10px;
+}
+
+.algorithm{
+    margin-top:4px;
+    font-family:monospace;
+    font-size:40px;
+    line-height:1.05;
+    color:#38bdf8;
+    white-space:pre;
+}
+
+.borrow{
+    font-size:18px;
+    color:#ff4d4d;
+    font-weight:bold;
+    position:relative;
+    top:-10px;
+}
+
+.small-note{
+    margin-top:6px;
+    color:#94a3b8;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>➖ Subtraction Thinking Lab</h1>
+
+<div class="container">
+
+<div class="top-panel">
+
+<button class="level-btn" onclick="setLevel(10,this)">
+Within 10
+</button>
+
+<button class="level-btn active" onclick="setLevel(20,this)">
+Within 20
+</button>
+
+<button class="level-btn" onclick="setLevel(50,this)">
+Within 50
+</button>
+
+<button class="start-btn" onclick="startGame()">
+Start 10 Questions
+</button>
+
+</div>
+
+<div class="timer" id="timer">
+⏱ Time: 0s
+</div>
+
+<div class="progress" id="progress">
+Question 0 / 10
+</div>
+
+<div class="main-area">
+
+<!-- LEFT -->
+<div class="card">
+
+<h2>🤔 Solve the Question</h2>
+
+<div class="question" id="question">
+Press Start
+</div>
+
+<div class="vertical" id="verticalSetup"></div>
+
+<input id="answerInput" placeholder="?">
+
+<br>
+
+<button class="submit-btn" onclick="submitAnswer()">
+Submit
+</button>
+
+<button class="next-btn" id="nextBtn"
+onclick="nextQuestion()"
+style="display:none;">
+Next
+</button>
+
+<div id="feedback" style="margin-top:10px;"></div>
+
+</div>
+
+<!-- RIGHT -->
+<div class="card">
+
+<h2>📚 Visual + Algorithm</h2>
+
+<div class="visual" id="visualArea">
+
+Waiting for answer...
+
+</div>
+
+</div>
+
+</div>
+
+<div class="summary" id="summary"></div>
+
+</div>
+
+<script>
+
+let maxNum = 20;
+let totalQuestions = 10;
+
+let currentIndex = 0;
+let correctCount = 0;
+
+let a,b,correctAnswer;
+
+let startTime;
+let timerInterval;
+
+/* ================= LEVEL ================= */
+
+function setLevel(n,btn){
+
+    maxNum = n;
+
+    document.querySelectorAll(".level-btn")
+    .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+}
+
+/* ================= START ================= */
+
+function startGame(){
+
+    currentIndex = 0;
+    correctCount = 0;
+
+    startTime = Date.now();
+
+    document.getElementById("summary").innerHTML = "";
+
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(updateTimer,100);
+
+    nextQuestion();
+}
+
+/* ================= TIMER ================= */
+
+function updateTimer(){
+
+    let sec = ((Date.now()-startTime)/1000).toFixed(1);
+
+    document.getElementById("timer").innerHTML =
+        `⏱ Time: ${sec}s`;
+}
+
+/* ================= FORMAT ================= */
+
+function pad2(n){
+    return n.toString().padStart(2," ");
+}
+
+/* ================= QUESTION ================= */
+
+function nextQuestion(){
+
+    if(currentIndex >= totalQuestions){
+        endGame();
+        return;
+    }
+
+    document.getElementById("feedback").innerHTML = "";
+    document.getElementById("visualArea").innerHTML =
+        "Solve first to see explanation.";
+
+    document.getElementById("nextBtn").style.display = "none";
+
+    a = Math.floor(Math.random()*maxNum);
+    b = Math.floor(Math.random()*maxNum);
+
+    // 保证大数在前，避免负数
+    if (a < b) {
+        [a, b] = [b, a];
+    }
+
+    correctAnswer = a - b;
+
+    document.getElementById("question").innerHTML =
+        `${a} − ${b} = ?`;
+
+    document.getElementById("verticalSetup").innerHTML =
+`
+  ${pad2(a)}
+- ${pad2(b)}
+────
+`;
+
+    document.getElementById("progress").innerHTML =
+        `Question ${currentIndex+1} / ${totalQuestions}`;
+
+    document.getElementById("answerInput").value = "";
+}
+
+/* ================= SUBMIT ================= */
+
+function submitAnswer(){
+
+    let user =
+        Number(document.getElementById("answerInput").value);
+
+    let feedback =
+        document.getElementById("feedback");
+
+    if(user === correctAnswer){
+
+        correctCount++;
+
+        feedback.innerHTML =
+            `<div class="correct">
+            ✔ Correct!
+            </div>`;
+
+    }else{
+
+        feedback.innerHTML =
+            `<div class="wrong">
+            ✘ Correct answer = ${correctAnswer}
+            </div>`;
+    }
+
+    showExplanation();
+
+    currentIndex++;
+
+    document.getElementById("nextBtn").style.display =
+        "inline-block";
+}
+
+/* ================= EXPLANATION ================= */
+
+function showExplanation(){
+
+    let remaining = "🟩".repeat(correctAnswer);
+    let removed = "🟥".repeat(b);
+
+    let onesA = a % 10;
+    let onesB = b % 10;
+
+    let borrow = (onesA < onesB);
+
+    let borrowHTML = borrow
+        ? `<span class="borrow">1</span>`
+        : "";
+
+    let algorithm =
+`${borrowHTML}
+  ${pad2(a)}
+- ${pad2(b)}
+────
+  ${pad2(correctAnswer)}
+`;
+
+    document.getElementById("visualArea").innerHTML =
+
+`
+<div class="blocks">
+${remaining}
+<br><br>
+${removed}
+</div>
+
+<div class="equation">
+${a} − ${b} = ${correctAnswer}
+</div>
+
+<div class="algorithm">
+${algorithm}
+</div>
+
+<div class="small-note">
+Standard Vertical Subtraction Method
+</div>
+`;
+}
+
+/* ================= END ================= */
+
+function endGame(){
+
+    clearInterval(timerInterval);
+
+    let totalTime =
+        ((Date.now()-startTime)/1000).toFixed(1);
+
+    let accuracy =
+        Math.round(correctCount/totalQuestions*100);
+
+    document.getElementById("summary").innerHTML =
+
+`
+<h2 style="color:gold;">
+🏁 Session Complete
+</h2>
+
+<p>⏱ Total Time: ${totalTime}s</p>
+
+<p>⭐ Correct Answers:
+${correctCount} / ${totalQuestions}</p>
+
+<p>🎯 Accuracy:
+${accuracy}%</p>
+
+<p style="color:#38bdf8;">
+Great job practicing subtraction thinking!
+</p>
+`;
+
+    document.getElementById("question").innerHTML =
+        "Finished!";
+
+    document.getElementById("verticalSetup").innerHTML =
+        "";
+
+    document.getElementById("visualArea").innerHTML =
+        "Excellent work!";
+}
+
+/* ================= ENTER ================= */
+
+document.getElementById("answerInput")
+.addEventListener("keydown",function(e){
+
+    if(e.key==="Enter"){
+        submitAnswer();
+    }
+});
+
+</script>
+
+</body>
+</html>
