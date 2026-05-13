@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Factor Finder + Prime Factorization</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#0b1020;
+    color:#e2e8f0;
+    text-align:center;
+    padding:30px;
+}
+
+h1{
+    color:gold;
+}
+
+.container{
+    width:800px;
+    margin:auto;
+    background:#111827;
+    padding:30px;
+    border-radius:16px;
+    border:1px solid #334155;
+}
+
+input{
+    width:220px;
+    padding:12px;
+    font-size:20px;
+    border-radius:10px;
+    border:none;
+    text-align:center;
+    margin-top:10px;
+}
+
+button{
+    padding:12px 20px;
+    font-size:18px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    margin-left:10px;
+    background:#38bdf8;
+    color:white;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+.result{
+    margin-top:30px;
+}
+
+.section{
+    margin-top:25px;
+    padding:20px;
+    background:#0f172a;
+    border-radius:12px;
+    border:1px solid #334155;
+}
+
+.title{
+    color:gold;
+    font-size:24px;
+    margin-bottom:15px;
+}
+
+.content{
+    font-size:24px;
+    line-height:1.8;
+    word-wrap:break-word;
+}
+
+.count{
+    margin-top:15px;
+    color:#38bdf8;
+    font-size:28px;
+}
+
+.explanation{
+    margin-top:30px;
+    color:#94a3b8;
+    font-size:18px;
+    line-height:1.8;
+}
+
+.formula{
+    margin-top:25px;
+    padding:25px;
+    background:#111827;
+    border-radius:14px;
+    border:1px solid #334155;
+}
+
+.formula h2{
+    color:#38bdf8;
+}
+
+.math{
+    font-size:28px;
+    margin:15px 0;
+    color:gold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔢 Factor Finder + Prime Factorization</h1>
+
+<div class="container">
+
+<p>Enter a positive integer:</p>
+
+<input type="number" id="numberInput" min="1" placeholder="Example: 360">
+
+<button onclick="analyzeNumber()">Analyze</button>
+
+<div class="result">
+
+<!-- FACTORS -->
+<div class="section">
+<div class="title">📌 Factors</div>
+
+<div class="content" id="factorList">
+Factors will appear here.
+</div>
+
+<div class="count" id="factorCount"></div>
+</div>
+
+<!-- PRIME FACTORIZATION -->
+<div class="section">
+<div class="title">🧩 Prime Factorization</div>
+
+<div class="content" id="primeFactorization">
+Prime factorization will appear here.
+</div>
+</div>
+
+</div>
+
+<!-- EXPLANATION -->
+<div class="formula">
+
+<h2>📚 How to Find the Number of Factors</h2>
+
+<p>
+First write the number in prime factorization form:
+</p>
+
+<div class="math">
+n = a<sup>x</sup> × b<sup>y</sup> × c<sup>z</sup>
+</div>
+
+<p>
+where a, b, c are prime numbers.
+</p>
+
+<p>
+Then add 1 to each exponent and multiply:
+</p>
+
+<div class="math" style="color:#38bdf8;">
+Number of Factors = (x + 1)(y + 1)(z + 1)
+</div>
+
+</div>
+
+<div class="explanation">
+<p>✔ A factor divides the number exactly.</p>
+
+<p>✔ Prime factorization breaks a number into prime numbers only.</p>
+
+<p>✔ Example:</p>
+
+<p>
+36 = 2² × 3²
+</p>
+
+<p>
+Number of factors = (2+1)(2+1) = 9
+</p>
+</div>
+
+</div>
+
+<script>
+
+function analyzeNumber(){
+
+    let num = parseInt(document.getElementById("numberInput").value);
+
+    const factorList = document.getElementById("factorList");
+    const factorCount = document.getElementById("factorCount");
+    const primeFactorization = document.getElementById("primeFactorization");
+
+    if(isNaN(num) || num <= 0){
+
+        factorList.innerHTML = "❌ Please enter a positive integer.";
+        factorCount.innerHTML = "";
+        primeFactorization.innerHTML = "";
+
+        return;
+    }
+
+    /* ================= FACTORS ================= */
+
+    let factors = [];
+
+    for(let i = 1; i <= num; i++){
+
+        if(num % i === 0){
+            factors.push(i);
+        }
+    }
+
+    factorList.innerHTML =
+        factors.join(" , ");
+
+    factorCount.innerHTML =
+        "Total Number of Factors: " + factors.length;
+
+    /* ================= PRIME FACTORIZATION ================= */
+
+    let n = num;
+    let primeFactors = [];
+
+    let divisor = 2;
+
+    while(n > 1){
+
+        while(n % divisor === 0){
+
+            primeFactors.push(divisor);
+            n = n / divisor;
+        }
+
+        divisor++;
+    }
+
+    /* Count exponents */
+
+    let factorMap = {};
+
+    for(let factor of primeFactors){
+
+        if(factorMap[factor]){
+            factorMap[factor]++;
+        } else {
+            factorMap[factor] = 1;
+        }
+    }
+
+    /* Expanded form */
+
+    let expandedForm = primeFactors.join(" × ");
+
+    /* Exponent form */
+
+    let exponentForm = [];
+
+    for(let key in factorMap){
+
+        let exponent = factorMap[key];
+
+        if(exponent === 1){
+            exponentForm.push(key);
+        } else {
+            exponentForm.push(
+                key + "<sup>" + exponent + "</sup>"
+            );
+        }
+    }
+
+    primeFactorization.innerHTML =
+        "<b>Expanded Form:</b><br>" +
+        expandedForm +
+        "<br><br>" +
+        "<b>Exponent Form:</b><br>" +
+        exponentForm.join(" × ");
+}
+
+</script>
+
+</body>
+</html>
