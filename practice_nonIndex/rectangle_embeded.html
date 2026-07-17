@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Rectangle & Square Geometry Demo</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#0b1020;
+    color:white;
+    overflow:hidden;
+}
+
+h1{
+    text-align:center;
+    color:gold;
+    margin-top:20px;
+    margin-bottom:5px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:20px;
+}
+
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    gap:40px;
+    padding:20px;
+}
+
+.canvas-area{
+    background:#111827;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+svg{
+    background:#1e293b;
+    border-radius:16px;
+}
+
+.panel{
+    width:320px;
+    background:#111827;
+    padding:20px;
+    border-radius:20px;
+    box-shadow:0 0 20px rgba(0,0,0,0.4);
+}
+
+.step{
+    margin-bottom:18px;
+    padding:12px;
+    background:#1e293b;
+    border-radius:12px;
+    line-height:1.6;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:bold;
+    background:gold;
+    color:black;
+    cursor:pointer;
+    margin-top:10px;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.03);
+}
+
+.highlight{
+    color:gold;
+    font-weight:bold;
+}
+
+.label{
+    font-size:18px;
+    fill:white;
+    font-weight:bold;
+}
+
+.small{
+    fill:#cbd5e1;
+    font-size:15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Nested Rectangle Geometry</h1>
+<div class="subtitle">
+See how a square “uses the full height” inside a rectangle
+</div>
+
+<div class="container">
+
+    <div class="canvas-area">
+
+        <svg width="820" height="500">
+
+            <!-- MAIN RECTANGLE -->
+            <rect id="mainRect"
+                  x="60"
+                  y="80"
+                  width="600"
+                  height="240"
+                  fill="#334155"
+                  stroke="white"
+                  stroke-width="4"/>
+
+            <!-- SQUARE -->
+            <rect id="square"
+                  x="60"
+                  y="80"
+                  width="240"
+                  height="240"
+                  fill="#ef4444"
+                  opacity="0"
+                  stroke="white"
+                  stroke-width="4"/>
+
+            <!-- REMAINING RECTANGLE -->
+            <rect id="remainRect"
+                  x="300"
+                  y="80"
+                  width="360"
+                  height="240"
+                  fill="#22c55e"
+                  opacity="0"
+                  stroke="white"
+                  stroke-width="4"/>
+
+            <!-- DIVIDE INTO 3 -->
+            <line id="line1"
+                  x1="420"
+                  y1="80"
+                  x2="420"
+                  y2="320"
+                  stroke="white"
+                  stroke-width="3"
+                  opacity="0"/>
+
+            <line id="line2"
+                  x1="540"
+                  y1="80"
+                  x2="540"
+                  y2="320"
+                  stroke="white"
+                  stroke-width="3"
+                  opacity="0"/>
+
+            <!-- LABELS -->
+            <text x="320" y="360" class="label">Length = 150</text>
+
+            <text x="5" y="210"
+                  transform="rotate(-90 20 210)"
+                  class="label">
+                  Height = 96
+            </text>
+
+            <text id="squareText"
+                  x="110"
+                  y="210"
+                  class="label"
+                  opacity="0">
+                  Square
+            </text>
+
+            <text id="remainText"
+                  x="390"
+                  y="210"
+                  class="label"
+                  opacity="0">
+                  Remaining Area
+            </text>
+
+            <text id="divideText"
+                  x="360"
+                  y="55"
+                  class="label"
+                  opacity="0">
+                  Divide into 3 equal rectangles
+            </text>
+
+        </svg>
+
+    </div>
+
+    <div class="panel">
+
+        <div class="step" id="stepBox">
+            Click START to begin the geometry thinking process.
+        </div>
+
+        <button onclick="nextStep()">NEXT STEP</button>
+        <button onclick="resetDemo()">RESET</button>
+
+    </div>
+
+</div>
+
+<script>
+
+let step = 0;
+
+function nextStep(){
+
+    step++;
+
+    const square = document.getElementById("square");
+    const remainRect = document.getElementById("remainRect");
+    const squareText = document.getElementById("squareText");
+    const remainText = document.getElementById("remainText");
+    const divideText = document.getElementById("divideText");
+    const line1 = document.getElementById("line1");
+    const line2 = document.getElementById("line2");
+    const stepBox = document.getElementById("stepBox");
+
+    if(step === 1){
+
+        square.style.opacity = 0.9;
+        squareText.style.opacity = 1;
+
+        stepBox.innerHTML = `
+        <span class="highlight">Step 1:</span><br><br>
+        The rectangle height is <b>96</b>.<br><br>
+        The red shape is a <b>square</b> using the FULL height.<br><br>
+        So the square must be:
+        <br><br>
+        <span class="highlight">96 × 96</span>
+        `;
+    }
+
+    else if(step === 2){
+
+        remainRect.style.opacity = 0.9;
+        remainText.style.opacity = 1;
+
+        stepBox.innerHTML = `
+        <span class="highlight">Step 2:</span><br><br>
+        The total length is:
+        <br><br>
+        <span class="highlight">150</span>
+        <br><br>
+        The square used:
+        <br><br>
+        <span class="highlight">96</span>
+        <br><br>
+        Remaining length:
+        <br><br>
+        <span class="highlight">
+        150 − 96 = 54
+        </span>
+        `;
+    }
+
+    else if(step === 3){
+
+        line1.style.opacity = 1;
+        line2.style.opacity = 1;
+        divideText.style.opacity = 1;
+
+        stepBox.innerHTML = `
+        <span class="highlight">Step 3:</span><br><br>
+        The remaining rectangle is divided into:
+        <br><br>
+        <span class="highlight">3 equal parts</span>
+        <br><br>
+        We do NOT need to redraw everything.<br><br>
+        We can think using AREA.
+        `;
+    }
+
+    else if(step === 4){
+
+        stepBox.innerHTML = `
+        <span class="highlight">Step 4:</span><br><br>
+
+        Remaining rectangle:
+        <br><br>
+
+        <span class="highlight">
+        96 × 54 = 5184
+        </span>
+        <br><br>
+
+        Divide into 3 equal parts:
+        <br><br>
+
+        <span class="highlight">
+        5184 ÷ 3 = 1728
+        </span>
+        `;
+    }
+
+    else if(step === 5){
+
+        stepBox.innerHTML = `
+        <span class="highlight">Final Thinking:</span><br><br>
+
+        Geometry is NOT only formulas.<br><br>
+
+        Strong students think:
+        <br><br>
+
+        ✔ Who takes space?<br>
+        ✔ What is left?<br>
+        ✔ How is the area split?
+        <br><br>
+
+        This is competition math thinking.
+        `;
+    }
+
+}
+
+function resetDemo(){
+
+    step = 0;
+
+    document.getElementById("square").style.opacity = 0;
+    document.getElementById("remainRect").style.opacity = 0;
+    document.getElementById("squareText").style.opacity = 0;
+    document.getElementById("remainText").style.opacity = 0;
+    document.getElementById("divideText").style.opacity = 0;
+    document.getElementById("line1").style.opacity = 0;
+    document.getElementById("line2").style.opacity = 0;
+
+    document.getElementById("stepBox").innerHTML = `
+    Click START to begin the geometry thinking process.
+    `;
+}
+
+</script>
+
+</body>
+</html>
